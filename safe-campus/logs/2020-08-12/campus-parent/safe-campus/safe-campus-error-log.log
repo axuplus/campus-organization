@@ -1,0 +1,14 @@
+2020-08-12 17:32:40.876 [main] ERROR org.springframework.boot.diagnostics.LoggingFailureAnalysisReporter - 
+
+***************************
+APPLICATION FAILED TO START
+***************************
+
+Description:
+
+Web server failed to start. Port 8070 was already in use.
+
+Action:
+
+Identify and stop the process that's listening on port 8070 or configure this application to listen on another port.
+

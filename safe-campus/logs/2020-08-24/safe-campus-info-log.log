@@ -1,0 +1,87 @@
+2020-08-24 09:55:45.917 [main] INFO  org.springframework.context.support.PostProcessorRegistrationDelegate$BeanPostProcessorChecker - Bean 'configurationPropertiesRebinderAutoConfiguration' of type [org.springframework.cloud.autoconfigure.ConfigurationPropertiesRebinderAutoConfiguration$$EnhancerBySpringCGLIB$$1434c61e] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2020-08-24 09:55:47.799 [main] INFO  com.safe.campus.SafeCampusApplication - The following profiles are active: dev
+2020-08-24 09:55:49.148 [main] INFO  org.springframework.data.repository.config.RepositoryConfigurationDelegate - Multiple Spring Data modules found, entering strict repository configuration mode!
+2020-08-24 09:55:49.159 [main] INFO  org.springframework.data.repository.config.RepositoryConfigurationDelegate - Bootstrapping Spring Data Redis repositories in DEFAULT mode.
+2020-08-24 09:55:49.229 [main] INFO  org.springframework.data.repository.config.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 41ms. Found 0 Redis repository interfaces.
+2020-08-24 09:55:49.592 [main] INFO  org.springframework.cloud.context.scope.GenericScope - BeanFactory id=1c70fd20-5fb3-31a9-809e-a6cce5d77d92
+2020-08-24 09:55:49.877 [main] INFO  org.springframework.context.support.PostProcessorRegistrationDelegate$BeanPostProcessorChecker - Bean 'org.springframework.transaction.annotation.ProxyTransactionManagementConfiguration' of type [org.springframework.transaction.annotation.ProxyTransactionManagementConfiguration] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2020-08-24 09:55:49.944 [main] INFO  org.springframework.context.support.PostProcessorRegistrationDelegate$BeanPostProcessorChecker - Bean 'org.springframework.cloud.autoconfigure.ConfigurationPropertiesRebinderAutoConfiguration' of type [org.springframework.cloud.autoconfigure.ConfigurationPropertiesRebinderAutoConfiguration$$EnhancerBySpringCGLIB$$1434c61e] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2020-08-24 09:55:50.352 [main] INFO  org.springframework.boot.web.embedded.tomcat.TomcatWebServer - Tomcat initialized with port(s): 8070 (http)
+2020-08-24 09:55:50.364 [main] INFO  org.apache.catalina.core.StandardService - Starting service [Tomcat]
+2020-08-24 09:55:50.364 [main] INFO  org.apache.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/9.0.30]
+2020-08-24 09:55:50.366 [main] INFO  org.apache.catalina.core.AprLifecycleListener - An older version [1.2.21] of the APR based Apache Tomcat Native library is installed, while Tomcat recommends a minimum version of [1.2.23]
+2020-08-24 09:55:50.366 [main] INFO  org.apache.catalina.core.AprLifecycleListener - Loaded APR based Apache Tomcat Native library [1.2.21] using APR version [1.6.5].
+2020-08-24 09:55:50.367 [main] INFO  org.apache.catalina.core.AprLifecycleListener - APR capabilities: IPv6 [true], sendfile [true], accept filters [false], random [true].
+2020-08-24 09:55:50.367 [main] INFO  org.apache.catalina.core.AprLifecycleListener - APR/OpenSSL configuration: useAprConnector [false], useOpenSSL [true]
+2020-08-24 09:55:50.406 [main] INFO  org.apache.catalina.core.AprLifecycleListener - OpenSSL successfully initialized [OpenSSL 1.1.1a  20 Nov 2018]
+2020-08-24 09:55:50.551 [main] INFO  org.apache.catalina.core.ContainerBase.[Tomcat].[localhost].[/] - Initializing Spring embedded WebApplicationContext
+2020-08-24 09:55:50.552 [main] INFO  org.springframework.web.context.ContextLoader - Root WebApplicationContext: initialization completed in 2735 ms
+2020-08-24 09:55:50.694 [main] INFO  com.alibaba.druid.spring.boot.autoconfigure.DruidDataSourceAutoConfigure - Init DruidDataSource
+2020-08-24 09:55:54.732 [main] INFO  com.alibaba.druid.pool.DruidDataSource - {dataSource-1} inited
+2020-08-24 09:55:54.762 [main] INFO  org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor - Initializing ExecutorService 'applicationTaskExecutor'
+2020-08-24 09:55:56.903 [main] INFO  springfox.documentation.spring.web.PropertySourcedRequestMappingHandlerMapping - Mapped URL path [/v2/api-docs] onto method [springfox.documentation.swagger2.web.Swagger2Controller#getDocumentation(String, HttpServletRequest)]
+2020-08-24 09:55:59.027 [main] INFO  org.springframework.cloud.commons.util.InetUtils - Cannot determine local hostname
+2020-08-24 09:55:59.192 [main] INFO  springfox.documentation.spring.web.plugins.DocumentationPluginsBootstrapper - Context refreshed
+2020-08-24 09:55:59.219 [main] INFO  springfox.documentation.spring.web.plugins.DocumentationPluginsBootstrapper - Found 1 custom documentation plugin(s)
+2020-08-24 09:55:59.314 [main] INFO  springfox.documentation.spring.web.scanners.ApiListingReferenceScanner - Scanning for api listing references
+2020-08-24 09:55:59.703 [main] INFO  springfox.documentation.spring.web.readers.operation.CachingOperationNameGenerator - Generating unique operation named: importTeacherConcentratorUsingPOST_1
+2020-08-24 09:55:59.848 [main] INFO  org.springframework.boot.web.embedded.tomcat.TomcatWebServer - Tomcat started on port(s): 8070 (http) with context path ''
+2020-08-24 09:55:59.853 [main] INFO  com.safe.campus.SafeCampusApplication - Started SafeCampusApplication in 17.615 seconds (JVM running for 21.579)
+2020-08-24 13:38:54.894 [SpringContextShutdownHook] INFO  org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor - Shutting down ExecutorService 'applicationTaskExecutor'
+2020-08-24 13:38:54.912 [SpringContextShutdownHook] INFO  com.alibaba.druid.pool.DruidDataSource - {dataSource-1} closed
+2020-08-24 14:07:30.056 [main] INFO  org.springframework.context.support.PostProcessorRegistrationDelegate$BeanPostProcessorChecker - Bean 'configurationPropertiesRebinderAutoConfiguration' of type [org.springframework.cloud.autoconfigure.ConfigurationPropertiesRebinderAutoConfiguration$$EnhancerBySpringCGLIB$$dff1a320] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2020-08-24 14:07:32.425 [main] INFO  com.safe.campus.SafeCampusApplication - The following profiles are active: dev
+2020-08-24 14:07:33.495 [main] INFO  org.springframework.data.repository.config.RepositoryConfigurationDelegate - Multiple Spring Data modules found, entering strict repository configuration mode!
+2020-08-24 14:07:33.498 [main] INFO  org.springframework.data.repository.config.RepositoryConfigurationDelegate - Bootstrapping Spring Data Redis repositories in DEFAULT mode.
+2020-08-24 14:07:33.554 [main] INFO  org.springframework.data.repository.config.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 42ms. Found 0 Redis repository interfaces.
+2020-08-24 14:07:33.864 [main] INFO  org.springframework.cloud.context.scope.GenericScope - BeanFactory id=80fc5494-ba2f-33f7-a035-95aa035e3405
+2020-08-24 14:07:34.003 [main] INFO  org.springframework.context.support.PostProcessorRegistrationDelegate$BeanPostProcessorChecker - Bean 'org.springframework.transaction.annotation.ProxyTransactionManagementConfiguration' of type [org.springframework.transaction.annotation.ProxyTransactionManagementConfiguration] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2020-08-24 14:07:34.044 [main] INFO  org.springframework.context.support.PostProcessorRegistrationDelegate$BeanPostProcessorChecker - Bean 'org.springframework.cloud.autoconfigure.ConfigurationPropertiesRebinderAutoConfiguration' of type [org.springframework.cloud.autoconfigure.ConfigurationPropertiesRebinderAutoConfiguration$$EnhancerBySpringCGLIB$$dff1a320] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2020-08-24 14:07:34.406 [main] INFO  org.springframework.boot.web.embedded.tomcat.TomcatWebServer - Tomcat initialized with port(s): 8070 (http)
+2020-08-24 14:07:34.781 [main] INFO  org.apache.catalina.core.StandardService - Starting service [Tomcat]
+2020-08-24 14:07:34.782 [main] INFO  org.apache.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/9.0.30]
+2020-08-24 14:07:34.786 [main] INFO  org.apache.catalina.core.AprLifecycleListener - An older version [1.2.21] of the APR based Apache Tomcat Native library is installed, while Tomcat recommends a minimum version of [1.2.23]
+2020-08-24 14:07:34.786 [main] INFO  org.apache.catalina.core.AprLifecycleListener - Loaded APR based Apache Tomcat Native library [1.2.21] using APR version [1.6.5].
+2020-08-24 14:07:34.786 [main] INFO  org.apache.catalina.core.AprLifecycleListener - APR capabilities: IPv6 [true], sendfile [true], accept filters [false], random [true].
+2020-08-24 14:07:34.788 [main] INFO  org.apache.catalina.core.AprLifecycleListener - APR/OpenSSL configuration: useAprConnector [false], useOpenSSL [true]
+2020-08-24 14:07:34.792 [main] INFO  org.apache.catalina.core.AprLifecycleListener - OpenSSL successfully initialized [OpenSSL 1.1.1a  20 Nov 2018]
+2020-08-24 14:07:34.916 [main] INFO  org.apache.catalina.core.ContainerBase.[Tomcat].[localhost].[/] - Initializing Spring embedded WebApplicationContext
+2020-08-24 14:07:34.916 [main] INFO  org.springframework.web.context.ContextLoader - Root WebApplicationContext: initialization completed in 2467 ms
+2020-08-24 14:07:35.001 [main] INFO  com.alibaba.druid.spring.boot.autoconfigure.DruidDataSourceAutoConfigure - Init DruidDataSource
+2020-08-24 14:07:39.124 [main] INFO  com.alibaba.druid.pool.DruidDataSource - {dataSource-1} inited
+2020-08-24 14:07:39.150 [main] INFO  org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor - Initializing ExecutorService 'applicationTaskExecutor'
+2020-08-24 14:07:41.990 [main] INFO  springfox.documentation.spring.web.PropertySourcedRequestMappingHandlerMapping - Mapped URL path [/v2/api-docs] onto method [springfox.documentation.swagger2.web.Swagger2Controller#getDocumentation(String, HttpServletRequest)]
+2020-08-24 14:07:44.773 [main] INFO  org.springframework.cloud.commons.util.InetUtils - Cannot determine local hostname
+2020-08-24 14:07:44.882 [main] INFO  springfox.documentation.spring.web.plugins.DocumentationPluginsBootstrapper - Context refreshed
+2020-08-24 14:07:44.901 [main] INFO  springfox.documentation.spring.web.plugins.DocumentationPluginsBootstrapper - Found 1 custom documentation plugin(s)
+2020-08-24 14:07:44.946 [main] INFO  springfox.documentation.spring.web.scanners.ApiListingReferenceScanner - Scanning for api listing references
+2020-08-24 14:07:45.434 [main] INFO  org.springframework.boot.web.embedded.tomcat.TomcatWebServer - Tomcat started on port(s): 8070 (http) with context path ''
+2020-08-24 14:07:45.436 [main] INFO  com.safe.campus.SafeCampusApplication - Started SafeCampusApplication in 19.002 seconds (JVM running for 22.684)
+2020-08-24 20:44:21.371 [main] INFO  org.springframework.context.support.PostProcessorRegistrationDelegate$BeanPostProcessorChecker - Bean 'configurationPropertiesRebinderAutoConfiguration' of type [org.springframework.cloud.autoconfigure.ConfigurationPropertiesRebinderAutoConfiguration$$EnhancerBySpringCGLIB$$e24e99cd] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2020-08-24 20:44:23.897 [main] INFO  com.safe.campus.SafeCampusApplication - The following profiles are active: dev
+2020-08-24 20:44:25.413 [main] INFO  org.springframework.data.repository.config.RepositoryConfigurationDelegate - Multiple Spring Data modules found, entering strict repository configuration mode!
+2020-08-24 20:44:25.417 [main] INFO  org.springframework.data.repository.config.RepositoryConfigurationDelegate - Bootstrapping Spring Data Redis repositories in DEFAULT mode.
+2020-08-24 20:44:25.536 [main] INFO  org.springframework.data.repository.config.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 95ms. Found 0 Redis repository interfaces.
+2020-08-24 20:44:25.987 [main] INFO  org.springframework.cloud.context.scope.GenericScope - BeanFactory id=80fc5494-ba2f-33f7-a035-95aa035e3405
+2020-08-24 20:44:26.136 [main] INFO  org.springframework.context.support.PostProcessorRegistrationDelegate$BeanPostProcessorChecker - Bean 'org.springframework.transaction.annotation.ProxyTransactionManagementConfiguration' of type [org.springframework.transaction.annotation.ProxyTransactionManagementConfiguration] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2020-08-24 20:44:26.175 [main] INFO  org.springframework.context.support.PostProcessorRegistrationDelegate$BeanPostProcessorChecker - Bean 'org.springframework.cloud.autoconfigure.ConfigurationPropertiesRebinderAutoConfiguration' of type [org.springframework.cloud.autoconfigure.ConfigurationPropertiesRebinderAutoConfiguration$$EnhancerBySpringCGLIB$$e24e99cd] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2020-08-24 20:44:26.487 [main] INFO  org.springframework.boot.web.embedded.tomcat.TomcatWebServer - Tomcat initialized with port(s): 8070 (http)
+2020-08-24 20:44:26.581 [main] INFO  org.apache.catalina.core.StandardService - Starting service [Tomcat]
+2020-08-24 20:44:26.581 [main] INFO  org.apache.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/9.0.30]
+2020-08-24 20:44:26.583 [main] INFO  org.apache.catalina.core.AprLifecycleListener - An older version [1.2.21] of the APR based Apache Tomcat Native library is installed, while Tomcat recommends a minimum version of [1.2.23]
+2020-08-24 20:44:26.584 [main] INFO  org.apache.catalina.core.AprLifecycleListener - Loaded APR based Apache Tomcat Native library [1.2.21] using APR version [1.6.5].
+2020-08-24 20:44:26.585 [main] INFO  org.apache.catalina.core.AprLifecycleListener - APR capabilities: IPv6 [true], sendfile [true], accept filters [false], random [true].
+2020-08-24 20:44:26.586 [main] INFO  org.apache.catalina.core.AprLifecycleListener - APR/OpenSSL configuration: useAprConnector [false], useOpenSSL [true]
+2020-08-24 20:44:26.590 [main] INFO  org.apache.catalina.core.AprLifecycleListener - OpenSSL successfully initialized [OpenSSL 1.1.1a  20 Nov 2018]
+2020-08-24 20:44:26.852 [main] INFO  org.apache.catalina.core.ContainerBase.[Tomcat].[localhost].[/] - Initializing Spring embedded WebApplicationContext
+2020-08-24 20:44:26.853 [main] INFO  org.springframework.web.context.ContextLoader - Root WebApplicationContext: initialization completed in 2935 ms
+2020-08-24 20:44:27.073 [main] INFO  com.alibaba.druid.spring.boot.autoconfigure.DruidDataSourceAutoConfigure - Init DruidDataSource
+2020-08-24 20:44:31.160 [main] INFO  com.alibaba.druid.pool.DruidDataSource - {dataSource-1} inited
+2020-08-24 20:44:31.184 [main] INFO  org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor - Initializing ExecutorService 'applicationTaskExecutor'
+2020-08-24 20:44:32.881 [main] INFO  springfox.documentation.spring.web.PropertySourcedRequestMappingHandlerMapping - Mapped URL path [/v2/api-docs] onto method [springfox.documentation.swagger2.web.Swagger2Controller#getDocumentation(String, HttpServletRequest)]
+2020-08-24 20:44:34.878 [main] INFO  org.springframework.cloud.commons.util.InetUtils - Cannot determine local hostname
+2020-08-24 20:44:34.973 [main] INFO  springfox.documentation.spring.web.plugins.DocumentationPluginsBootstrapper - Context refreshed
+2020-08-24 20:44:34.985 [main] INFO  springfox.documentation.spring.web.plugins.DocumentationPluginsBootstrapper - Found 1 custom documentation plugin(s)
+2020-08-24 20:44:35.021 [main] INFO  springfox.documentation.spring.web.scanners.ApiListingReferenceScanner - Scanning for api listing references
+2020-08-24 20:44:35.464 [main] INFO  org.springframework.boot.web.embedded.tomcat.TomcatWebServer - Tomcat started on port(s): 8070 (http) with context path ''
+2020-08-24 20:44:35.466 [main] INFO  com.safe.campus.SafeCampusApplication - Started SafeCampusApplication in 17.351 seconds (JVM running for 20.343)

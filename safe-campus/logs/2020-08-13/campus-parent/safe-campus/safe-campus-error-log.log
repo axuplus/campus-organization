@@ -1,0 +1,451 @@
+2020-08-13 00:12:39.943 [main] ERROR org.springframework.boot.SpringApplication - Application run failed
+org.springframework.beans.factory.BeanDefinitionStoreException: Failed to process import candidates for configuration class [com.safe.campus.SafeCampusApplication]; nested exception is java.lang.ArrayStoreException: sun.reflect.annotation.TypeNotPresentExceptionProxy
+	at org.springframework.context.annotation.ConfigurationClassParser.processImports(ConfigurationClassParser.java:597)
+	at org.springframework.context.annotation.ConfigurationClassParser.access$900(ConfigurationClassParser.java:109)
+	at org.springframework.context.annotation.ConfigurationClassParser$DeferredImportSelectorGroupingHandler.lambda$processGroupImports$1(ConfigurationClassParser.java:805)
+	at java.util.ArrayList.forEach(ArrayList.java:1249)
+	at org.springframework.context.annotation.ConfigurationClassParser$DeferredImportSelectorGroupingHandler.processGroupImports(ConfigurationClassParser.java:801)
+	at org.springframework.context.annotation.ConfigurationClassParser$DeferredImportSelectorHandler.process(ConfigurationClassParser.java:771)
+	at org.springframework.context.annotation.ConfigurationClassParser.parse(ConfigurationClassParser.java:188)
+	at org.springframework.context.annotation.ConfigurationClassPostProcessor.processConfigBeanDefinitions(ConfigurationClassPostProcessor.java:325)
+	at org.springframework.context.annotation.ConfigurationClassPostProcessor.postProcessBeanDefinitionRegistry(ConfigurationClassPostProcessor.java:242)
+	at org.springframework.context.support.PostProcessorRegistrationDelegate.invokeBeanDefinitionRegistryPostProcessors(PostProcessorRegistrationDelegate.java:275)
+	at org.springframework.context.support.PostProcessorRegistrationDelegate.invokeBeanFactoryPostProcessors(PostProcessorRegistrationDelegate.java:95)
+	at org.springframework.context.support.AbstractApplicationContext.invokeBeanFactoryPostProcessors(AbstractApplicationContext.java:706)
+	at org.springframework.context.support.AbstractApplicationContext.refresh(AbstractApplicationContext.java:532)
+	at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.refresh(ServletWebServerApplicationContext.java:141)
+	at org.springframework.boot.SpringApplication.refresh(SpringApplication.java:747)
+	at org.springframework.boot.SpringApplication.refreshContext(SpringApplication.java:397)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:315)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1226)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1215)
+	at com.safe.campus.SafeCampusApplication.main(SafeCampusApplication.java:17)
+Caused by: java.lang.ArrayStoreException: sun.reflect.annotation.TypeNotPresentExceptionProxy
+	at sun.reflect.annotation.AnnotationParser.parseClassArray(AnnotationParser.java:724)
+	at sun.reflect.annotation.AnnotationParser.parseArray(AnnotationParser.java:531)
+	at sun.reflect.annotation.AnnotationParser.parseMemberValue(AnnotationParser.java:355)
+	at sun.reflect.annotation.AnnotationParser.parseAnnotation2(AnnotationParser.java:286)
+	at sun.reflect.annotation.AnnotationParser.parseAnnotations2(AnnotationParser.java:120)
+	at sun.reflect.annotation.AnnotationParser.parseAnnotations(AnnotationParser.java:72)
+	at java.lang.Class.createAnnotationData(Class.java:3521)
+	at java.lang.Class.annotationData(Class.java:3510)
+	at java.lang.Class.getDeclaredAnnotations(Class.java:3477)
+	at org.springframework.core.annotation.AnnotationsScanner.getDeclaredAnnotations(AnnotationsScanner.java:461)
+	at org.springframework.core.annotation.AnnotationTypeMappings.addMetaAnnotationsToQueue(AnnotationTypeMappings.java:85)
+	at org.springframework.core.annotation.AnnotationTypeMappings.addAllMappings(AnnotationTypeMappings.java:79)
+	at org.springframework.core.annotation.AnnotationTypeMappings.<init>(AnnotationTypeMappings.java:68)
+	at org.springframework.core.annotation.AnnotationTypeMappings.<init>(AnnotationTypeMappings.java:46)
+	at org.springframework.core.annotation.AnnotationTypeMappings$Cache.createMappings(AnnotationTypeMappings.java:253)
+	at java.util.concurrent.ConcurrentMap.computeIfAbsent(ConcurrentMap.java:324)
+	at org.springframework.core.annotation.AnnotationTypeMappings$Cache.get(AnnotationTypeMappings.java:249)
+	at org.springframework.core.annotation.AnnotationTypeMappings.forAnnotationType(AnnotationTypeMappings.java:206)
+	at org.springframework.core.annotation.AnnotationTypeMappings.forAnnotationType(AnnotationTypeMappings.java:188)
+	at org.springframework.core.annotation.AnnotationTypeMappings.forAnnotationType(AnnotationTypeMappings.java:175)
+	at org.springframework.core.annotation.TypeMappedAnnotation.of(TypeMappedAnnotation.java:636)
+	at org.springframework.core.annotation.MergedAnnotation.of(MergedAnnotation.java:596)
+	at org.springframework.core.type.classreading.MergedAnnotationReadingVisitor.visitEnd(MergedAnnotationReadingVisitor.java:96)
+	at org.springframework.asm.ClassReader.readElementValues(ClassReader.java:2775)
+	at org.springframework.asm.ClassReader.accept(ClassReader.java:572)
+	at org.springframework.asm.ClassReader.accept(ClassReader.java:400)
+	at org.springframework.core.type.classreading.SimpleMetadataReader.<init>(SimpleMetadataReader.java:50)
+	at org.springframework.core.type.classreading.SimpleMetadataReaderFactory.getMetadataReader(SimpleMetadataReaderFactory.java:103)
+	at org.springframework.boot.type.classreading.ConcurrentReferenceCachingMetadataReaderFactory.createMetadataReader(ConcurrentReferenceCachingMetadataReaderFactory.java:86)
+	at org.springframework.boot.type.classreading.ConcurrentReferenceCachingMetadataReaderFactory.getMetadataReader(ConcurrentReferenceCachingMetadataReaderFactory.java:73)
+	at org.springframework.core.type.classreading.SimpleMetadataReaderFactory.getMetadataReader(SimpleMetadataReaderFactory.java:81)
+	at org.springframework.context.annotation.ConfigurationClassParser.asSourceClass(ConfigurationClassParser.java:686)
+	at org.springframework.context.annotation.ConfigurationClassParser$SourceClass.getMemberClasses(ConfigurationClassParser.java:977)
+	at org.springframework.context.annotation.ConfigurationClassParser.processMemberClasses(ConfigurationClassParser.java:347)
+	at org.springframework.context.annotation.ConfigurationClassParser.doProcessConfigurationClass(ConfigurationClassParser.java:266)
+	at org.springframework.context.annotation.ConfigurationClassParser.processConfigurationClass(ConfigurationClassParser.java:245)
+	at org.springframework.context.annotation.ConfigurationClassParser.processImports(ConfigurationClassParser.java:587)
+	... 19 common frames omitted
+2020-08-13 00:17:24.173 [main] ERROR org.springframework.boot.SpringApplication - Application run failed
+org.springframework.beans.factory.BeanDefinitionStoreException: Failed to process import candidates for configuration class [com.safe.campus.SafeCampusApplication]; nested exception is java.lang.ArrayStoreException: sun.reflect.annotation.TypeNotPresentExceptionProxy
+	at org.springframework.context.annotation.ConfigurationClassParser.processImports(ConfigurationClassParser.java:597)
+	at org.springframework.context.annotation.ConfigurationClassParser.access$900(ConfigurationClassParser.java:109)
+	at org.springframework.context.annotation.ConfigurationClassParser$DeferredImportSelectorGroupingHandler.lambda$processGroupImports$1(ConfigurationClassParser.java:805)
+	at java.util.ArrayList.forEach(ArrayList.java:1249)
+	at org.springframework.context.annotation.ConfigurationClassParser$DeferredImportSelectorGroupingHandler.processGroupImports(ConfigurationClassParser.java:801)
+	at org.springframework.context.annotation.ConfigurationClassParser$DeferredImportSelectorHandler.process(ConfigurationClassParser.java:771)
+	at org.springframework.context.annotation.ConfigurationClassParser.parse(ConfigurationClassParser.java:188)
+	at org.springframework.context.annotation.ConfigurationClassPostProcessor.processConfigBeanDefinitions(ConfigurationClassPostProcessor.java:325)
+	at org.springframework.context.annotation.ConfigurationClassPostProcessor.postProcessBeanDefinitionRegistry(ConfigurationClassPostProcessor.java:242)
+	at org.springframework.context.support.PostProcessorRegistrationDelegate.invokeBeanDefinitionRegistryPostProcessors(PostProcessorRegistrationDelegate.java:275)
+	at org.springframework.context.support.PostProcessorRegistrationDelegate.invokeBeanFactoryPostProcessors(PostProcessorRegistrationDelegate.java:95)
+	at org.springframework.context.support.AbstractApplicationContext.invokeBeanFactoryPostProcessors(AbstractApplicationContext.java:706)
+	at org.springframework.context.support.AbstractApplicationContext.refresh(AbstractApplicationContext.java:532)
+	at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.refresh(ServletWebServerApplicationContext.java:141)
+	at org.springframework.boot.SpringApplication.refresh(SpringApplication.java:747)
+	at org.springframework.boot.SpringApplication.refreshContext(SpringApplication.java:397)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:315)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1226)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1215)
+	at com.safe.campus.SafeCampusApplication.main(SafeCampusApplication.java:18)
+Caused by: java.lang.ArrayStoreException: sun.reflect.annotation.TypeNotPresentExceptionProxy
+	at sun.reflect.annotation.AnnotationParser.parseClassArray(AnnotationParser.java:724)
+	at sun.reflect.annotation.AnnotationParser.parseArray(AnnotationParser.java:531)
+	at sun.reflect.annotation.AnnotationParser.parseMemberValue(AnnotationParser.java:355)
+	at sun.reflect.annotation.AnnotationParser.parseAnnotation2(AnnotationParser.java:286)
+	at sun.reflect.annotation.AnnotationParser.parseAnnotations2(AnnotationParser.java:120)
+	at sun.reflect.annotation.AnnotationParser.parseAnnotations(AnnotationParser.java:72)
+	at java.lang.Class.createAnnotationData(Class.java:3521)
+	at java.lang.Class.annotationData(Class.java:3510)
+	at java.lang.Class.getDeclaredAnnotations(Class.java:3477)
+	at org.springframework.core.annotation.AnnotationsScanner.getDeclaredAnnotations(AnnotationsScanner.java:461)
+	at org.springframework.core.annotation.AnnotationTypeMappings.addMetaAnnotationsToQueue(AnnotationTypeMappings.java:85)
+	at org.springframework.core.annotation.AnnotationTypeMappings.addAllMappings(AnnotationTypeMappings.java:79)
+	at org.springframework.core.annotation.AnnotationTypeMappings.<init>(AnnotationTypeMappings.java:68)
+	at org.springframework.core.annotation.AnnotationTypeMappings.<init>(AnnotationTypeMappings.java:46)
+	at org.springframework.core.annotation.AnnotationTypeMappings$Cache.createMappings(AnnotationTypeMappings.java:253)
+	at java.util.concurrent.ConcurrentMap.computeIfAbsent(ConcurrentMap.java:324)
+	at org.springframework.core.annotation.AnnotationTypeMappings$Cache.get(AnnotationTypeMappings.java:249)
+	at org.springframework.core.annotation.AnnotationTypeMappings.forAnnotationType(AnnotationTypeMappings.java:206)
+	at org.springframework.core.annotation.AnnotationTypeMappings.forAnnotationType(AnnotationTypeMappings.java:188)
+	at org.springframework.core.annotation.AnnotationTypeMappings.forAnnotationType(AnnotationTypeMappings.java:175)
+	at org.springframework.core.annotation.TypeMappedAnnotation.of(TypeMappedAnnotation.java:636)
+	at org.springframework.core.annotation.MergedAnnotation.of(MergedAnnotation.java:596)
+	at org.springframework.core.type.classreading.MergedAnnotationReadingVisitor.visitEnd(MergedAnnotationReadingVisitor.java:96)
+	at org.springframework.asm.ClassReader.readElementValues(ClassReader.java:2775)
+	at org.springframework.asm.ClassReader.accept(ClassReader.java:572)
+	at org.springframework.asm.ClassReader.accept(ClassReader.java:400)
+	at org.springframework.core.type.classreading.SimpleMetadataReader.<init>(SimpleMetadataReader.java:50)
+	at org.springframework.core.type.classreading.SimpleMetadataReaderFactory.getMetadataReader(SimpleMetadataReaderFactory.java:103)
+	at org.springframework.boot.type.classreading.ConcurrentReferenceCachingMetadataReaderFactory.createMetadataReader(ConcurrentReferenceCachingMetadataReaderFactory.java:86)
+	at org.springframework.boot.type.classreading.ConcurrentReferenceCachingMetadataReaderFactory.getMetadataReader(ConcurrentReferenceCachingMetadataReaderFactory.java:73)
+	at org.springframework.core.type.classreading.SimpleMetadataReaderFactory.getMetadataReader(SimpleMetadataReaderFactory.java:81)
+	at org.springframework.context.annotation.ConfigurationClassParser.asSourceClass(ConfigurationClassParser.java:686)
+	at org.springframework.context.annotation.ConfigurationClassParser$SourceClass.getMemberClasses(ConfigurationClassParser.java:977)
+	at org.springframework.context.annotation.ConfigurationClassParser.processMemberClasses(ConfigurationClassParser.java:347)
+	at org.springframework.context.annotation.ConfigurationClassParser.doProcessConfigurationClass(ConfigurationClassParser.java:266)
+	at org.springframework.context.annotation.ConfigurationClassParser.processConfigurationClass(ConfigurationClassParser.java:245)
+	at org.springframework.context.annotation.ConfigurationClassParser.processImports(ConfigurationClassParser.java:587)
+	... 19 common frames omitted
+2020-08-13 01:19:18.810 [main] ERROR org.springframework.boot.SpringApplication - Application startup failed
+org.springframework.beans.factory.BeanDefinitionStoreException: Failed to process import candidates for configuration class [com.safe.campus.SafeCampusApplication]; nested exception is java.lang.IllegalStateException: Annotation @EnableDiscoveryClient found, but there are no implementations.  Did you forget to include a starter?
+	at org.springframework.context.annotation.ConfigurationClassParser.processDeferredImportSelectors(ConfigurationClassParser.java:438) ~[spring-context-4.1.9.RELEASE.jar:4.1.9.RELEASE]
+	at org.springframework.context.annotation.ConfigurationClassParser.parse(ConfigurationClassParser.java:184) ~[spring-context-4.1.9.RELEASE.jar:4.1.9.RELEASE]
+	at org.springframework.context.annotation.ConfigurationClassPostProcessor.processConfigBeanDefinitions(ConfigurationClassPostProcessor.java:306) ~[spring-context-4.1.9.RELEASE.jar:4.1.9.RELEASE]
+	at org.springframework.context.annotation.ConfigurationClassPostProcessor.postProcessBeanDefinitionRegistry(ConfigurationClassPostProcessor.java:239) ~[spring-context-4.1.9.RELEASE.jar:4.1.9.RELEASE]
+	at org.springframework.context.support.PostProcessorRegistrationDelegate.invokeBeanDefinitionRegistryPostProcessors(PostProcessorRegistrationDelegate.java:254) ~[spring-context-4.1.9.RELEASE.jar:4.1.9.RELEASE]
+	at org.springframework.context.support.PostProcessorRegistrationDelegate.invokeBeanFactoryPostProcessors(PostProcessorRegistrationDelegate.java:94) ~[spring-context-4.1.9.RELEASE.jar:4.1.9.RELEASE]
+	at org.springframework.context.support.AbstractApplicationContext.invokeBeanFactoryPostProcessors(AbstractApplicationContext.java:610) ~[spring-context-4.1.9.RELEASE.jar:4.1.9.RELEASE]
+	at org.springframework.context.support.AbstractApplicationContext.refresh(AbstractApplicationContext.java:462) ~[spring-context-4.1.9.RELEASE.jar:4.1.9.RELEASE]
+	at org.springframework.boot.context.embedded.EmbeddedWebApplicationContext.refresh(EmbeddedWebApplicationContext.java:118) ~[spring-boot-1.2.8.RELEASE.jar:1.2.8.RELEASE]
+	at org.springframework.boot.SpringApplication.refresh(SpringApplication.java:690) [spring-boot-1.2.8.RELEASE.jar:1.2.8.RELEASE]
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:322) [spring-boot-1.2.8.RELEASE.jar:1.2.8.RELEASE]
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:970) [spring-boot-1.2.8.RELEASE.jar:1.2.8.RELEASE]
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:959) [spring-boot-1.2.8.RELEASE.jar:1.2.8.RELEASE]
+	at com.safe.campus.SafeCampusApplication.main(SafeCampusApplication.java:17) [classes/:na]
+Caused by: java.lang.IllegalStateException: Annotation @EnableDiscoveryClient found, but there are no implementations.  Did you forget to include a starter?
+	at org.springframework.cloud.util.SpringFactoryImportSelector.selectImports(SpringFactoryImportSelector.java:75) ~[spring-cloud-commons-1.0.5.RELEASE.jar:1.0.5.RELEASE]
+	at org.springframework.context.annotation.ConfigurationClassParser.processDeferredImportSelectors(ConfigurationClassParser.java:430) ~[spring-context-4.1.9.RELEASE.jar:4.1.9.RELEASE]
+	... 13 common frames omitted
+2020-08-13 01:23:35.786 [main] ERROR org.springframework.boot.SpringApplication - Application startup failed
+org.springframework.beans.factory.BeanDefinitionStoreException: Failed to process import candidates for configuration class [com.safe.campus.SafeCampusApplication]; nested exception is java.lang.IllegalStateException: Annotation @EnableDiscoveryClient found, but there are no implementations.  Did you forget to include a starter?
+	at org.springframework.context.annotation.ConfigurationClassParser.processDeferredImportSelectors(ConfigurationClassParser.java:438) ~[spring-context-4.1.9.RELEASE.jar:4.1.9.RELEASE]
+	at org.springframework.context.annotation.ConfigurationClassParser.parse(ConfigurationClassParser.java:184) ~[spring-context-4.1.9.RELEASE.jar:4.1.9.RELEASE]
+	at org.springframework.context.annotation.ConfigurationClassPostProcessor.processConfigBeanDefinitions(ConfigurationClassPostProcessor.java:306) ~[spring-context-4.1.9.RELEASE.jar:4.1.9.RELEASE]
+	at org.springframework.context.annotation.ConfigurationClassPostProcessor.postProcessBeanDefinitionRegistry(ConfigurationClassPostProcessor.java:239) ~[spring-context-4.1.9.RELEASE.jar:4.1.9.RELEASE]
+	at org.springframework.context.support.PostProcessorRegistrationDelegate.invokeBeanDefinitionRegistryPostProcessors(PostProcessorRegistrationDelegate.java:254) ~[spring-context-4.1.9.RELEASE.jar:4.1.9.RELEASE]
+	at org.springframework.context.support.PostProcessorRegistrationDelegate.invokeBeanFactoryPostProcessors(PostProcessorRegistrationDelegate.java:94) ~[spring-context-4.1.9.RELEASE.jar:4.1.9.RELEASE]
+	at org.springframework.context.support.AbstractApplicationContext.invokeBeanFactoryPostProcessors(AbstractApplicationContext.java:610) ~[spring-context-4.1.9.RELEASE.jar:4.1.9.RELEASE]
+	at org.springframework.context.support.AbstractApplicationContext.refresh(AbstractApplicationContext.java:462) ~[spring-context-4.1.9.RELEASE.jar:4.1.9.RELEASE]
+	at org.springframework.boot.context.embedded.EmbeddedWebApplicationContext.refresh(EmbeddedWebApplicationContext.java:118) ~[spring-boot-1.2.8.RELEASE.jar:1.2.8.RELEASE]
+	at org.springframework.boot.SpringApplication.refresh(SpringApplication.java:690) [spring-boot-1.2.8.RELEASE.jar:1.2.8.RELEASE]
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:322) [spring-boot-1.2.8.RELEASE.jar:1.2.8.RELEASE]
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:970) [spring-boot-1.2.8.RELEASE.jar:1.2.8.RELEASE]
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:959) [spring-boot-1.2.8.RELEASE.jar:1.2.8.RELEASE]
+	at com.safe.campus.SafeCampusApplication.main(SafeCampusApplication.java:17) [classes/:na]
+Caused by: java.lang.IllegalStateException: Annotation @EnableDiscoveryClient found, but there are no implementations.  Did you forget to include a starter?
+	at org.springframework.cloud.util.SpringFactoryImportSelector.selectImports(SpringFactoryImportSelector.java:75) ~[spring-cloud-commons-1.0.5.RELEASE.jar:1.0.5.RELEASE]
+	at org.springframework.context.annotation.ConfigurationClassParser.processDeferredImportSelectors(ConfigurationClassParser.java:430) ~[spring-context-4.1.9.RELEASE.jar:4.1.9.RELEASE]
+	... 13 common frames omitted
+2020-08-13 01:25:45.149 [main] ERROR org.springframework.boot.SpringApplication - Application startup failed
+org.springframework.beans.factory.BeanDefinitionStoreException: Failed to process import candidates for configuration class [com.safe.campus.SafeCampusApplication]; nested exception is java.lang.IllegalStateException: Annotation @EnableDiscoveryClient found, but there are no implementations.  Did you forget to include a starter?
+	at org.springframework.context.annotation.ConfigurationClassParser.processDeferredImportSelectors(ConfigurationClassParser.java:438) ~[spring-context-4.1.9.RELEASE.jar:4.1.9.RELEASE]
+	at org.springframework.context.annotation.ConfigurationClassParser.parse(ConfigurationClassParser.java:184) ~[spring-context-4.1.9.RELEASE.jar:4.1.9.RELEASE]
+	at org.springframework.context.annotation.ConfigurationClassPostProcessor.processConfigBeanDefinitions(ConfigurationClassPostProcessor.java:306) ~[spring-context-4.1.9.RELEASE.jar:4.1.9.RELEASE]
+	at org.springframework.context.annotation.ConfigurationClassPostProcessor.postProcessBeanDefinitionRegistry(ConfigurationClassPostProcessor.java:239) ~[spring-context-4.1.9.RELEASE.jar:4.1.9.RELEASE]
+	at org.springframework.context.support.PostProcessorRegistrationDelegate.invokeBeanDefinitionRegistryPostProcessors(PostProcessorRegistrationDelegate.java:254) ~[spring-context-4.1.9.RELEASE.jar:4.1.9.RELEASE]
+	at org.springframework.context.support.PostProcessorRegistrationDelegate.invokeBeanFactoryPostProcessors(PostProcessorRegistrationDelegate.java:94) ~[spring-context-4.1.9.RELEASE.jar:4.1.9.RELEASE]
+	at org.springframework.context.support.AbstractApplicationContext.invokeBeanFactoryPostProcessors(AbstractApplicationContext.java:610) ~[spring-context-4.1.9.RELEASE.jar:4.1.9.RELEASE]
+	at org.springframework.context.support.AbstractApplicationContext.refresh(AbstractApplicationContext.java:462) ~[spring-context-4.1.9.RELEASE.jar:4.1.9.RELEASE]
+	at org.springframework.boot.context.embedded.EmbeddedWebApplicationContext.refresh(EmbeddedWebApplicationContext.java:118) ~[spring-boot-1.2.8.RELEASE.jar:1.2.8.RELEASE]
+	at org.springframework.boot.SpringApplication.refresh(SpringApplication.java:690) [spring-boot-1.2.8.RELEASE.jar:1.2.8.RELEASE]
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:322) [spring-boot-1.2.8.RELEASE.jar:1.2.8.RELEASE]
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:970) [spring-boot-1.2.8.RELEASE.jar:1.2.8.RELEASE]
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:959) [spring-boot-1.2.8.RELEASE.jar:1.2.8.RELEASE]
+	at com.safe.campus.SafeCampusApplication.main(SafeCampusApplication.java:17) [classes/:na]
+Caused by: java.lang.IllegalStateException: Annotation @EnableDiscoveryClient found, but there are no implementations.  Did you forget to include a starter?
+	at org.springframework.cloud.util.SpringFactoryImportSelector.selectImports(SpringFactoryImportSelector.java:75) ~[spring-cloud-commons-1.0.5.RELEASE.jar:1.0.5.RELEASE]
+	at org.springframework.context.annotation.ConfigurationClassParser.processDeferredImportSelectors(ConfigurationClassParser.java:430) ~[spring-context-4.1.9.RELEASE.jar:4.1.9.RELEASE]
+	... 13 common frames omitted
+2020-08-13 15:43:38.971 [main] ERROR org.springframework.boot.SpringApplication - Application run failed
+java.lang.IllegalStateException: Failed to load property source from location 'classpath:/application.yml'
+	at org.springframework.boot.context.config.ConfigFileApplicationListener$Loader.load(ConfigFileApplicationListener.java:545)
+	at org.springframework.boot.context.config.ConfigFileApplicationListener$Loader.loadForFileExtension(ConfigFileApplicationListener.java:494)
+	at org.springframework.boot.context.config.ConfigFileApplicationListener$Loader.load(ConfigFileApplicationListener.java:464)
+	at org.springframework.boot.context.config.ConfigFileApplicationListener$Loader.lambda$null$7(ConfigFileApplicationListener.java:443)
+	at java.lang.Iterable.forEach(Iterable.java:75)
+	at org.springframework.boot.context.config.ConfigFileApplicationListener$Loader.lambda$load$8(ConfigFileApplicationListener.java:443)
+	at java.lang.Iterable.forEach(Iterable.java:75)
+	at org.springframework.boot.context.config.ConfigFileApplicationListener$Loader.load(ConfigFileApplicationListener.java:440)
+	at org.springframework.boot.context.config.ConfigFileApplicationListener$Loader.lambda$load$0(ConfigFileApplicationListener.java:335)
+	at org.springframework.boot.context.config.FilteredPropertySource.apply(FilteredPropertySource.java:59)
+	at org.springframework.boot.context.config.ConfigFileApplicationListener$Loader.load(ConfigFileApplicationListener.java:323)
+	at org.springframework.boot.context.config.ConfigFileApplicationListener.addPropertySources(ConfigFileApplicationListener.java:214)
+	at org.springframework.boot.context.config.ConfigFileApplicationListener.postProcessEnvironment(ConfigFileApplicationListener.java:198)
+	at org.springframework.boot.context.config.ConfigFileApplicationListener.onApplicationEnvironmentPreparedEvent(ConfigFileApplicationListener.java:188)
+	at org.springframework.boot.context.config.ConfigFileApplicationListener.onApplicationEvent(ConfigFileApplicationListener.java:176)
+	at org.springframework.context.event.SimpleApplicationEventMulticaster.doInvokeListener(SimpleApplicationEventMulticaster.java:172)
+	at org.springframework.context.event.SimpleApplicationEventMulticaster.invokeListener(SimpleApplicationEventMulticaster.java:165)
+	at org.springframework.context.event.SimpleApplicationEventMulticaster.multicastEvent(SimpleApplicationEventMulticaster.java:139)
+	at org.springframework.context.event.SimpleApplicationEventMulticaster.multicastEvent(SimpleApplicationEventMulticaster.java:127)
+	at org.springframework.boot.context.event.EventPublishingRunListener.environmentPrepared(EventPublishingRunListener.java:76)
+	at org.springframework.boot.SpringApplicationRunListeners.environmentPrepared(SpringApplicationRunListeners.java:53)
+	at org.springframework.boot.SpringApplication.prepareEnvironment(SpringApplication.java:345)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:308)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1226)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1215)
+	at com.safe.campus.SafeCampusApplication.main(SafeCampusApplication.java:15)
+Caused by: org.yaml.snakeyaml.scanner.ScannerException: while scanning for the next token
+found character '@' that cannot start any token. (Do not use @ for indentation)
+ in 'reader', line 5, column 13:
+        active: @profileActive@
+                ^
+
+	at org.yaml.snakeyaml.scanner.ScannerImpl.fetchMoreTokens(ScannerImpl.java:419)
+	at org.yaml.snakeyaml.scanner.ScannerImpl.checkToken(ScannerImpl.java:227)
+	at org.yaml.snakeyaml.parser.ParserImpl$ParseBlockMappingValue.produce(ParserImpl.java:586)
+	at org.yaml.snakeyaml.parser.ParserImpl.peekEvent(ParserImpl.java:158)
+	at org.yaml.snakeyaml.parser.ParserImpl.checkEvent(ParserImpl.java:148)
+	at org.yaml.snakeyaml.composer.Composer.composeNode(Composer.java:124)
+	at org.yaml.snakeyaml.composer.Composer.composeValueNode(Composer.java:239)
+	at org.yaml.snakeyaml.composer.Composer.composeMappingChildren(Composer.java:230)
+	at org.yaml.snakeyaml.composer.Composer.composeMappingNode(Composer.java:218)
+	at org.yaml.snakeyaml.composer.Composer.composeNode(Composer.java:144)
+	at org.yaml.snakeyaml.composer.Composer.composeValueNode(Composer.java:239)
+	at org.yaml.snakeyaml.composer.Composer.composeMappingChildren(Composer.java:230)
+	at org.yaml.snakeyaml.composer.Composer.composeMappingNode(Composer.java:218)
+	at org.yaml.snakeyaml.composer.Composer.composeNode(Composer.java:144)
+	at org.yaml.snakeyaml.composer.Composer.composeValueNode(Composer.java:239)
+	at org.yaml.snakeyaml.composer.Composer.composeMappingChildren(Composer.java:230)
+	at org.yaml.snakeyaml.composer.Composer.composeMappingNode(Composer.java:218)
+	at org.yaml.snakeyaml.composer.Composer.composeNode(Composer.java:144)
+	at org.yaml.snakeyaml.composer.Composer.getNode(Composer.java:85)
+	at org.yaml.snakeyaml.constructor.BaseConstructor.getData(BaseConstructor.java:125)
+	at org.yaml.snakeyaml.Yaml$1.next(Yaml.java:548)
+	at org.springframework.beans.factory.config.YamlProcessor.process(YamlProcessor.java:160)
+	at org.springframework.beans.factory.config.YamlProcessor.process(YamlProcessor.java:134)
+	at org.springframework.boot.env.OriginTrackedYamlLoader.load(OriginTrackedYamlLoader.java:75)
+	at org.springframework.boot.env.YamlPropertySourceLoader.load(YamlPropertySourceLoader.java:50)
+	at org.springframework.boot.context.config.ConfigFileApplicationListener$Loader.loadDocuments(ConfigFileApplicationListener.java:562)
+	at org.springframework.boot.context.config.ConfigFileApplicationListener$Loader.load(ConfigFileApplicationListener.java:518)
+	... 25 common frames omitted
+2020-08-13 15:44:14.568 [main] ERROR org.springframework.boot.SpringApplication - Application run failed
+java.lang.IllegalStateException: Failed to load property source from location 'classpath:/application.yml'
+	at org.springframework.boot.context.config.ConfigFileApplicationListener$Loader.load(ConfigFileApplicationListener.java:545)
+	at org.springframework.boot.context.config.ConfigFileApplicationListener$Loader.loadForFileExtension(ConfigFileApplicationListener.java:494)
+	at org.springframework.boot.context.config.ConfigFileApplicationListener$Loader.load(ConfigFileApplicationListener.java:464)
+	at org.springframework.boot.context.config.ConfigFileApplicationListener$Loader.lambda$null$7(ConfigFileApplicationListener.java:443)
+	at java.lang.Iterable.forEach(Iterable.java:75)
+	at org.springframework.boot.context.config.ConfigFileApplicationListener$Loader.lambda$load$8(ConfigFileApplicationListener.java:443)
+	at java.lang.Iterable.forEach(Iterable.java:75)
+	at org.springframework.boot.context.config.ConfigFileApplicationListener$Loader.load(ConfigFileApplicationListener.java:440)
+	at org.springframework.boot.context.config.ConfigFileApplicationListener$Loader.lambda$load$0(ConfigFileApplicationListener.java:335)
+	at org.springframework.boot.context.config.FilteredPropertySource.apply(FilteredPropertySource.java:59)
+	at org.springframework.boot.context.config.ConfigFileApplicationListener$Loader.load(ConfigFileApplicationListener.java:323)
+	at org.springframework.boot.context.config.ConfigFileApplicationListener.addPropertySources(ConfigFileApplicationListener.java:214)
+	at org.springframework.boot.context.config.ConfigFileApplicationListener.postProcessEnvironment(ConfigFileApplicationListener.java:198)
+	at org.springframework.boot.context.config.ConfigFileApplicationListener.onApplicationEnvironmentPreparedEvent(ConfigFileApplicationListener.java:188)
+	at org.springframework.boot.context.config.ConfigFileApplicationListener.onApplicationEvent(ConfigFileApplicationListener.java:176)
+	at org.springframework.context.event.SimpleApplicationEventMulticaster.doInvokeListener(SimpleApplicationEventMulticaster.java:172)
+	at org.springframework.context.event.SimpleApplicationEventMulticaster.invokeListener(SimpleApplicationEventMulticaster.java:165)
+	at org.springframework.context.event.SimpleApplicationEventMulticaster.multicastEvent(SimpleApplicationEventMulticaster.java:139)
+	at org.springframework.context.event.SimpleApplicationEventMulticaster.multicastEvent(SimpleApplicationEventMulticaster.java:127)
+	at org.springframework.boot.context.event.EventPublishingRunListener.environmentPrepared(EventPublishingRunListener.java:76)
+	at org.springframework.boot.SpringApplicationRunListeners.environmentPrepared(SpringApplicationRunListeners.java:53)
+	at org.springframework.boot.SpringApplication.prepareEnvironment(SpringApplication.java:345)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:308)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1226)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1215)
+	at com.safe.campus.SafeCampusApplication.main(SafeCampusApplication.java:15)
+Caused by: org.yaml.snakeyaml.scanner.ScannerException: while scanning for the next token
+found character '@' that cannot start any token. (Do not use @ for indentation)
+ in 'reader', line 5, column 13:
+        active: @profileActive@
+                ^
+
+	at org.yaml.snakeyaml.scanner.ScannerImpl.fetchMoreTokens(ScannerImpl.java:419)
+	at org.yaml.snakeyaml.scanner.ScannerImpl.checkToken(ScannerImpl.java:227)
+	at org.yaml.snakeyaml.parser.ParserImpl$ParseBlockMappingValue.produce(ParserImpl.java:586)
+	at org.yaml.snakeyaml.parser.ParserImpl.peekEvent(ParserImpl.java:158)
+	at org.yaml.snakeyaml.parser.ParserImpl.checkEvent(ParserImpl.java:148)
+	at org.yaml.snakeyaml.composer.Composer.composeNode(Composer.java:124)
+	at org.yaml.snakeyaml.composer.Composer.composeValueNode(Composer.java:239)
+	at org.yaml.snakeyaml.composer.Composer.composeMappingChildren(Composer.java:230)
+	at org.yaml.snakeyaml.composer.Composer.composeMappingNode(Composer.java:218)
+	at org.yaml.snakeyaml.composer.Composer.composeNode(Composer.java:144)
+	at org.yaml.snakeyaml.composer.Composer.composeValueNode(Composer.java:239)
+	at org.yaml.snakeyaml.composer.Composer.composeMappingChildren(Composer.java:230)
+	at org.yaml.snakeyaml.composer.Composer.composeMappingNode(Composer.java:218)
+	at org.yaml.snakeyaml.composer.Composer.composeNode(Composer.java:144)
+	at org.yaml.snakeyaml.composer.Composer.composeValueNode(Composer.java:239)
+	at org.yaml.snakeyaml.composer.Composer.composeMappingChildren(Composer.java:230)
+	at org.yaml.snakeyaml.composer.Composer.composeMappingNode(Composer.java:218)
+	at org.yaml.snakeyaml.composer.Composer.composeNode(Composer.java:144)
+	at org.yaml.snakeyaml.composer.Composer.getNode(Composer.java:85)
+	at org.yaml.snakeyaml.constructor.BaseConstructor.getData(BaseConstructor.java:125)
+	at org.yaml.snakeyaml.Yaml$1.next(Yaml.java:548)
+	at org.springframework.beans.factory.config.YamlProcessor.process(YamlProcessor.java:160)
+	at org.springframework.beans.factory.config.YamlProcessor.process(YamlProcessor.java:134)
+	at org.springframework.boot.env.OriginTrackedYamlLoader.load(OriginTrackedYamlLoader.java:75)
+	at org.springframework.boot.env.YamlPropertySourceLoader.load(YamlPropertySourceLoader.java:50)
+	at org.springframework.boot.context.config.ConfigFileApplicationListener$Loader.loadDocuments(ConfigFileApplicationListener.java:562)
+	at org.springframework.boot.context.config.ConfigFileApplicationListener$Loader.load(ConfigFileApplicationListener.java:518)
+	... 25 common frames omitted
+2020-08-13 16:04:59.531 [main] ERROR org.springframework.boot.diagnostics.LoggingFailureAnalysisReporter - 
+
+***************************
+APPLICATION FAILED TO START
+***************************
+
+Description:
+
+The bean 'tokenInterceptor', defined in class path resource [com/safe/campus/config/WebMvcConfig.class], could not be registered. A bean with that name has already been defined in file [C:\Users\14256\Desktop\project\campus-parent\safe-campus\target\classes\com\safe\campus\about\interceptor\TokenInterceptor.class] and overriding is disabled.
+
+Action:
+
+Consider renaming one of the beans or enabling overriding by setting spring.main.allow-bean-definition-overriding=true
+
+2020-08-13 16:07:12.658 [main] ERROR org.springframework.boot.diagnostics.LoggingFailureAnalysisReporter - 
+
+***************************
+APPLICATION FAILED TO START
+***************************
+
+Description:
+
+The bean 'tokenInterceptor', defined in class path resource [com/safe/campus/config/WebMvcConfig.class], could not be registered. A bean with that name has already been defined in file [C:\Users\14256\Desktop\project\campus-parent\safe-campus\target\classes\com\safe\campus\about\interceptor\TokenInterceptor.class] and overriding is disabled.
+
+Action:
+
+Consider renaming one of the beans or enabling overriding by setting spring.main.allow-bean-definition-overriding=true
+
+2020-08-13 16:10:38.127 [http-nio-8070-exec-1] ERROR com.safe.campus.GlobalExceptionHandler - 业务异常=check token fail
+com.safe.campus.about.exception.BizException: check token fail
+	at com.safe.campus.about.interceptor.TokenInterceptor.preHandle(TokenInterceptor.java:97)
+	at org.springframework.web.servlet.HandlerExecutionChain.applyPreHandle(HandlerExecutionChain.java:141)
+	at org.springframework.web.servlet.DispatcherServlet.doDispatch(DispatcherServlet.java:1035)
+	at org.springframework.web.servlet.DispatcherServlet.doService(DispatcherServlet.java:943)
+	at org.springframework.web.servlet.FrameworkServlet.processRequest(FrameworkServlet.java:1006)
+	at org.springframework.web.servlet.FrameworkServlet.doGet(FrameworkServlet.java:898)
+	at javax.servlet.http.HttpServlet.service(HttpServlet.java:634)
+	at org.springframework.web.servlet.FrameworkServlet.service(FrameworkServlet.java:883)
+	at javax.servlet.http.HttpServlet.service(HttpServlet.java:741)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:231)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:166)
+	at org.apache.tomcat.websocket.server.WsFilter.doFilter(WsFilter.java:53)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:193)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:166)
+	at com.alibaba.druid.support.http.WebStatFilter.doFilter(WebStatFilter.java:123)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:193)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:166)
+	at org.springframework.web.filter.CharacterEncodingFilter.doFilterInternal(CharacterEncodingFilter.java:201)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:119)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:193)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:166)
+	at org.apache.catalina.core.StandardWrapperValve.invoke(StandardWrapperValve.java:202)
+	at org.apache.catalina.core.StandardContextValve.invoke(StandardContextValve.java:96)
+	at org.apache.catalina.authenticator.AuthenticatorBase.invoke(AuthenticatorBase.java:541)
+	at org.apache.catalina.core.StandardHostValve.invoke(StandardHostValve.java:139)
+	at org.apache.catalina.valves.ErrorReportValve.invoke(ErrorReportValve.java:92)
+	at org.apache.catalina.core.StandardEngineValve.invoke(StandardEngineValve.java:74)
+	at org.apache.catalina.connector.CoyoteAdapter.service(CoyoteAdapter.java:343)
+	at org.apache.coyote.http11.Http11Processor.service(Http11Processor.java:367)
+	at org.apache.coyote.AbstractProcessorLight.process(AbstractProcessorLight.java:65)
+	at org.apache.coyote.AbstractProtocol$ConnectionHandler.process(AbstractProtocol.java:860)
+	at org.apache.tomcat.util.net.NioEndpoint$SocketProcessor.doRun(NioEndpoint.java:1598)
+	at org.apache.tomcat.util.net.SocketProcessorBase.run(SocketProcessorBase.java:49)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1142)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:617)
+	at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:61)
+	at java.lang.Thread.run(Thread.java:748)
+2020-08-13 16:19:23.326 [http-nio-8070-exec-1] ERROR com.safe.campus.GlobalExceptionHandler - 业务异常=check token fail
+com.safe.campus.about.exception.BizException: check token fail
+	at com.safe.campus.about.interceptor.TokenInterceptor.preHandle(TokenInterceptor.java:97)
+	at org.springframework.web.servlet.HandlerExecutionChain.applyPreHandle(HandlerExecutionChain.java:141)
+	at org.springframework.web.servlet.DispatcherServlet.doDispatch(DispatcherServlet.java:1035)
+	at org.springframework.web.servlet.DispatcherServlet.doService(DispatcherServlet.java:943)
+	at org.springframework.web.servlet.FrameworkServlet.processRequest(FrameworkServlet.java:1006)
+	at org.springframework.web.servlet.FrameworkServlet.doGet(FrameworkServlet.java:898)
+	at javax.servlet.http.HttpServlet.service(HttpServlet.java:634)
+	at org.springframework.web.servlet.FrameworkServlet.service(FrameworkServlet.java:883)
+	at javax.servlet.http.HttpServlet.service(HttpServlet.java:741)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:231)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:166)
+	at org.apache.tomcat.websocket.server.WsFilter.doFilter(WsFilter.java:53)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:193)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:166)
+	at com.alibaba.druid.support.http.WebStatFilter.doFilter(WebStatFilter.java:123)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:193)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:166)
+	at org.springframework.web.filter.CharacterEncodingFilter.doFilterInternal(CharacterEncodingFilter.java:201)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:119)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:193)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:166)
+	at org.apache.catalina.core.StandardWrapperValve.invoke(StandardWrapperValve.java:202)
+	at org.apache.catalina.core.StandardContextValve.invoke(StandardContextValve.java:96)
+	at org.apache.catalina.authenticator.AuthenticatorBase.invoke(AuthenticatorBase.java:541)
+	at org.apache.catalina.core.StandardHostValve.invoke(StandardHostValve.java:139)
+	at org.apache.catalina.valves.ErrorReportValve.invoke(ErrorReportValve.java:92)
+	at org.apache.catalina.core.StandardEngineValve.invoke(StandardEngineValve.java:74)
+	at org.apache.catalina.connector.CoyoteAdapter.service(CoyoteAdapter.java:343)
+	at org.apache.coyote.http11.Http11Processor.service(Http11Processor.java:367)
+	at org.apache.coyote.AbstractProcessorLight.process(AbstractProcessorLight.java:65)
+	at org.apache.coyote.AbstractProtocol$ConnectionHandler.process(AbstractProtocol.java:860)
+	at org.apache.tomcat.util.net.NioEndpoint$SocketProcessor.doRun(NioEndpoint.java:1598)
+	at org.apache.tomcat.util.net.SocketProcessorBase.run(SocketProcessorBase.java:49)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1142)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:617)
+	at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:61)
+	at java.lang.Thread.run(Thread.java:748)
+2020-08-13 20:14:14.580 [http-nio-8070-exec-1] ERROR com.safe.campus.GlobalExceptionHandler - 业务异常=check token fail
+com.safe.campus.about.exception.BizException: check token fail
+	at com.safe.campus.about.interceptor.TokenInterceptor.preHandle(TokenInterceptor.java:125)
+	at org.springframework.web.servlet.HandlerExecutionChain.applyPreHandle(HandlerExecutionChain.java:141)
+	at org.springframework.web.servlet.DispatcherServlet.doDispatch(DispatcherServlet.java:1035)
+	at org.springframework.web.servlet.DispatcherServlet.doService(DispatcherServlet.java:943)
+	at org.springframework.web.servlet.FrameworkServlet.processRequest(FrameworkServlet.java:1006)
+	at org.springframework.web.servlet.FrameworkServlet.doPost(FrameworkServlet.java:909)
+	at javax.servlet.http.HttpServlet.service(HttpServlet.java:660)
+	at org.springframework.web.servlet.FrameworkServlet.service(FrameworkServlet.java:883)
+	at javax.servlet.http.HttpServlet.service(HttpServlet.java:741)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:231)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:166)
+	at org.apache.tomcat.websocket.server.WsFilter.doFilter(WsFilter.java:53)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:193)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:166)
+	at com.alibaba.druid.support.http.WebStatFilter.doFilter(WebStatFilter.java:123)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:193)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:166)
+	at org.springframework.web.filter.CharacterEncodingFilter.doFilterInternal(CharacterEncodingFilter.java:201)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:119)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:193)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:166)
+	at org.apache.catalina.core.StandardWrapperValve.invoke(StandardWrapperValve.java:202)
+	at org.apache.catalina.core.StandardContextValve.invoke(StandardContextValve.java:96)
+	at org.apache.catalina.authenticator.AuthenticatorBase.invoke(AuthenticatorBase.java:541)
+	at org.apache.catalina.core.StandardHostValve.invoke(StandardHostValve.java:139)
+	at org.apache.catalina.valves.ErrorReportValve.invoke(ErrorReportValve.java:92)
+	at org.apache.catalina.core.StandardEngineValve.invoke(StandardEngineValve.java:74)
+	at org.apache.catalina.connector.CoyoteAdapter.service(CoyoteAdapter.java:343)
+	at org.apache.coyote.http11.Http11Processor.service(Http11Processor.java:367)
+	at org.apache.coyote.AbstractProcessorLight.process(AbstractProcessorLight.java:65)
+	at org.apache.coyote.AbstractProtocol$ConnectionHandler.process(AbstractProtocol.java:860)
+	at org.apache.tomcat.util.net.NioEndpoint$SocketProcessor.doRun(NioEndpoint.java:1598)
+	at org.apache.tomcat.util.net.SocketProcessorBase.run(SocketProcessorBase.java:49)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1142)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:617)
+	at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:61)
+	at java.lang.Thread.run(Thread.java:748)
