@@ -538,7 +538,7 @@ public class SchoolTeacherServiceImpl extends ServiceImpl<SchoolTeacherMapper, S
     }
 
     @Override
-    public Wrapper active(LoginAuthDto loginAuthDto, Long id, Integer state) {
+    public Wrapper active(LoginAuthDto loginAuthDto, Long id,Long masterId, Integer state) {
         if (null != id && null != state) {
             if (0 == state) {
                 // 先查询admin表看其是否存在
@@ -556,16 +556,16 @@ public class SchoolTeacherServiceImpl extends ServiceImpl<SchoolTeacherMapper, S
                     sysAdmin.setId(gobalInterface.generateId());
                     sysAdmin.setState(0);
                     sysAdmin.setCreateTime(new Date());
-                    SchoolTeacher teacher = teacherMapper.selectById(admin.getTId());
+                    SchoolTeacher teacher = teacherMapper.selectById(id);
                     sysAdmin.setUserName(teacher.getPhone().toString());
                     sysAdmin.setPassword(Md5Utils.md5Str(teacher.getIdNumber().substring(teacher.getIdNumber().length() - 6)));
                     sysAdmin.setAppKey(StringUtils.getRandomString(7).toUpperCase());
                     sysAdmin.setAppSecret(StringUtils.getRandomString(13).toLowerCase());
                     sysAdmin.setLevel(3);
                     sysAdmin.setType(3);
-                    sysAdmin.setMasterId(loginAuthDto.getMasterId());
+                    sysAdmin.setMasterId(masterId);
                     sysAdmin.setCreateUser(loginAuthDto.getUserId());
-                    adminUserMapper.insert(admin);
+                    adminUserMapper.insert(sysAdmin);
                     return WrapMapper.ok("操作成功");
                 }
             } else if (1 == state) {

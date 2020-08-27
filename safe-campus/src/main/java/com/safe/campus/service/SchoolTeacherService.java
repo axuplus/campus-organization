@@ -54,5 +54,5 @@ public interface SchoolTeacherService extends IService<SchoolTeacher> {
 
     Wrapper importTeacherPictureConcentrator(MultipartFile file, LoginAuthDto loginAuthDto);
 
-    Wrapper active(LoginAuthDto loginAuthDto, Long id, Integer state);
+    Wrapper active(LoginAuthDto loginAuthDto, Long id, Long masterId,Integer state);
 }

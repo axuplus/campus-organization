@@ -33,9 +33,6 @@ public class BaseController {
         loginAuthDto.setUserId(loginTokenDto.getId());
         loginAuthDto.setUserName(loginTokenDto.getUserName());
         loginAuthDto.setType(loginTokenDto.getType());
-        if(3 == loginTokenDto.getType()){
-            loginAuthDto.setMasterId(loginAuthDto.getMasterId());
-        }
         return loginAuthDto;
     }
 

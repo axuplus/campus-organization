@@ -101,8 +101,8 @@ public class SchoolTeacherController extends BaseController {
 
     @PutMapping("/active")
     @ApiOperation("停用/启用")
-    public Wrapper<Map<Long,String>> active(@ApiParam("此教师的ID")@RequestParam("id")Long id, @RequestParam("state")Integer state) {
-        return teacherService.active(getLoginAuthDto(), id,state);
+    public Wrapper<Map<Long,String>> active(@ApiParam("此教师的ID")@RequestParam("id")Long id,@RequestParam("masterId")Long masterId,@RequestParam("state")Integer state) {
+        return teacherService.active(getLoginAuthDto(), id,masterId,state);
     }
 
 }
