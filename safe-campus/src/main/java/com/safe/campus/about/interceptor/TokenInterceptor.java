@@ -129,25 +129,21 @@ public class TokenInterceptor implements HandlerInterceptor {
         if (!token.equals(userTokenDto.getToken())) {
             throw new BizException(403, "check token fail");
         }
-//        UserLocationDto userLocationDto = (UserLocationDto) redisTemplate.opsForHash().get(GlobalConstant.USER_LOCATION, userId);
-//        if (PublicUtil.isNotEmpty(userLocationDto)) {
-//            log.info("userId={},lng={},lat={}", userLocationDto.getUserId(), userLocationDto.getLng(), userLocationDto.getLat());
-//            loginUser.setLng(userLocationDto.getLng());
-//            loginUser.setLat(userLocationDto.getLat());
-//            loginUser.setProvince(userLocationDto.getProvince());
-//            loginUser.setCity(userLocationDto.getCity());
-//        }
         LoginTokenDto loginTokenDto = new LoginTokenDto();
         loginTokenDto.setId(userTokenDto.getUserId());
         loginTokenDto.setUserName(userTokenDto.getUserName());
+        loginTokenDto.setType(userTokenDto.getType());
+        if (3 == loginTokenDto.getType()) {
+            loginTokenDto.setMasterId(userTokenDto.getMasterId());
+        }
         loginTokenDto.setCreateTime(userTokenDto.getCreateTime());
         loginTokenDto.setExpireTime(userTokenDto.getExpireTime());
         log.info("<== preHandle - 权限拦截器.  loginUser={}", loginTokenDto);
         Permission allowedDo = isAllowedDo(handler);
         if (null != allowedDo) {
             log.info("开始验证注解 =====>>>>>");
-            if (!adminService.havePermission(userId,allowedDo.url(),allowedDo.type().toString())) {
-                throw new BizException(ErrorCodeEnum.PUB10000017);
+            if (!adminService.havePermission(userId, allowedDo.url(), allowedDo.type().toString())) {
+                throw new BizException(ErrorCodeEnum.SYS10000007);
             }
             log.info("结束验证注解 <<<<<=====");
         }

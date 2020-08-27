@@ -28,4 +28,7 @@ public interface SysAdminUserMapper extends BaseMapper<SysAdmin> {
             "WHERE\n" +
             "\tischild != 0")
     List<Long> getAdminUsers(@Param("pids") Long pids);
+
+    @Select("select * from sys_admin where t_id = #{tId}")
+    SysAdmin getAdminUserByTId(@Param("tId") Long tId);
 }

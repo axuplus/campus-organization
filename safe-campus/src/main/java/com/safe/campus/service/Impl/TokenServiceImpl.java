@@ -4,18 +4,15 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.safe.campus.about.constant.GlobalConstant;
 import com.safe.campus.about.exception.BizException;
-import com.safe.campus.about.redis.RedisKeyUtil;
-import com.safe.campus.about.redis.SnowFlake;
 import com.safe.campus.about.token.JwtUtil;
 import com.safe.campus.about.token.TokenObject;
 import com.safe.campus.about.utils.Md5Utils;
 import com.safe.campus.about.utils.PublicUtil;
 import com.safe.campus.about.utils.date.DateUtil;
-import com.safe.campus.about.utils.service.GobalInterface;
 import com.safe.campus.enums.ErrorCodeEnum;
+import com.safe.campus.mapper.SchoolTeacherMapper;
 import com.safe.campus.mapper.SysAdminUserMapper;
 import com.safe.campus.model.domain.SysAdmin;
-import com.safe.campus.model.dto.LoginTokenDto;
 import com.safe.campus.model.dto.UserTokenDto;
 import com.safe.campus.model.vo.LoginTokenVo;
 import com.safe.campus.service.TokenService;
@@ -28,7 +25,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
-import java.util.concurrent.TimeUnit;
+
 
 @Service
 @Transactional(rollbackFor = Exception.class)
@@ -39,6 +36,8 @@ public class TokenServiceImpl extends ServiceImpl<SysAdminUserMapper, SysAdmin> 
     @Autowired
     private SysAdminUserMapper sysAdminUserMapper;
 
+    @Autowired
+    private SchoolTeacherMapper teacherMapper;
 
     @Value(value = "${token.secretKey}")
     private String token_secret_key;
@@ -56,7 +55,11 @@ public class TokenServiceImpl extends ServiceImpl<SysAdminUserMapper, SysAdmin> 
         SysAdmin sysAdminUser = sysAdminUserMapper.selectOne(queryWrapper);
         if (PublicUtil.isEmpty(sysAdminUser)) {
             logger.info("账户{}不存在", account);
-            throw new BizException(ErrorCodeEnum.SYS10011005);
+            throw new BizException(ErrorCodeEnum.SYS20000002);
+        }
+        if (1 == sysAdminUser.getState()) {
+            logger.info("账户{}已经被禁用", sysAdminUser.getId());
+            throw new BizException(ErrorCodeEnum.SYS20000005);
         }
         if (!Md5Utils.md5Str(pwd).equals(sysAdminUser.getPassword())) {
             logger.info("密码{}错误", account);
@@ -70,12 +73,11 @@ public class TokenServiceImpl extends ServiceImpl<SysAdminUserMapper, SysAdmin> 
         userTokenDto.setUserName(sysAdminUser.getUserName());
         userTokenDto.setToken(jwtInfo.getToken());
         userTokenDto.setType(sysAdminUser.getType());
-        if (1 != sysAdminUser.getType()) {
+        if (3 == sysAdminUser.getType()) {
             userTokenDto.setMasterId(sysAdminUser.getMasterId());
         }
         userTokenDto.setExpireTime(jwtInfo.getExpireIn());
         userTokenDto.setCreateTime(DateUtil.currentTime(nowDate));
-        // redisTemplate.opsForValue().set(RedisKeyUtil.getAccessTokenKey(String.valueOf(sysAdminUser.getId())), userTokenDto, token_ttl, TimeUnit.DAYS);
         redisTemplate.opsForHash().put(GlobalConstant.LOGIN_TOKEN, String.valueOf(sysAdminUser.getId()), userTokenDto);
         LoginTokenVo loginTokenVo = new LoginTokenVo();
         loginTokenVo.setUserId(sysAdminUser.getId());
@@ -83,7 +85,7 @@ public class TokenServiceImpl extends ServiceImpl<SysAdminUserMapper, SysAdmin> 
         loginTokenVo.setToken(jwtInfo.getToken());
         loginTokenVo.setExpireIn(jwtInfo.getExpireIn());
         loginTokenVo.setType(sysAdminUser.getType());
-        if (1 != sysAdminUser.getType()) {
+        if (3 == sysAdminUser.getType()) {
             loginTokenVo.setMasterId(sysAdminUser.getMasterId());
             loginTokenVo.setType(sysAdminUser.getType());
         }
@@ -94,7 +96,7 @@ public class TokenServiceImpl extends ServiceImpl<SysAdminUserMapper, SysAdmin> 
     public Boolean exit(Long userId) {
         logger.info("正在退出用户 {}", userId);
         Long delete = redisTemplate.opsForHash().delete(GlobalConstant.LOGIN_TOKEN, String.valueOf(userId));
-        System.out.println("delete = " + delete);
+        logger.info("退成成功 {}", delete);
         return true;
     }
 }

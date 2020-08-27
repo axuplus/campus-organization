@@ -98,12 +98,10 @@ public class SchoolMasterServiceImpl extends ServiceImpl<SchoolMasterMapper, Sch
             admin.setType(2);
             admin.setLevel(2);
             admin.setState(0);
-            admin.setPId(loginAuthDto.getUserId());
             admin.setMasterId(master.getId());
             admin.setAppKey(StringUtils.getRandomString(7).toUpperCase());
             admin.setAppSecret(StringUtils.getRandomString(13).toLowerCase());
             admin.setCreateTime(new Date());
-            // pid为空就行了
             masterMapper.insert(master);
             userMapper.insert(admin);
             return WrapMapper.ok("保存成功");

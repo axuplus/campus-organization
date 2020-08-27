@@ -13,10 +13,6 @@ public class SysAdmin {
      */
     private Long id;
     /**
-     * pid
-     */
-    private Long pId;
-    /**
      * 密码
      */
     private String password;
@@ -66,5 +62,11 @@ public class SysAdmin {
      * masterId
      */
     private Long masterId;
+
+    /**
+     * tId
+     */
+    private Long tId;
+
 
 }

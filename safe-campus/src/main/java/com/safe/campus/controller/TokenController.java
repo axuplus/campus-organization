@@ -29,8 +29,8 @@ public class TokenController extends BaseController {
      */
     @PostMapping(value = "/token")
     @ApiOperation(value = "获取token", notes = "获取token")
-    public Wrapper<LoginTokenVo> token(@RequestBody LoginTokenDto loginTokenDto) {
-        final LoginTokenVo result= tokenService.token(loginTokenDto.getUserName(), loginTokenDto.getPassword());
+    public Wrapper<LoginTokenVo> token(@RequestParam("userName")String userName,@RequestParam("password")String password) {
+        final LoginTokenVo result= tokenService.token(userName, password);
         return WrapMapper.ok(result);
     }
 

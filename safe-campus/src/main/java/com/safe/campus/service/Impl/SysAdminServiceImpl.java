@@ -60,7 +60,6 @@ public class SysAdminServiceImpl extends ServiceImpl<SysAdminUserMapper, SysAdmi
             admin.setPassword(Md5Utils.md5Str(password));
             admin.setUserName(userName);
             admin.setLevel(sysAdmin.getLevel() + 1);
-            admin.setPId(loginAuthDto.getUserId());
             admin.setCreateUser(loginAuthDto.getUserId());
             adminUserMapper.insert(admin);
         }
@@ -91,7 +90,7 @@ public class SysAdminServiceImpl extends ServiceImpl<SysAdminUserMapper, SysAdmi
         } else  {
             t = 0;
         }
-        // 1为安校总账号 2为学校账号
+        // 1为安校总账号 2为学校账号 3为学校子账号
         if (1 == adminUserMapper.selectById(userId).getType() || 2 == adminUserMapper.selectById(userId).getType() ) {
             return true;
         }
@@ -127,7 +126,7 @@ public class SysAdminServiceImpl extends ServiceImpl<SysAdminUserMapper, SysAdmi
         if (null != userId) {
             SysAdmin admin = adminUserMapper.selectById(userId);
             AdminUserVo map = new ModelMapper().map(admin, AdminUserVo.class);
-            map.setParentName(adminUserMapper.selectById(admin.getPId()).getUserName());
+            map.setParentName(adminUserMapper.selectById(admin.getCreateUser()).getUserName());
             return WrapMapper.ok(map);
         }
         return null;
@@ -142,7 +141,7 @@ public class SysAdminServiceImpl extends ServiceImpl<SysAdminUserMapper, SysAdmi
             List<AdminUserVo> vos = new ArrayList<>();
             sysAdmins.forEach(a -> {
                 AdminUserVo map = new ModelMapper().map(a, AdminUserVo.class);
-                map.setParentName(adminUserMapper.selectById(a.getPId()).getUserName());
+                map.setParentName(adminUserMapper.selectById(a.getCreateUser()).getUserName());
                 vos.add(map);
             });
             return WrapMapper.ok(vos);

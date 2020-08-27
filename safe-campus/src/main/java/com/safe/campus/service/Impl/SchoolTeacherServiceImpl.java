@@ -29,6 +29,7 @@ import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+
 import java.io.*;
 import java.nio.charset.Charset;
 import java.util.*;
@@ -106,15 +107,18 @@ public class SchoolTeacherServiceImpl extends ServiceImpl<SchoolTeacherMapper, S
                 if (null != section) {
                     vo.setSectionName(section.getSectionName());
                 }
-                // 此教职工下面关联的账号
-                QueryWrapper<SysUserRole> userRoleQueryWrapper = new QueryWrapper<>();
-                userRoleQueryWrapper.eq("user_id", teacher.getAdminId());
-                List<SysUserRole> userRoles = userRoleMapper.selectList(userRoleQueryWrapper);
-                if (PublicUtil.isNotEmpty(userRoles)) {
-                    List<Long> ids = userRoles.stream().map(SysUserRole::getRoleId).collect(Collectors.toList());
-                    List<SysRole> roles = roleMapper.selectBatchIds(ids);
-                    // 此账号下面关联的多个角色
-                    vo.setRoleInfo(roles.stream().collect(Collectors.toMap(SysRole::getId, SysRole::getRoleName)));
+                SysAdmin adminUserByTId = adminUserMapper.getAdminUserByTId(teacher.getId());
+                if (PublicUtil.isNotEmpty(adminUserByTId)) {
+                    // 此教职工下面关联的账号
+                    QueryWrapper<SysUserRole> userRoleQueryWrapper = new QueryWrapper<>();
+                    userRoleQueryWrapper.eq("user_id", adminUserByTId.getId());
+                    List<SysUserRole> userRoles = userRoleMapper.selectList(userRoleQueryWrapper);
+                    if (PublicUtil.isNotEmpty(userRoles)) {
+                        List<Long> ids = userRoles.stream().map(SysUserRole::getRoleId).collect(Collectors.toList());
+                        List<SysRole> roles = roleMapper.selectBatchIds(ids);
+                        // 此账号下面关联的多个角色
+                        vo.setRoleInfo(roles.stream().collect(Collectors.toMap(SysRole::getId, SysRole::getRoleName)));
+                    }
                 }
                 list.add(vo);
             });
@@ -129,7 +133,9 @@ public class SchoolTeacherServiceImpl extends ServiceImpl<SchoolTeacherMapper, S
             return WrapMapper.error("参数不能为空");
         }
         // 先删除关联账号
-        adminUserMapper.deleteById(teacherMapper.selectById(id).getAdminId());
+        QueryWrapper<SysAdmin> adminQueryWrapper = new QueryWrapper<>();
+        adminQueryWrapper.eq("t_id", id);
+        adminUserMapper.delete(adminQueryWrapper);
         teacherMapper.deleteById(id);
         return WrapMapper.ok("删除成功");
     }
@@ -152,17 +158,20 @@ public class SchoolTeacherServiceImpl extends ServiceImpl<SchoolTeacherMapper, S
                 vo.setSectionName(section.getSectionName());
             }
             vo.setPhoto(sysFileService.getFileById(teacher.getImgId()).getFileUrl());
-            // 此教职工下面关联的账号
-            QueryWrapper<SysUserRole> userRoleQueryWrapper = new QueryWrapper<>();
-            userRoleQueryWrapper.eq("user_id", teacher.getAdminId());
-            List<SysUserRole> userRoles = userRoleMapper.selectList(userRoleQueryWrapper);
-            if (PublicUtil.isNotEmpty(userRoles)) {
-                List<Long> ids = userRoles.stream().map(SysUserRole::getRoleId).collect(Collectors.toList());
-                List<SysRole> roles = roleMapper.selectBatchIds(ids);
-                // 此账号下面关联的多个角色
-                // vo.setRoleId(roles.stream().map(SysRole::getId).collect(Collectors.toList()));
-                // vo.setRoleName(roles.stream().map(SysRole::getRoleName).collect(Collectors.toList()));
-                vo.setRoleInfo(roles.stream().collect(Collectors.toMap(SysRole::getId, SysRole::getRoleName)));
+            SysAdmin adminUserByTId = adminUserMapper.getAdminUserByTId(teacher.getId());
+            if (PublicUtil.isNotEmpty(adminUserByTId)) {
+                // 此教职工下面关联的账号
+                QueryWrapper<SysUserRole> userRoleQueryWrapper = new QueryWrapper<>();
+                userRoleQueryWrapper.eq("user_id", adminUserByTId.getId());
+                List<SysUserRole> userRoles = userRoleMapper.selectList(userRoleQueryWrapper);
+                if (PublicUtil.isNotEmpty(userRoles)) {
+                    List<Long> ids = userRoles.stream().map(SysUserRole::getRoleId).collect(Collectors.toList());
+                    List<SysRole> roles = roleMapper.selectBatchIds(ids);
+                    // 此账号下面关联的多个角色
+                    // vo.setRoleId(roles.stream().map(SysRole::getId).collect(Collectors.toList()));
+                    // vo.setRoleName(roles.stream().map(SysRole::getRoleName).collect(Collectors.toList()));
+                    vo.setRoleInfo(roles.stream().collect(Collectors.toMap(SysRole::getId, SysRole::getRoleName)));
+                }
             }
             return WrapMapper.ok(vo);
         }
@@ -191,33 +200,7 @@ public class SchoolTeacherServiceImpl extends ServiceImpl<SchoolTeacherMapper, S
         teacher.setState(0);
         teacher.setTNumber(teacherInfoDto.getTNumber());
         teacher.setCreatedUser(loginAuthDto.getUserId());
-        // admin插入
-        SysAdmin admin = new SysAdmin();
-        admin.setId(gobalInterface.generateId());
-        admin.setState(0);
-        admin.setLevel(3);
-        admin.setType(3);
-        admin.setCreateTime(new Date());
-        admin.setUserName(teacher.getPhone().toString());
-        admin.setPassword(Md5Utils.md5Str(teacher.getIdNumber().substring(teacher.getIdNumber().length() - 6)));
-        admin.setAppKey(StringUtils.getRandomString(7).toUpperCase());
-        admin.setAppSecret(StringUtils.getRandomString(13).toLowerCase());
-        admin.setCreateUser(loginAuthDto.getUserId());
-        // PID给个默认
-        admin.setPId(1L);
-        adminUserMapper.insert(admin);
-        teacher.setAdminId(admin.getId());
         teacherMapper.insert(teacher);
-        // 教职工角色设置
-        if (PublicUtil.isNotEmpty(teacherInfoDto.getRoleId())) {
-            teacherInfoDto.getRoleId().forEach(i -> {
-                SysUserRole role = new SysUserRole();
-                role.setId(gobalInterface.generateId());
-                role.setRoleId(i);
-                role.setUserId(admin.getId());
-                userRoleMapper.insert(role);
-            });
-        }
         return WrapMapper.ok("保存成功");
     }
 
@@ -238,18 +221,6 @@ public class SchoolTeacherServiceImpl extends ServiceImpl<SchoolTeacherMapper, S
         teacher.setSectionId(teacherInfoDto.getSectionId());
         teacher.setSex(teacherInfoDto.getSex());
         teacher.setTNumber(teacherInfoDto.getTNumber());
-        // 教职工角色更新
-        userRoleMapper.deleteByAdminId(teacher.getAdminId());
-        if (PublicUtil.isNotEmpty(teacherInfoDto.getRoleId())) {
-            teacherInfoDto.getRoleId().forEach(i -> {
-                SysUserRole role = new SysUserRole();
-                role.setId(gobalInterface.generateId());
-                role.setRoleId(i);
-                System.out.println("teacher.getAdminId() = " + teacher.getAdminId());
-                role.setUserId(teacher.getAdminId());
-                userRoleMapper.insert(role);
-            });
-        }
         teacherMapper.updateById(teacher);
         return WrapMapper.ok("修改成功");
     }
@@ -282,14 +253,17 @@ public class SchoolTeacherServiceImpl extends ServiceImpl<SchoolTeacherMapper, S
                     vo.setSectionName(section.getSectionName());
                 }
                 // 此教职工下面关联的账号
-                QueryWrapper<SysUserRole> userRoleQueryWrapper = new QueryWrapper<>();
-                userRoleQueryWrapper.eq("user_id", teacher.getAdminId());
-                List<SysUserRole> userRoles = userRoleMapper.selectList(userRoleQueryWrapper);
-                if (PublicUtil.isNotEmpty(userRoles)) {
-                    List<Long> ids = userRoles.stream().map(SysUserRole::getRoleId).collect(Collectors.toList());
-                    List<SysRole> roles = roleMapper.selectBatchIds(ids);
-                    // 此账号下面关联的多个角色
-                    vo.setRoleInfo(roles.stream().collect(Collectors.toMap(SysRole::getId, SysRole::getRoleName)));
+                SysAdmin adminUserByTId = adminUserMapper.getAdminUserByTId(teacher.getId());
+                if (PublicUtil.isNotEmpty(adminUserByTId)) {
+                    QueryWrapper<SysUserRole> userRoleQueryWrapper = new QueryWrapper<>();
+                    userRoleQueryWrapper.eq("user_id", adminUserByTId.getId());
+                    List<SysUserRole> userRoles = userRoleMapper.selectList(userRoleQueryWrapper);
+                    if (PublicUtil.isNotEmpty(userRoles)) {
+                        List<Long> ids = userRoles.stream().map(SysUserRole::getRoleId).collect(Collectors.toList());
+                        List<SysRole> roles = roleMapper.selectBatchIds(ids);
+                        // 此账号下面关联的多个角色
+                        vo.setRoleInfo(roles.stream().collect(Collectors.toMap(SysRole::getId, SysRole::getRoleName)));
+                    }
                 }
                 list.add(vo);
             });
@@ -362,38 +336,6 @@ public class SchoolTeacherServiceImpl extends ServiceImpl<SchoolTeacherMapper, S
                         throw new BizException(ErrorCodeEnum.PUB10000018);
                     }
                 }
-//                // admin插入
-//                SysAdmin admin = new SysAdmin();
-//                admin.setId(gobalInterface.generateId());
-//                admin.setState(0);
-//                admin.setLevel(3);
-//                admin.setType(3);
-//                admin.setCreateTime(new Date());
-//                admin.setUserName(teacher.getPhone().toString());
-//                admin.setPassword(Md5Utils.md5Str(teacher.getIdNumber().substring(teacher.getIdNumber().length() - 6)));
-//                admin.setAppKey(StringUtils.getRandomString(7).toUpperCase());
-//                admin.setAppSecret(StringUtils.getRandomString(13).toLowerCase());
-//                admin.setCreateUser(loginAuthDto.getUserId());
-//                admin.setPId(1L);
-//                adminUserMapper.insert(admin);
-                // 分割角色
-//                if (null != t.getRoleName()) {
-//                    List<String> roles = Arrays.asList(t.getRoleName().split("/"));
-//                    for (String role : roles) {
-//                        Long checkIdByRoleName = roleMapper.checkIdByRoleName(role);
-//                        if (null == checkIdByRoleName) {
-//                            throw new BizException(ErrorCodeEnum.PUB10000011);
-//                        } else {
-//                            // 分配角色到 user_role
-//                            SysUserRole userRole = new SysUserRole();
-//                            userRole.setId(gobalInterface.generateId());
-//                            userRole.setUserId(teacher.getId());
-//                            userRole.setRoleId(checkIdByRoleName);
-//                            userRoleMapper.insert(userRole);
-//                        }
-//                    }
-//                }
-//                teacher.setAdminId(admin.getId());
                 teacherMapper.insert(teacher);
             });
             return WrapMapper.ok("导入成功");
@@ -405,7 +347,7 @@ public class SchoolTeacherServiceImpl extends ServiceImpl<SchoolTeacherMapper, S
      * 检查是否有重复的人员
      */
     private String checkIsSame(String idNumber) {
-        if(idNumber.length() != 18){
+        if (idNumber.length() != 18) {
             throw new BizException(ErrorCodeEnum.PUB10000022);
         }
         QueryWrapper<SchoolTeacher> wrapper = new QueryWrapper<>();
@@ -516,10 +458,15 @@ public class SchoolTeacherServiceImpl extends ServiceImpl<SchoolTeacherMapper, S
     public Wrapper setRole(LoginAuthDto loginAuthDto, SetRoleDto setRoleDto) {
         if (PublicUtil.isNotEmpty(setRoleDto)) {
             SchoolTeacher teacher = teacherMapper.selectById(setRoleDto.getTeacherId());
+            // 去查admin表有没有启用教职工的账号
+            SysAdmin adminUserByTId = adminUserMapper.getAdminUserByTId(teacher.getId());
+            if (PublicUtil.isEmpty(adminUserByTId)) {
+                return WrapMapper.error("无教工暂无账号,请先启用账户");
+            }
             setRoleDto.getRoleId().forEach(i -> {
                 SysUserRole userRole = new SysUserRole();
                 userRole.setId(gobalInterface.generateId());
-                userRole.setUserId(teacher.getAdminId());
+                userRole.setUserId(adminUserByTId.getId());
                 userRole.setRoleId(i);
                 userRoleMapper.insert(userRole);
             });
@@ -589,4 +536,66 @@ public class SchoolTeacherServiceImpl extends ServiceImpl<SchoolTeacherMapper, S
         }
         return null;
     }
+
+    @Override
+    public Wrapper active(LoginAuthDto loginAuthDto, Long id, Integer state) {
+        if (null != id && null != state) {
+            if (0 == state) {
+                // 先查询admin表看其是否存在
+                QueryWrapper<SysAdmin> adminQueryWrapper = new QueryWrapper<>();
+                adminQueryWrapper.eq("t_id", id);
+                SysAdmin admin = adminUserMapper.selectOne(adminQueryWrapper);
+                // 已经存在的状态下就改变状态
+                if (PublicUtil.isNotEmpty(admin)) {
+                    admin.setState(0);
+                    adminUserMapper.updateById(admin);
+                    return WrapMapper.ok("操作成功");
+                } else {
+                    // 未存在的情况下就说明没有 然后新增
+                    SysAdmin sysAdmin = new SysAdmin();
+                    sysAdmin.setId(gobalInterface.generateId());
+                    sysAdmin.setState(0);
+                    sysAdmin.setCreateTime(new Date());
+                    SchoolTeacher teacher = teacherMapper.selectById(admin.getTId());
+                    sysAdmin.setUserName(teacher.getPhone().toString());
+                    sysAdmin.setPassword(Md5Utils.md5Str(teacher.getIdNumber().substring(teacher.getIdNumber().length() - 6)));
+                    sysAdmin.setAppKey(StringUtils.getRandomString(7).toUpperCase());
+                    sysAdmin.setAppSecret(StringUtils.getRandomString(13).toLowerCase());
+                    sysAdmin.setLevel(3);
+                    sysAdmin.setType(3);
+                    sysAdmin.setMasterId(loginAuthDto.getMasterId());
+                    sysAdmin.setCreateUser(loginAuthDto.getUserId());
+                    adminUserMapper.insert(admin);
+                    return WrapMapper.ok("操作成功");
+                }
+            } else if (1 == state) {
+                // 只有有了账号的情况下有停用
+                QueryWrapper<SysAdmin> adminQueryWrapper = new QueryWrapper<>();
+                adminQueryWrapper.eq("t_id", id);
+                SysAdmin admin = adminUserMapper.selectOne(adminQueryWrapper);
+                admin.setState(1);
+                adminUserMapper.updateById(admin);
+                return WrapMapper.ok("操作成功");
+            }
+        }
+        return WrapMapper.error("参数不正确");
+    }
 }
+
+
+/**
+ * // 教职工角色更新
+ * SysAdmin userByTId = adminUserMapper.getAdminUserByTId(teacher.getId());
+ * if(PublicUtil.isNotEmpty(userByTId)) {
+ * userRoleMapper.deleteByAdminId(userByTId.getId());
+ * if (PublicUtil.isNotEmpty(teacherInfoDto.getRoleId())) {
+ * teacherInfoDto.getRoleId().forEach(i -> {
+ * SysUserRole role = new SysUserRole();
+ * role.setId(gobalInterface.generateId());
+ * role.setRoleId(i);
+ * role.setUserId(userByTId.getId());
+ * userRoleMapper.insert(role);
+ * });
+ * }
+ * }
+ */

@@ -26,10 +26,15 @@ public class BaseController {
 
     protected LoginAuthDto getLoginAuthDto() {
         LoginTokenDto loginTokenDto = (LoginTokenDto) ThreadLocalMap.get(GlobalConstant.Sys.TOKEN_AUTH_DTO);
-        LoginAuthDto loginAuthDto = new ModelMapper().map(loginTokenDto, LoginAuthDto.class);
-        loginAuthDto.setUserId(loginTokenDto.getId());
-        if (PublicUtil.isEmpty(loginAuthDto)) {
+        if (PublicUtil.isEmpty(loginTokenDto)) {
             throw new BizException(ErrorCodeEnum.UAC10011041);
+        }
+        LoginAuthDto loginAuthDto = new LoginAuthDto();
+        loginAuthDto.setUserId(loginTokenDto.getId());
+        loginAuthDto.setUserName(loginTokenDto.getUserName());
+        loginAuthDto.setType(loginTokenDto.getType());
+        if(3 == loginTokenDto.getType()){
+            loginAuthDto.setMasterId(loginAuthDto.getMasterId());
         }
         return loginAuthDto;
     }

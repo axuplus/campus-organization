@@ -78,8 +78,5 @@ public class SchoolTeacher implements Serializable {
 
     @ApiModelProperty(value = "图片ID")
     private Long imgId;
-
-    @ApiModelProperty(value = "adminId")
-    private Long adminId;
 }
 

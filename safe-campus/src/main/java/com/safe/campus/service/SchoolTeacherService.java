@@ -53,4 +53,6 @@ public interface SchoolTeacherService extends IService<SchoolTeacher> {
     Wrapper setRole(LoginAuthDto loginAuthDto, SetRoleDto setRoleDto);
 
     Wrapper importTeacherPictureConcentrator(MultipartFile file, LoginAuthDto loginAuthDto);
+
+    Wrapper active(LoginAuthDto loginAuthDto, Long id, Integer state);
 }

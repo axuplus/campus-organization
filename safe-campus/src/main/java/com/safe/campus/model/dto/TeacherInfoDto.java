@@ -32,6 +32,4 @@ public class TeacherInfoDto {
     private Long faceInfoId;
     @ApiModelProperty(value = "电话", required = true)
     private Long phone;
-    @ApiModelProperty("数组 roleId")
-    private List<Long> roleId;
 }

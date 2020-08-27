@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import javax.servlet.http.HttpServletRequest;
+import java.util.Map;
 
 /**
  * <p>
@@ -96,6 +97,12 @@ public class SchoolTeacherController extends BaseController {
     @ApiOperation("给教师设置角色")
     public Wrapper setRole(@RequestBody SetRoleDto setRoleDto) {
         return teacherService.setRole(getLoginAuthDto(), setRoleDto);
+    }
+
+    @PutMapping("/active")
+    @ApiOperation("停用/启用")
+    public Wrapper<Map<Long,String>> active(@ApiParam("此教师的ID")@RequestParam("id")Long id, @RequestParam("state")Integer state) {
+        return teacherService.active(getLoginAuthDto(), id,state);
     }
 
 }

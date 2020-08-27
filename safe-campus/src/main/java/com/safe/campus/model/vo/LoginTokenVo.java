@@ -18,7 +18,7 @@ public class LoginTokenVo implements java.io.Serializable {
     @ApiModelProperty(value = "类型：1：安校admin 2：学校账号 3：学校子账号", name = "type")
     private Integer type;
 
-    @ApiModelProperty(value = "如果是type为2的话就是学校账号，这里是学校的ID", name = "masterId")
+    @ApiModelProperty(value = "只有type为3的情况下masterId不会为空", name = "masterId")
     private Long masterId;
 
     @ApiModelProperty(value = "过期时间", name = "expireIn")
