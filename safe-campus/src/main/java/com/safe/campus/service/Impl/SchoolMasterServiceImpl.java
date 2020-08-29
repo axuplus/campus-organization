@@ -228,17 +228,14 @@ public class SchoolMasterServiceImpl extends ServiceImpl<SchoolMasterMapper, Sch
         if (PublicUtil.isNotEmpty(schoolMaterConfDto)) {
             QueryWrapper<MasterRoute> queryWrapper = new QueryWrapper<>();
             queryWrapper.eq("master_id", schoolMaterConfDto.getMasterId());
-            List<MasterRoute> routes = routeMapper.selectList(queryWrapper);
-            for (MasterRoute route : routes) {
-                routeMapper.deleteByMasterId(route.getMasterId());
-                schoolMaterConfDto.getRouteId().forEach(r -> {
-                    MasterRoute masterRoute = new MasterRoute();
-                    masterRoute.setId(gobalInterface.generateId());
-                    masterRoute.setRouteId(r);
-                    masterRoute.setMasterId(schoolMaterConfDto.getMasterId());
-                    routeMapper.insert(masterRoute);
-                });
-            }
+            routeMapper.delete(queryWrapper);
+            schoolMaterConfDto.getRouteId().forEach(r -> {
+                MasterRoute masterRoute = new MasterRoute();
+                masterRoute.setId(gobalInterface.generateId());
+                masterRoute.setRouteId(r);
+                masterRoute.setMasterId(schoolMaterConfDto.getMasterId());
+                routeMapper.insert(masterRoute);
+            });
             return WrapMapper.ok("保存成功");
         }
         return WrapMapper.error("参数不能为空");

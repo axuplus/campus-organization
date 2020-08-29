@@ -189,7 +189,7 @@ public class SchoolTeacherServiceImpl extends ServiceImpl<SchoolTeacherMapper, S
         teacher.setClassInfoId(teacherInfoDto.getClassInfoId());
         teacher.setCreatedTime(new Date());
         teacher.setTName(teacherInfoDto.getTName());
-        teacher.setImgId(teacherInfoDto.getFaceInfoId());
+        teacher.setImgId(teacherInfoDto.getImgId());
         teacher.setIdNumber(teacherInfoDto.getIdNumber());
         teacher.setIsDelete(0);
         teacher.setPhone(teacherInfoDto.getPhone());
@@ -213,7 +213,7 @@ public class SchoolTeacherServiceImpl extends ServiceImpl<SchoolTeacherMapper, S
         teacher.setTName(teacherInfoDto.getTName());
         teacher.setClassId(teacherInfoDto.getClassId());
         teacher.setClassInfoId(teacherInfoDto.getClassInfoId());
-        teacher.setImgId(teacherInfoDto.getFaceInfoId());
+        teacher.setImgId(teacherInfoDto.getImgId());
         teacher.setIdNumber(teacherInfoDto.getIdNumber());
         teacher.setPhone(teacherInfoDto.getPhone());
         teacher.setJoinTime(teacherInfoDto.getJoinTime());

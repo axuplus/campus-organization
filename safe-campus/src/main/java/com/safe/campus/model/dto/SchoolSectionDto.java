@@ -13,7 +13,7 @@ public class SchoolSectionDto {
     private String name;
     @ApiModelProperty(value = "是否是根节点 1：是 0：否", name = "isRoot", required = true)
     private Integer isRoot;
-    @ApiModelProperty(value = "如果是总校就传总校ID",name = "masterId",required = false)
+    @ApiModelProperty(value = "学校ID", name = "masterId", required = true)
     private Long masterId;
     @ApiModelProperty(value = "如果不是校区根节点的话就传", name = "sectionId", required = false)
     private Long sectionId;

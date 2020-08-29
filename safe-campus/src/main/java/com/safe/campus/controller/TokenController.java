@@ -6,8 +6,10 @@ import com.safe.campus.about.utils.wrapper.WrapMapper;
 import com.safe.campus.about.utils.wrapper.Wrapper;
 import com.safe.campus.model.dto.LoginTokenDto;
 import com.safe.campus.model.vo.LoginTokenVo;
+import com.safe.campus.model.vo.ModuleConfVo;
 import com.safe.campus.service.TokenService;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiModelProperty;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -45,5 +47,12 @@ public class TokenController extends BaseController {
         if(flag)
             return WrapMapper.ok("退出成功");
         return WrapMapper.wrap(100002,"退出失败");
+    }
+
+
+    @GetMapping(value = "/conf")
+    @ApiModelProperty(value = "获取当前模块配置 (登录成功后首先调这个接口)",notes = "获取当前模块配置")
+    public Wrapper<ModuleConfVo> getModuleConf(@RequestParam("userId")Long userId){
+        return tokenService.getModuleConf(userId);
     }
 }

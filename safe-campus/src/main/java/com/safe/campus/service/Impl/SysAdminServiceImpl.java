@@ -43,8 +43,6 @@ public class SysAdminServiceImpl extends ServiceImpl<SysAdminUserMapper, SysAdmi
     @Autowired
     private SysAdminUserMapper adminUserMapper;
 
-    @Autowired
-    private SysUserRoleMapper userRoleMapper;
 
     @Autowired
     private SysMenuMapper menuMapper;
@@ -59,8 +57,17 @@ public class SysAdminServiceImpl extends ServiceImpl<SysAdminUserMapper, SysAdmi
             admin.setCreateTime(new Date());
             admin.setPassword(Md5Utils.md5Str(password));
             admin.setUserName(userName);
-            admin.setLevel(sysAdmin.getLevel() + 1);
             admin.setCreateUser(loginAuthDto.getUserId());
+            if (1 == sysAdmin.getType()) {
+                // 安校总账号创建用户
+                admin.setType(1);
+                admin.setMasterId(0L);
+            } else {
+                // 学校创建用户
+                admin.setType(3);
+                admin.setMasterId(sysAdmin.getMasterId());
+            }
+            admin.setLevel(sysAdmin.getLevel() + 1);
             adminUserMapper.insert(admin);
         }
         return WrapMapper.ok("添加成功");
@@ -85,13 +92,15 @@ public class SysAdminServiceImpl extends ServiceImpl<SysAdminUserMapper, SysAdmi
             t = 3;
         } else if ("QUERY".equals(type)) {
             t = 4;
-        }else if("SET".equals(type)){
+        } else if ("SET".equals(type)) {
             t = 5;
-        } else  {
+        } else if ("ACTIVE".equals(type)) {
+            t = 6;
+        } else {
             t = 0;
         }
         // 1为安校总账号 2为学校账号 3为学校子账号
-        if (1 == adminUserMapper.selectById(userId).getType() || 2 == adminUserMapper.selectById(userId).getType() ) {
+        if (1 == adminUserMapper.selectById(userId).getType() || 2 == adminUserMapper.selectById(userId).getType()) {
             return true;
         }
         if (PublicUtil.isNotEmpty(menuMapper.checkHavePermission(userId, url, t))) {

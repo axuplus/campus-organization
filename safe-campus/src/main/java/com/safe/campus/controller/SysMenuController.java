@@ -43,7 +43,7 @@ public class SysMenuController extends BaseController {
     }
 
     @PostMapping("/setMenu")
-    @Permission(url = qxurl, type = PermissionType.SET)
+    @Permission(url = qxurl, type = PermissionType.ADD)
     @ApiOperation("设置权限")
     public Wrapper setRoleMenu(@RequestParam("roleId") Long roleId, @RequestParam("menuIds") List<Long> menuIds) {
         return menuService.setRoleMenu(roleId, menuIds);

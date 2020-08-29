@@ -1,6 +1,8 @@
 package com.safe.campus.controller;
 
 
+import com.safe.campus.about.annotation.Permission;
+import com.safe.campus.about.annotation.PermissionType;
 import com.safe.campus.model.dto.SchoolSectionDto;
 import com.safe.campus.model.dto.SchoolSectionInfoDto;
 import com.safe.campus.service.SchoolSectionService;
@@ -22,6 +24,9 @@ import java.util.Map;
 @Api(value = "部门管理", tags = {"部门管理"})
 public class SchoolSectionController {
 
+    private final static String qxurl = "/campus/school/section";
+
+
     @Autowired
     private SchoolSectionService sectionService;
 
@@ -39,6 +44,7 @@ public class SchoolSectionController {
     }
 
 
+    @Permission(url = qxurl,type = PermissionType.ADD)
     @PostMapping("/save")
     @ApiOperation("添加部门信息")
     public Wrapper saveSchoolSection(@RequestBody SchoolSectionDto schoolSectionDto) {

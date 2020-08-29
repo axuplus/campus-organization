@@ -29,7 +29,7 @@ public class TeacherInfoDto {
     @ApiModelProperty(value = "关联班级ID", required = true)
     private Long classInfoId;
     @ApiModelProperty(value = "图片ID", required = true)
-    private Long faceInfoId;
+    private Long imgId;
     @ApiModelProperty(value = "电话", required = true)
     private Long phone;
 }

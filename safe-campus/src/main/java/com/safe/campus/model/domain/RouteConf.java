@@ -27,8 +27,11 @@ public class RouteConf implements Serializable {
     @ApiModelProperty(value = "主键ID")
     private Long id;
 
-    @ApiModelProperty(value = "名称")
+    @ApiModelProperty(value = "模块名称")
     private String name;
+
+    @ApiModelProperty(value = "子模块名称")
+    private String subName;
 
     @ApiModelProperty(value = "路由")
     private String routeUrl;

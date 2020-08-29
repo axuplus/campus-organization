@@ -9,12 +9,19 @@ import com.safe.campus.about.token.TokenObject;
 import com.safe.campus.about.utils.Md5Utils;
 import com.safe.campus.about.utils.PublicUtil;
 import com.safe.campus.about.utils.date.DateUtil;
+import com.safe.campus.about.utils.wrapper.WrapMapper;
+import com.safe.campus.about.utils.wrapper.Wrapper;
 import com.safe.campus.enums.ErrorCodeEnum;
+import com.safe.campus.mapper.MasterRouteMapper;
+import com.safe.campus.mapper.RouteConfMapper;
 import com.safe.campus.mapper.SchoolTeacherMapper;
 import com.safe.campus.mapper.SysAdminUserMapper;
+import com.safe.campus.model.domain.MasterRoute;
+import com.safe.campus.model.domain.RouteConf;
 import com.safe.campus.model.domain.SysAdmin;
 import com.safe.campus.model.dto.UserTokenDto;
 import com.safe.campus.model.vo.LoginTokenVo;
+import com.safe.campus.model.vo.ModuleConfVo;
 import com.safe.campus.service.TokenService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,6 +32,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
+import java.util.List;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -37,7 +46,10 @@ public class TokenServiceImpl extends ServiceImpl<SysAdminUserMapper, SysAdmin> 
     private SysAdminUserMapper sysAdminUserMapper;
 
     @Autowired
-    private SchoolTeacherMapper teacherMapper;
+    private RouteConfMapper confMapper;
+
+    @Autowired
+    private MasterRouteMapper routeMapper;
 
     @Value(value = "${token.secretKey}")
     private String token_secret_key;
@@ -98,5 +110,28 @@ public class TokenServiceImpl extends ServiceImpl<SysAdminUserMapper, SysAdmin> 
         Long delete = redisTemplate.opsForHash().delete(GlobalConstant.LOGIN_TOKEN, String.valueOf(userId));
         logger.info("退成成功 {}", delete);
         return true;
+    }
+
+    @Override
+    public Wrapper<ModuleConfVo> getModuleConf(Long userId) {
+        if (null != userId) {
+            SysAdmin sysAdmin = sysAdminUserMapper.selectById(userId);
+            ModuleConfVo confVo = new ModuleConfVo();
+            confVo.setUserId(sysAdmin.getId());
+            confVo.setType(sysAdmin.getType());
+            if (1 == sysAdmin.getType()) {
+                confVo.setMasterId(0L);
+                confVo.setConfs(confMapper.getAllRoutes());
+            } else {
+                confVo.setMasterId(sysAdmin.getMasterId());
+                QueryWrapper<MasterRoute> routeQueryWrapper = new QueryWrapper<>();
+                routeQueryWrapper.eq("master_id", sysAdmin.getMasterId());
+                List<MasterRoute> masterRoutes = routeMapper.selectList(routeQueryWrapper);
+                List<Long> ids = masterRoutes.stream().map(MasterRoute::getRouteId).collect(Collectors.toList());
+                confVo.setConfs(confMapper.selectBatchIds(ids));
+            }
+            return WrapMapper.ok(confVo);
+        }
+        return null;
     }
 }
