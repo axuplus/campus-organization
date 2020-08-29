@@ -34,7 +34,7 @@ public interface SchoolTeacherService extends IService<SchoolTeacher> {
 
     Wrapper searchTeacherInfo(String context);
 
-    List<SchoolTeacher> getCharge();
+    List<SchoolTeacher> getCharge(Long masterId);
 
     SchoolTeacher getTeacherBySection(Long sectionId);
 

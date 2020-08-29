@@ -15,7 +15,7 @@ public class BaseQueryDto {
      * 每页条数
      */
     @ApiModelProperty(value = "条数", name = "pageSize")
-    private Integer pageSize = 5;
+    private Integer pageSize = 2;
 
 
 }

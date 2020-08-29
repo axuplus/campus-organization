@@ -22,17 +22,18 @@ public interface SysMenuMapper extends BaseMapper<SysMenu> {
     @Select("SELECT\n" +
             "\t* \n" +
             "FROM\n" +
-            "\tsys_menu \n" +
+            "\tsys_role_menu \n" +
             "WHERE\n" +
-            "\tid = (\n" +
+            "\trole_id IN ( SELECT role_id FROM sys_user_role WHERE user_id = #{userId} ) \n" +
+            "\tAND menu_id = (\n" +
             "\tSELECT\n" +
-            "\t\tmenu_id \n" +
+            "\t\tid \n" +
             "\tFROM\n" +
-            "\t\tsys_role_menu \n" +
+            "\t\tsys_menu \n" +
             "\tWHERE\n" +
-            "\trole_id = ( SELECT role_id FROM sys_user_role WHERE user_id = #{userId} )) \n" +
+            "\t\ttype = #{type} \n" +
             "\tAND menu_name = #{menuName} \n" +
-            "\tAND type = #{type}")
+            "\t)")
     SysMenu checkHavePermission(@Param("userId") Long userId, @Param("menuName") String menuName, @Param("type") Integer type);
 
 }

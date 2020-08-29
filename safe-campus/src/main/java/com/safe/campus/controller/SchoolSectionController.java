@@ -3,6 +3,8 @@ package com.safe.campus.controller;
 
 import com.safe.campus.about.annotation.Permission;
 import com.safe.campus.about.annotation.PermissionType;
+import com.safe.campus.about.controller.BaseController;
+import com.safe.campus.about.utils.wrapper.BaseQueryDto;
 import com.safe.campus.model.dto.SchoolSectionDto;
 import com.safe.campus.model.dto.SchoolSectionInfoDto;
 import com.safe.campus.service.SchoolSectionService;
@@ -22,7 +24,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("/campus/school/section")
 @Api(value = "部门管理", tags = {"部门管理"})
-public class SchoolSectionController {
+public class SchoolSectionController extends BaseController {
 
     private final static String qxurl = "/campus/school/section";
 
@@ -32,14 +34,14 @@ public class SchoolSectionController {
 
     @GetMapping("/school")
     @ApiOperation("1：获取学校")
-    public Wrapper<Map<Long, String>> getSchools() {
-        return sectionService.getSchools();
+    public Wrapper<Map<Long, String>> getSchools(@RequestParam("masterId")Long masterId) {
+        return sectionService.getSchools(masterId,getLoginAuthDto());
     }
 
 
     @GetMapping("/tree")
     @ApiOperation("2：获取部门以及下面节点")
-    public Wrapper getDetailsSchoolSection(@RequestParam("schoolId") Long id) {
+    public Wrapper getDetailsSchoolSection(@RequestParam("masterId") Long id) {
         return sectionService.getDetailsSection(id);
     }
 
@@ -53,12 +55,12 @@ public class SchoolSectionController {
 
     @GetMapping("/charge")
     @ApiOperation("获取部门负责人")
-    public Wrapper<Map<Long, String>> getCharge() {
-        return sectionService.getCharge();
+    public Wrapper<Map<Long, String>> getCharge(@RequestParam("masterId")Long masterId) {
+        return sectionService.getCharge(masterId);
     }
 
 
-
+    @Permission(url = qxurl,type = PermissionType.EDIT)
     @PutMapping("/edit")
     @ApiOperation("修改部门信息")
     public Wrapper editSchoolSection(@RequestBody SchoolSectionInfoDto schoolSectionInfoDto) {
@@ -66,6 +68,7 @@ public class SchoolSectionController {
     }
 
 
+    @Permission(url = qxurl,type = PermissionType.QUERY)
     @GetMapping("/get")
     @ApiOperation("获取部门信息")
     public Wrapper getSchoolSection(@RequestParam("id") Long id) {
@@ -73,6 +76,7 @@ public class SchoolSectionController {
     }
 
 
+    @Permission(url = qxurl,type = PermissionType.DEL)
     @DeleteMapping("/delete/{id}")
     @ApiOperation("删除部门信息")
     public Wrapper deleteSchoolSection(@PathVariable("id") Long id) {
@@ -80,22 +84,25 @@ public class SchoolSectionController {
     }
 
 
+    @Permission(url = qxurl,type = PermissionType.ACTIVE)
     @PutMapping("/activate")
     @ApiOperation("停用/启用")
     public Wrapper activeSchoolSection(@RequestParam("id") Long id, @ApiParam("1:停用 0: 启用") @RequestParam("type") Integer type) {
         return sectionService.activeSchoolSection(id, type);
     }
 
+    @Permission(url = qxurl,type = PermissionType.QUERY)
     @GetMapping("/list")
     @ApiOperation("获取部门信息列表")
-    public Wrapper listSchoolSection(@RequestParam("sectionId")Long sectionId) {
-        return sectionService.listSchoolSection(sectionId);
+    public Wrapper listSchoolSection(@RequestParam("masterId")Long masterId, @RequestParam("sectionId")Long sectionId, BaseQueryDto baseQueryDto) {
+        return sectionService.listSchoolSection(masterId,sectionId,baseQueryDto);
     }
 
 
+    @Permission(url = qxurl,type = PermissionType.QUERY)
     @GetMapping("/search")
     @ApiOperation("搜索")
-    public Wrapper searchSchoolSection(@RequestParam("name") String name) {
-        return sectionService.searchSchoolSection(name);
+    public Wrapper searchSchoolSection(@RequestParam("masterId")Long masterId,@RequestParam("context") String name) {
+        return sectionService.searchSchoolSection(masterId,name);
     }
 }

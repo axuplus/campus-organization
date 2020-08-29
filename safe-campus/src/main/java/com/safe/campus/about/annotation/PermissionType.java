@@ -5,7 +5,8 @@ public enum PermissionType {
     DEL("del"),             // 删除权限
     EDIT("edit"),           // 编辑权限
     QUERY("query"),         // 查看权限
-    SET("set");             // 权限设置
+    SET("set"),             // 角色设置
+    ACTIVE("active");       // 教师停用启用（分配账号）
     private String type;
 
     PermissionType(String type) {

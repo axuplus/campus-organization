@@ -1,6 +1,8 @@
 package com.safe.campus.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.safe.campus.about.dto.LoginAuthDto;
+import com.safe.campus.about.utils.wrapper.BaseQueryDto;
 import com.safe.campus.model.domain.SchoolSection;
 import com.safe.campus.model.dto.SchoolSectionDto;
 import com.safe.campus.model.dto.SchoolSectionInfoDto;
@@ -14,6 +16,8 @@ import java.util.Map;
  */
 public interface SchoolSectionService extends IService<SchoolSection> {
 
+    Wrapper getDetailsSection(Long id);
+
     Wrapper saveSchoolSection(SchoolSectionDto schoolSectionDto);
 
     Wrapper editSchoolSection(SchoolSectionInfoDto schoolSectionInfoDto);
@@ -24,14 +28,12 @@ public interface SchoolSectionService extends IService<SchoolSection> {
 
     Wrapper activeSchoolSection(Long id, Integer type);
 
-    Wrapper listSchoolSection(Long id);
+    Wrapper listSchoolSection(Long masterId, Long id, BaseQueryDto baseQueryDto);
 
-    Wrapper getDetailsSection(Long id);
+    Wrapper searchSchoolSection(Long masterId,String name);
 
-    Wrapper searchSchoolSection(String name);
+    Wrapper<Map<Long, String>> getCharge(Long masterId);
 
-    Wrapper<Map<Long, String>> getCharge();
-
-    Wrapper<Map<Long, String>> getSchools();
+    Wrapper<Map<Long, String>> getSchools(Long masterId, LoginAuthDto loginAuthDto);
 
 }

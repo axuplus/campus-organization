@@ -2,6 +2,10 @@ package com.safe.campus.service.Impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
+import com.safe.campus.about.dto.LoginAuthDto;
+import com.safe.campus.about.utils.wrapper.BaseQueryDto;
 import com.safe.campus.mapper.SchoolMasterMapper;
 import com.safe.campus.mapper.SchoolSectionMapper;
 import com.safe.campus.model.domain.SchoolMaster;
@@ -61,11 +65,10 @@ public class SchoolSectionServiceImpl extends ServiceImpl<SchoolSectionMapper, S
         if (1 == schoolSectionDto.getIsRoot()) {
             section.setLevel(1);
             // 根节点的id就变成子节点的pid
-            section.setPId(schoolSectionDto.getSectionId());
+            section.setPId(0L);
         } else {
-            SchoolSection byId = schoolSectionMapper.selectById(schoolSectionDto.getSectionId());
             section.setPId(schoolSectionDto.getSectionId());
-            section.setLevel(byId.getLevel() + 1);
+            section.setLevel(schoolSectionMapper.selectById(schoolSectionDto.getSectionId()).getLevel() + 1);
         }
         section.setMasterId(schoolSectionDto.getMasterId());
         section.setId(gobalInterface.generateId());
@@ -89,15 +92,15 @@ public class SchoolSectionServiceImpl extends ServiceImpl<SchoolSectionMapper, S
         if (PublicUtil.isEmpty(schoolSectionInfoDto)) {
             return WrapMapper.error("部门信息不能为空");
         }
-        SchoolSection section = new SchoolSection();
-        section.setId(schoolSectionInfoDto.getId());
+        SchoolSection section = schoolSectionMapper.selectById(schoolSectionInfoDto.getId());
         section.setSectionName(schoolSectionInfoDto.getName());
-        teacherService.updateSectionTeacher(schoolSectionInfoDto.getId(), schoolSectionInfoDto.getTId());
-        int updateById = schoolSectionMapper.updateById(section);
-        if (1 == updateById) {
-            return WrapMapper.ok("修改成功");
+        section.setPId(schoolSectionInfoDto.getPid());
+        section.setLevel(schoolSectionMapper.selectById(schoolSectionInfoDto.getPid()).getLevel() + 1);
+        if (0L != schoolSectionInfoDto.getTId() && null != schoolSectionInfoDto.getTId()){
+            teacherService.updateSectionTeacher(schoolSectionInfoDto.getId(), schoolSectionInfoDto.getTId());
         }
-        return WrapMapper.error("修改失败");
+        updateById(section);
+        return WrapMapper.ok("修改成功");
     }
 
     @Override
@@ -107,7 +110,15 @@ public class SchoolSectionServiceImpl extends ServiceImpl<SchoolSectionMapper, S
         }
         SchoolSection schoolSection = schoolSectionMapper.selectById(id);
         if (PublicUtil.isNotEmpty(schoolSection)) {
-            return WrapMapper.ok(schoolSection);
+            SchoolSectionVo vo = new SchoolSectionVo();
+            vo.setSectionId(schoolSection.getId());
+            vo.setSectionName(schoolSection.getSectionName());
+            vo.setPreSectionName(schoolSectionMapper.selectById(schoolSection.getId()).getSectionName());
+            SchoolTeacher teacher = teacherService.getTeacherBySection(schoolSection.getId());
+            if(PublicUtil.isNotEmpty(teacher) ){
+                vo.setName(teacher.getTName());
+            }
+            return WrapMapper.ok(vo);
         }
         return WrapMapper.error("未查到");
     }
@@ -145,7 +156,7 @@ public class SchoolSectionServiceImpl extends ServiceImpl<SchoolSectionMapper, S
     }
 
     @Override
-    public Wrapper listSchoolSection(Long id) {
+    public Wrapper listSchoolSection(Long masterId, Long id, BaseQueryDto baseQueryDto) {
         if (PublicUtil.isEmpty(id)) {
             return WrapMapper.error("id不能为空");
         }
@@ -154,6 +165,7 @@ public class SchoolSectionServiceImpl extends ServiceImpl<SchoolSectionMapper, S
             return WrapMapper.error("暂无数据");
         }
         subTrees.add(id);
+        PageHelper.startPage(baseQueryDto.getPageNum(),baseQueryDto.getPageSize());
         List<SchoolSection> list = schoolSectionMapper.selectBatchIds(subTrees);
         List<SchoolSectionVo> vos = new ArrayList<>();
         for (int i = 0; i < list.size(); i++) {
@@ -177,7 +189,7 @@ public class SchoolSectionServiceImpl extends ServiceImpl<SchoolSectionMapper, S
             }
             vos.add(vo);
         }
-        return WrapMapper.ok(vos);
+        return WrapMapper.ok(new PageInfo<>(vos));
     }
 
     @Override
@@ -202,7 +214,7 @@ public class SchoolSectionServiceImpl extends ServiceImpl<SchoolSectionMapper, S
             List<SectionTreeVo> children = new ArrayList<>();
             for (SectionTreeVo dept : depts) {
                 if (sysDept.getId() != null && sysDept.getId().equals(dept.getPid())) {
-                   // dept.setParentName(dept.getSectionName());
+                    // dept.setParentName(dept.getSectionName());
                     dept.setLevel(sysDept.getLevel() + 1);
                     children.add(dept);
                 }
@@ -214,7 +226,7 @@ public class SchoolSectionServiceImpl extends ServiceImpl<SchoolSectionMapper, S
 
 
     @Override
-    public Wrapper searchSchoolSection(String name) {
+    public Wrapper searchSchoolSection(Long masterId,String name) {
         if (null == name) {
             return WrapMapper.error("搜索参数不能为空");
         }
@@ -250,8 +262,8 @@ public class SchoolSectionServiceImpl extends ServiceImpl<SchoolSectionMapper, S
     }
 
     @Override
-    public Wrapper<Map<Long, String>> getCharge() {
-        List<SchoolTeacher> charge = teacherService.getCharge();
+    public Wrapper<Map<Long, String>> getCharge(Long masterId) {
+        List<SchoolTeacher> charge = teacherService.getCharge(masterId);
         if (PublicUtil.isNotEmpty(charge)) {
             return WrapMapper.ok(charge.stream().collect(Collectors.toMap(SchoolTeacher::getId, SchoolTeacher::getTName)));
         }
@@ -259,9 +271,9 @@ public class SchoolSectionServiceImpl extends ServiceImpl<SchoolSectionMapper, S
     }
 
     @Override
-    public Wrapper<Map<Long, String>> getSchools() {
+    public Wrapper<Map<Long, String>> getSchools(Long masterId, LoginAuthDto loginAuthDto) {
         QueryWrapper<SchoolMaster> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("is_delete", 0);
+        queryWrapper.eq("is_delete", 0).eq("master_id", masterId);
         List<SchoolMaster> masters = masterMapper.selectList(queryWrapper);
         if (PublicUtil.isNotEmpty(masters)) {
             return WrapMapper.ok(masters.stream().collect(Collectors.toMap(SchoolMaster::getId, SchoolMaster::getAreaName)));
