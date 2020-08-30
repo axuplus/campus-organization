@@ -2,6 +2,10 @@ package com.safe.campus.service.Impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
+import com.safe.campus.about.dto.LoginAuthDto;
+import com.safe.campus.about.utils.wrapper.BaseQueryDto;
 import com.safe.campus.mapper.SchoolClassInfoMapper;
 import com.safe.campus.mapper.SchoolClassMapper;
 import com.safe.campus.model.domain.SchoolClass;
@@ -53,7 +57,7 @@ public class SchoolClassServiceImpl extends ServiceImpl<SchoolClassMapper, Schoo
 
 
     @Override
-    public Wrapper saveSchoolClass(SchoolClassDto schoolClassDto) {
+    public Wrapper saveSchoolClass(SchoolClassDto schoolClassDto, LoginAuthDto loginAuthDto) {
         if (PublicUtil.isEmpty(schoolClassDto)) {
             return WrapMapper.error("参数不能为空");
         }
@@ -64,25 +68,16 @@ public class SchoolClassServiceImpl extends ServiceImpl<SchoolClassMapper, Schoo
             schoolClass.setIsDelete(0);
             schoolClass.setMasterId(schoolClassDto.getMasterId());
             schoolClass.setState(0);
+            schoolClass.setCreatedUser(loginAuthDto.getUserId());
             schoolClass.setCreatedTime(new Date());
             schoolClassMapper.insert(schoolClass);
             return WrapMapper.ok("添加成功");
-        } else if (1 == schoolClassDto.getType()) {
-            if (null == schoolClassDto.getId() || null == schoolClassDto.getTId()) {
-                return WrapMapper.error("ID不能为空");
-            }
-            SchoolClass byId = schoolClassMapper.selectById(schoolClassDto.getId());
-            if (PublicUtil.isNotEmpty(byId)) {
-                byId.setTId(schoolClassDto.getTId());
-                schoolClassMapper.updateById(byId);
-                return WrapMapper.ok("编辑成功");
-            }
         }
-        return null;
+        return WrapMapper.error("添加失败");
     }
 
     @Override
-    public Wrapper saveSchoolClassInfo(SchoolClassInfoDto schoolClassInfoDto) {
+    public Wrapper saveSchoolClassInfo(SchoolClassInfoDto schoolClassInfoDto, LoginAuthDto loginAuthDto) {
         if (PublicUtil.isEmpty(schoolClassInfoDto)) {
             return WrapMapper.error("参数不能为空");
         }
@@ -94,23 +89,50 @@ public class SchoolClassServiceImpl extends ServiceImpl<SchoolClassMapper, Schoo
             info.setClassId(schoolClassInfoDto.getClassId());
             info.setIsDelete(0);
             info.setState(0);
+            info.setCreateUser(loginAuthDto.getUserId());
             info.setCreateTime(new Date());
             schoolClassInfoMapper.insert(info);
             return WrapMapper.ok("添加成功");
-        } else if (1 == schoolClassInfoDto.getType()) {
+        }
+        return WrapMapper.error("添加失败");
+    }
+
+
+    @Override
+    public Wrapper editClass(SchoolClassDto schoolClassDto, LoginAuthDto loginAuthDto) {
+        if (1 == schoolClassDto.getType()) {
+            if (null == schoolClassDto.getId() || null == schoolClassDto.getTId()) {
+                return WrapMapper.error("ID不能为空");
+            }
+            SchoolClass byId = schoolClassMapper.selectById(schoolClassDto.getId());
+            if (PublicUtil.isNotEmpty(byId)) {
+                byId.setClassName(schoolClassDto.getClassName());
+                byId.setTId(schoolClassDto.getTId());
+                schoolClassMapper.updateById(byId);
+                return WrapMapper.ok("编辑成功");
+            }
+        }
+        return WrapMapper.error("参数有误");
+    }
+
+    @Override
+    public Wrapper editClassInfo(SchoolClassInfoDto schoolClassInfoDto, LoginAuthDto loginAuthDto) {
+        if (1 == schoolClassInfoDto.getType()) {
             if (null == schoolClassInfoDto.getId() || null == schoolClassInfoDto.getSuperiorId()) {
                 return WrapMapper.error("ID不能为空");
             }
             SchoolClassInfo info = schoolClassInfoMapper.selectById(schoolClassInfoDto.getId());
             if (PublicUtil.isNotEmpty(info)) {
+                info.setClassInfoName(schoolClassInfoDto.getClassInfoName());
                 info.setTId(schoolClassInfoDto.getSuperiorId());
                 schoolClassInfoMapper.updateById(info);
                 return WrapMapper.ok("编辑成功");
             }
             return WrapMapper.error("编辑失败");
         }
-        return null;
+        return WrapMapper.error("编辑失败");
     }
+
 
     @Override
     public Wrapper deleteSchoolClass(Integer type, Long id) {
@@ -132,38 +154,36 @@ public class SchoolClassServiceImpl extends ServiceImpl<SchoolClassMapper, Schoo
     }
 
     @Override
-    public Wrapper operationSchoolClass(Integer state, Long id) {
-        if (null != state && null != id) {
-            SchoolClassInfo info = schoolClassInfoMapper.selectById(id);
-            if (1 == state) {
-                info.setState(1);
-            } else {
-                info.setState(0);
-            }
-            schoolClassInfoMapper.updateById(info);
-            return WrapMapper.ok("操作成功");
-        }
-        return null;
-    }
-
-    @Override
-    public Wrapper operationSchoolClassInfo(Integer state, Long id) {
-        if (null != state && null != id) {
-            SchoolClass schoolClass = schoolClassMapper.selectById(id);
-            if (1 == state) {
-                QueryWrapper<SchoolClassInfo> queryWrapper = new QueryWrapper<>();
-                queryWrapper.eq("class_id", id).eq("is_delete", 0);
-                List<SchoolClassInfo> infos = schoolClassInfoMapper.selectList(queryWrapper);
-                if (PublicUtil.isNotEmpty(infos)) {
-                    return WrapMapper.error("此年级下面还有其他班级");
+    public Wrapper operation(Integer type, Integer state, Long id) {
+        if (1 == type) {
+            if (null != state && null != id) {
+                SchoolClass schoolClass = schoolClassMapper.selectById(id);
+                if (1 == state) {
+                    QueryWrapper<SchoolClassInfo> queryWrapper = new QueryWrapper<>();
+                    queryWrapper.eq("class_id", id).eq("is_delete", 0);
+                    List<SchoolClassInfo> infos = schoolClassInfoMapper.selectList(queryWrapper);
+                    if (PublicUtil.isNotEmpty(infos)) {
+                        return WrapMapper.error("此年级下面还有其他班级");
+                    } else {
+                        schoolClass.setState(1);
+                        schoolClassMapper.updateById(schoolClass);
+                        return WrapMapper.ok("操作成功");
+                    }
                 } else {
-                    schoolClass.setState(1);
+                    schoolClass.setState(0);
                     schoolClassMapper.updateById(schoolClass);
                     return WrapMapper.ok("操作成功");
                 }
-            } else {
-                schoolClass.setState(0);
-                schoolClassMapper.updateById(schoolClass);
+            }
+        } else if (2 == type) {
+            if (null != state && null != id) {
+                SchoolClassInfo info = schoolClassInfoMapper.selectById(id);
+                if (1 == state) {
+                    info.setState(1);
+                } else {
+                    info.setState(0);
+                }
+                schoolClassInfoMapper.updateById(info);
                 return WrapMapper.ok("操作成功");
             }
         }
@@ -171,13 +191,13 @@ public class SchoolClassServiceImpl extends ServiceImpl<SchoolClassMapper, Schoo
     }
 
     @Override
-    public Wrapper searchSchoolClass(String name) {
+    public Wrapper searchSchoolClass(Long masterId, String name) {
         if (null == name) {
             return WrapMapper.error("请输入搜索条件");
         }
         if (name.contains("年级")) {
             QueryWrapper<SchoolClass> queryWrapper = new QueryWrapper<>();
-            queryWrapper.like("class_name", name).eq("is_delete", 0);
+            queryWrapper.like("class_name", name).eq("is_delete", 0).eq("master_id", masterId);
             SchoolClass schoolClass = schoolClassMapper.selectOne(queryWrapper);
             List<SchoolClassSearchVo> list = new ArrayList<>();
             if (PublicUtil.isNotEmpty(schoolClass)) {
@@ -189,11 +209,11 @@ public class SchoolClassServiceImpl extends ServiceImpl<SchoolClassMapper, Schoo
                 if (PublicUtil.isNotEmpty(teacher)) {
                     vo.setClassSuperiorName(teacher.getTName());
                     vo.setPhone(teacher.getPhone());
-                    vo.setType(1);
                 }
+                vo.setType(1);
                 list.add(vo);
                 QueryWrapper<SchoolClassInfo> query = new QueryWrapper<>();
-                queryWrapper.eq("class_id", schoolClass.getId()).eq("is_delete", 0);
+                query.eq("class_id", schoolClass.getId()).eq("is_delete", 0);
                 List<SchoolClassInfo> infos = schoolClassInfoMapper.selectList(query);
                 if (PublicUtil.isNotEmpty(infos)) {
                     infos.forEach(info -> {
@@ -216,23 +236,25 @@ public class SchoolClassServiceImpl extends ServiceImpl<SchoolClassMapper, Schoo
         } else {
             List<SchoolClassSearchVo> list = new ArrayList<>();
             QueryWrapper<SchoolClassInfo> query = new QueryWrapper<>();
-            query.like("class_name", name).eq("is_delete", 0);
+            query.like("class_info_name", name).eq("is_delete", 0);
             List<SchoolClassInfo> infos = schoolClassInfoMapper.selectList(query);
             if (PublicUtil.isNotEmpty(infos)) {
                 infos.forEach(info -> {
-                    SchoolClassSearchVo searchVo = new SchoolClassSearchVo();
-                    searchVo.setClassInfoId(info.getId());
-                    searchVo.setClassInfoName(info.getClassInfoName());
-                    searchVo.setType(2);
-                    searchVo.setState(info.getState());
                     SchoolClass schoolClass = schoolClassMapper.selectById(info.getClassId());
-                    searchVo.setClassName(schoolClass.getClassName());
-                    SchoolTeacher t = teacherService.getTeacher(schoolClass.getTId());
-                    if (PublicUtil.isNotEmpty(t)) {
-                        searchVo.setClassSuperiorName(t.getTName());
-                        searchVo.setPhone(t.getPhone());
+                    if (masterId.equals(schoolClass.getMasterId())) {
+                        SchoolClassSearchVo searchVo = new SchoolClassSearchVo();
+                        searchVo.setClassInfoId(info.getId());
+                        searchVo.setClassInfoName(info.getClassInfoName());
+                        searchVo.setType(2);
+                        searchVo.setState(info.getState());
+                        searchVo.setClassName(schoolClass.getClassName());
+                        SchoolTeacher t = teacherService.getTeacher(schoolClass.getTId());
+                        if (PublicUtil.isNotEmpty(t)) {
+                            searchVo.setClassSuperiorName(t.getTName());
+                            searchVo.setPhone(t.getPhone());
+                        }
+                        list.add(searchVo);
                     }
-                    list.add(searchVo);
                 });
                 return WrapMapper.ok(list);
             }
@@ -242,9 +264,9 @@ public class SchoolClassServiceImpl extends ServiceImpl<SchoolClassMapper, Schoo
 
 
     @Override
-    public Wrapper nodeTreeSchoolClass() {
+    public Wrapper nodeTreeSchoolClass(Long masterId) {
         QueryWrapper<SchoolClass> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("is_delete", 0);
+        queryWrapper.eq("is_delete", 0).eq("master_id", masterId);
         List<SchoolClass> classes = schoolClassMapper.selectList(queryWrapper);
         List<NodeTreeVo> treeVos = new ArrayList<>();
         if (PublicUtil.isNotEmpty(classes)) {
@@ -273,24 +295,6 @@ public class SchoolClassServiceImpl extends ServiceImpl<SchoolClassMapper, Schoo
     }
 
     @Override
-    public Wrapper nodeTreeInfoSchoolClass(Long id) {
-        if (null == id) {
-            return WrapMapper.error("参数不能为空");
-        }
-        List<SchoolClassInfoVo> vos = new ArrayList<>();
-        QueryWrapper<SchoolClassInfo> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("class_id", id);
-        List<SchoolClassInfo> infos = schoolClassInfoMapper.selectList(queryWrapper);
-        if (PublicUtil.isNotEmpty(infos)) {
-            infos.forEach(info -> {
-                vos.add(getClassInfoVoList(info));
-            });
-            return WrapMapper.ok(vos);
-        }
-        return WrapMapper.error("暂无班级信息");
-    }
-
-    @Override
     public List<SchoolClass> getAllClass() {
         QueryWrapper<SchoolClass> wrapper = new QueryWrapper<>();
         wrapper.eq("is_delete", 0);
@@ -305,40 +309,84 @@ public class SchoolClassServiceImpl extends ServiceImpl<SchoolClassMapper, Schoo
     }
 
     @Override
-    public Wrapper listClass(Long masterId) {
-        QueryWrapper<SchoolClass> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("is_delete", 0).eq("state", 0).eq("master_id", masterId);
-        List<SchoolClass> classes = schoolClassMapper.selectList(queryWrapper);
-        List<SchoolClassVo> list = new ArrayList<>();
-        if (PublicUtil.isNotEmpty(classes)) {
-            classes.forEach(c -> {
-                list.add(getClassVoList(c));
-            });
-            return WrapMapper.ok(list);
+    public Wrapper listClass(Long masterId, Long id, Integer type, BaseQueryDto baseQueryDto) {
+        if (1 == type) {
+            QueryWrapper<SchoolClass> queryWrapper = new QueryWrapper<>();
+            queryWrapper.eq("id", id).eq("is_delete", 0).eq("master_id", masterId);
+            SchoolClass schoolClass = schoolClassMapper.selectOne(queryWrapper);
+            List<SchoolClassSearchVo> list = new ArrayList<>();
+            QueryWrapper<SchoolClassInfo> query = new QueryWrapper<>();
+            query.eq("class_id", schoolClass.getId()).eq("is_delete", 0);
+            PageHelper.startPage(baseQueryDto.getPageNum(), baseQueryDto.getPageSize());
+            List<SchoolClassInfo> infos = schoolClassInfoMapper.selectList(query);
+            if (PublicUtil.isNotEmpty(infos)) {
+                infos.forEach(info -> {
+                    SchoolClassSearchVo searchVo = new SchoolClassSearchVo();
+                    searchVo.setClassId(schoolClass.getId());
+                    searchVo.setClassName(schoolClass.getClassName());
+                    searchVo.setClassInfoId(info.getId());
+                    searchVo.setClassInfoName(info.getClassInfoName());
+                    searchVo.setType(2);
+                    searchVo.setState(info.getState());
+                    searchVo.setClassName(schoolClass.getClassName());
+                    SchoolTeacher t = teacherService.getTeacher(schoolClass.getTId());
+                    if (PublicUtil.isNotEmpty(t)) {
+                        searchVo.setClassSuperiorName(t.getTName());
+                        searchVo.setPhone(t.getPhone());
+                    }
+                    list.add(searchVo);
+                });
+                // 所属班级信息加不进去
+//                SchoolClassSearchVo vo = new SchoolClassSearchVo();
+//                vo.setClassId(schoolClass.getId());
+//                vo.setClassName(schoolClass.getClassName());
+//                vo.setState(schoolClass.getState());
+//                SchoolTeacher teacher = teacherService.getTeacher(schoolClass.getTId());
+//                if (PublicUtil.isNotEmpty(teacher)) {
+//                    vo.setClassSuperiorName(teacher.getTName());
+//                    vo.setPhone(teacher.getPhone());
+//                }
+//                vo.setType(1);
+//                list.add(vo);
+            }
+            return WrapMapper.ok(new PageInfo<>(list));
+        } else {
+            PageHelper.startPage(baseQueryDto.getPageNum(), baseQueryDto.getPageSize());
+            SchoolClassInfo schoolClassInfo = schoolClassInfoMapper.selectById(id);
+            if (PublicUtil.isNotEmpty(schoolClassInfo)) {
+                List<SchoolClassSearchVo> list = new ArrayList<>();
+                SchoolClassSearchVo searchVo = new SchoolClassSearchVo();
+                searchVo.setClassInfoId(schoolClassInfo.getId());
+                searchVo.setClassInfoName(schoolClassInfo.getClassInfoName());
+                searchVo.setType(2);
+                searchVo.setState(schoolClassInfo.getState());
+                SchoolClass schoolClass = schoolClassMapper.selectById(schoolClassInfo.getClassId());
+                searchVo.setClassId(schoolClass.getId());
+                searchVo.setClassName(schoolClass.getClassName());
+                SchoolTeacher t = teacherService.getTeacher(schoolClassInfo.getTId());
+                if (PublicUtil.isNotEmpty(t)) {
+                    searchVo.setClassSuperiorName(t.getTName());
+                    searchVo.setPhone(t.getPhone());
+                }
+                list.add(searchVo);
+                return WrapMapper.ok(new PageInfo<>(list));
+            }
         }
         return WrapMapper.error("暂无数据");
     }
 
     @Override
-    public Wrapper<Map<Long, String>> listTeachers(Integer type) {
-        if (1 == type) {
-            List<SchoolTeacher> teachers = teacherService.getTeachersToClass(1);
-            if (PublicUtil.isNotEmpty(teachers)) {
-                return WrapMapper.ok(teachers.stream().collect(Collectors.toMap(SchoolTeacher::getId, SchoolTeacher::getTName)));
-            }
-            return WrapMapper.error("暂无数据");
-        } else {
-            List<SchoolTeacher> teachers = teacherService.getTeachersToClass(2);
+    public Wrapper<Map<Long, String>> listTeachers(Long masterId) {
+            List<SchoolTeacher> teachers = teacherService.getTeachersToClass(masterId);
             if (PublicUtil.isNotEmpty(teachers)) {
                 return WrapMapper.ok(teachers.stream().collect(Collectors.toMap(SchoolTeacher::getId, SchoolTeacher::getTName)));
             }
             return WrapMapper.error("暂无数据");
         }
-    }
 
     @Override
     public Wrapper<SchoolClassEditVo> getInfo(Integer type, Long id) {
-        if (null == type && null == id) {
+        if (null != type && null != id) {
             if (1 == type) {
                 SchoolClass schoolClass = schoolClassMapper.selectById(id);
                 SchoolClassEditVo editVo = new SchoolClassEditVo();
@@ -368,36 +416,5 @@ public class SchoolClassServiceImpl extends ServiceImpl<SchoolClassMapper, Schoo
             }
         }
         return null;
-    }
-
-
-    private SchoolClassVo getClassVoList(SchoolClass schoolClass) {
-        SchoolClassVo vo = new SchoolClassVo();
-        vo.setClassId(schoolClass.getId());
-        vo.setClassName(schoolClass.getClassName());
-        vo.setState(schoolClass.getState());
-        SchoolTeacher teacher = teacherService.getTeacher(schoolClass.getTId());
-        if (PublicUtil.isNotEmpty(teacher)) {
-            vo.setPhone(teacher.getPhone());
-            vo.setClassSuperiorName(teacher.getTName());
-        }
-        return vo;
-    }
-
-    private SchoolClassInfoVo getClassInfoVoList(SchoolClassInfo info) {
-        SchoolClassInfoVo vo = new SchoolClassInfoVo();
-        vo.setClassInfoId(info.getId());
-        vo.setClassInfoName(info.getClassInfoName());
-        vo.setClassName(info.getClassInfoName());
-        vo.setState(info.getState());
-        SchoolClass schoolClass = schoolClassMapper.selectById(info.getClassId());
-        vo.setClassId(schoolClass.getId());
-        vo.setClassName(schoolClass.getClassName());
-        SchoolTeacher teacher = teacherService.getTeacher(schoolClass.getTId());
-        if (PublicUtil.isNotEmpty(teacher)) {
-            vo.setPhone(teacher.getPhone());
-            vo.setClassInfoSuperiorName(teacher.getTName());
-        }
-        return vo;
     }
 }

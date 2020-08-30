@@ -1,6 +1,8 @@
 package com.safe.campus.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.safe.campus.about.dto.LoginAuthDto;
+import com.safe.campus.about.utils.wrapper.BaseQueryDto;
 import com.safe.campus.model.domain.SchoolClass;
 import com.safe.campus.model.domain.SchoolClassInfo;
 import com.safe.campus.model.dto.SchoolClassDto;
@@ -17,29 +19,29 @@ import java.util.Map;
  */
 public interface SchoolClassService extends IService<SchoolClass> {
 
-    Wrapper saveSchoolClass(SchoolClassDto schoolClassDto);
+    Wrapper saveSchoolClass(SchoolClassDto schoolClassDto, LoginAuthDto loginAuthDto);
 
-    Wrapper saveSchoolClassInfo(SchoolClassInfoDto schoolClassInfoDto);
+    Wrapper saveSchoolClassInfo(SchoolClassInfoDto schoolClassInfoDto,LoginAuthDto loginAuthDto);
 
     Wrapper deleteSchoolClass(Integer type, Long id);
 
-    Wrapper operationSchoolClass(Integer state, Long id);
+    Wrapper searchSchoolClass(Long masterId,String name);
 
-    Wrapper operationSchoolClassInfo(Integer state, Long id);
-
-    Wrapper searchSchoolClass(String name);
-
-    Wrapper nodeTreeSchoolClass();
-
-    Wrapper nodeTreeInfoSchoolClass( Long id);
+    Wrapper nodeTreeSchoolClass(Long masterId);
 
     List<SchoolClass> getAllClass();
 
     List<SchoolClassInfo> getAllClassInfo(Long classId);
 
-    Wrapper listClass(Long masterId);
+    Wrapper listClass(Long masterId, Long id, Integer type, BaseQueryDto baseQueryDto);
 
-    Wrapper<Map<Long, String>> listTeachers(Integer type);
+    Wrapper<Map<Long, String>> listTeachers(Long masterId);
 
     Wrapper<SchoolClassEditVo> getInfo(Integer type, Long id);
+
+    Wrapper editClass(SchoolClassDto schoolClassDto, LoginAuthDto loginAuthDto);
+
+    Wrapper editClassInfo(SchoolClassInfoDto schoolClassInfoDto, LoginAuthDto loginAuthDto);
+
+    Wrapper operation(Integer type, Integer state, Long id);
 }

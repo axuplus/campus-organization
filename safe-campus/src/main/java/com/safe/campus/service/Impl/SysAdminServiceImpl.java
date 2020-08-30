@@ -75,7 +75,6 @@ public class SysAdminServiceImpl extends ServiceImpl<SysAdminUserMapper, SysAdmi
 
     /**
      * 这是初始化请求头的时候去验证TokenInterceptor里面的注解
-     *
      * @param userId
      * @param url
      * @param type

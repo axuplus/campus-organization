@@ -10,7 +10,7 @@ public class SchoolClassDto {
     private Long id;
     @ApiModelProperty(value = "年级主任ID/如果是新增就不用管，如果是编辑就传id", name = "directorId", required = false)
     private Long tId;
-    @ApiModelProperty(value = "总校ID", name = "masterId", required = true)
+    @ApiModelProperty(value = "学校ID", name = "masterId", required = true)
     private Long  masterId;
     @ApiModelProperty(value = "年级名称", name = "className", required = true)
     private String className;

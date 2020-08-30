@@ -2,6 +2,7 @@ package com.safe.campus.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.safe.campus.model.domain.SysMenu;
+import com.safe.campus.model.domain.SysRoleMenu;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
@@ -34,6 +35,6 @@ public interface SysMenuMapper extends BaseMapper<SysMenu> {
             "\t\ttype = #{type} \n" +
             "\tAND menu_name = #{menuName} \n" +
             "\t)")
-    SysMenu checkHavePermission(@Param("userId") Long userId, @Param("menuName") String menuName, @Param("type") Integer type);
+    SysRoleMenu checkHavePermission(@Param("userId") Long userId, @Param("menuName") String menuName, @Param("type") Integer type);
 
 }

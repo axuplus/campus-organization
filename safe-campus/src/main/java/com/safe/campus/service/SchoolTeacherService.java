@@ -44,7 +44,7 @@ public interface SchoolTeacherService extends IService<SchoolTeacher> {
 
     SchoolTeacher getTeacher(Long tId);
 
-    List<SchoolTeacher> getTeachersToClass(Integer type);
+    List<SchoolTeacher> getTeachersToClass(Long masterId);
 
     List<SchoolTeacher> getBuildingTeachers();
 

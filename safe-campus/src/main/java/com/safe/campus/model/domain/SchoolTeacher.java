@@ -33,6 +33,8 @@ public class SchoolTeacher implements Serializable {
     @Id
     private Long id;
 
+    private Long masterId;
+
     @ApiModelProperty(value = "教师姓名")
     private String tName;
 

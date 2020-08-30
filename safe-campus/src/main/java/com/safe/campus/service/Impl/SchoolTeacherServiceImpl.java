@@ -419,16 +419,10 @@ public class SchoolTeacherServiceImpl extends ServiceImpl<SchoolTeacherMapper, S
     }
 
     @Override
-    public List<SchoolTeacher> getTeachersToClass(Integer type) {
-        if (1 == type) {
+    public List<SchoolTeacher> getTeachersToClass(Long masterId) {
             QueryWrapper<SchoolTeacher> queryWrapper = new QueryWrapper<>();
-            queryWrapper.eq("type", 3).or().eq("type", 4);
+            queryWrapper.eq("master_id",masterId);
             return teacherMapper.selectList(queryWrapper);
-        } else {
-            QueryWrapper<SchoolTeacher> queryWrapper = new QueryWrapper<>();
-            queryWrapper.eq("type", 1).or().eq("type", 4);
-            return teacherMapper.selectList(queryWrapper);
-        }
     }
 
     @Override
