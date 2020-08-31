@@ -49,6 +49,7 @@ pagehelper:
   reasonable: true
   support-methods-arguments: true
   params: count=countSql
+  returnPageInfo: check
 
 upload-file:
   imgPath: C:\Users\14256\Desktop\linshi
