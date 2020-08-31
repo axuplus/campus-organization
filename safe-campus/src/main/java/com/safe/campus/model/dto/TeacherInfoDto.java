@@ -10,6 +10,8 @@ import java.util.List;
 public class TeacherInfoDto {
     @ApiModelProperty(value = "编辑传这个ID 新增不用管", required = false)
     private Long id;
+    @ApiModelProperty(value = "学校ID", required = true)
+    private Long masterId;
     @ApiModelProperty(value = "姓名", required = true)
     private String tName;
     @ApiModelProperty(value = "工号", required = true)
@@ -24,10 +26,6 @@ public class TeacherInfoDto {
     private Long sectionId;
     @ApiModelProperty(value = "职务", required = true)
     private String position;
-    @ApiModelProperty(value = "关联年级ID", required = true)
-    private Long classId;
-    @ApiModelProperty(value = "关联班级ID", required = true)
-    private Long classInfoId;
     @ApiModelProperty(value = "图片ID", required = true)
     private Long imgId;
     @ApiModelProperty(value = "电话", required = true)

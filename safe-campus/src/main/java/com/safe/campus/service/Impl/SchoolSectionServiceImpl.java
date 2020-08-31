@@ -2,10 +2,10 @@ package com.safe.campus.service.Impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
-import com.github.pagehelper.PageInfo;
 import com.safe.campus.about.dto.LoginAuthDto;
-import com.safe.campus.about.utils.wrapper.BaseQueryDto;
+import com.safe.campus.about.utils.wrapper.*;
 import com.safe.campus.mapper.SchoolMasterMapper;
 import com.safe.campus.mapper.SchoolSectionMapper;
 import com.safe.campus.model.domain.SchoolMaster;
@@ -14,13 +14,12 @@ import com.safe.campus.model.domain.SchoolTeacher;
 import com.safe.campus.model.dto.SchoolSectionDto;
 import com.safe.campus.model.dto.SchoolSectionInfoDto;
 import com.safe.campus.model.vo.SchoolSectionVo;
+import com.safe.campus.model.vo.SchoolTeacherVo;
 import com.safe.campus.model.vo.SectionTreeVo;
 import com.safe.campus.service.SchoolSectionService;
 import com.safe.campus.service.SchoolTeacherService;
 import com.safe.campus.about.utils.PublicUtil;
 import com.safe.campus.about.utils.service.GobalInterface;
-import com.safe.campus.about.utils.wrapper.WrapMapper;
-import com.safe.campus.about.utils.wrapper.Wrapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -156,17 +155,18 @@ public class SchoolSectionServiceImpl extends ServiceImpl<SchoolSectionMapper, S
     }
 
     @Override
-    public Wrapper listSchoolSection(Long masterId, Long id, BaseQueryDto baseQueryDto) {
+    public PageWrapper<List<SchoolSectionVo>> listSchoolSection(Long masterId, Long id, BaseQueryDto baseQueryDto) {
         if (PublicUtil.isEmpty(id)) {
-            return WrapMapper.error("id不能为空");
+            return PageWrapMapper.wrap(500,"参数不能为空");
         }
         List<Long> subTrees = schoolSectionMapper.getSubTrees(id);
         if (PublicUtil.isEmpty(subTrees)) {
-            return WrapMapper.error("暂无数据");
+            return PageWrapMapper.wrap(200,"暂无数据");
         }
         subTrees.add(id);
-        PageHelper.startPage(baseQueryDto.getPageNum(),baseQueryDto.getPageSize());
+        Page page = PageHelper.startPage(baseQueryDto.getPageNum(), baseQueryDto.getPageSize());
         List<SchoolSection> list = schoolSectionMapper.selectBatchIds(subTrees);
+        Long total = page.getTotal();
         List<SchoolSectionVo> vos = new ArrayList<>();
         for (int i = 0; i < list.size(); i++) {
             SchoolSection section = list.get(i);
@@ -189,7 +189,7 @@ public class SchoolSectionServiceImpl extends ServiceImpl<SchoolSectionMapper, S
             }
             vos.add(vo);
         }
-        return WrapMapper.ok(new PageInfo<>(vos));
+        return PageWrapMapper.wrap(vos, new PageUtil(total.intValue(), baseQueryDto.getPageNum(), baseQueryDto.getPageSize()));
     }
 
     @Override

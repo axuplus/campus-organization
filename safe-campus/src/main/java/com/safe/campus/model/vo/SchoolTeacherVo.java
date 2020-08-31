@@ -20,6 +20,8 @@ public class SchoolTeacherVo {
     private String idNumber;
     @ApiModelProperty("电话")
     private Long phone;
+    @ApiModelProperty("1停用 0启用")
+    private Integer state;
     @ApiModelProperty("照片")
     private String photo;
     @ApiModelProperty("部门名称")

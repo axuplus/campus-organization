@@ -30,6 +30,9 @@ public class SysRole implements Serializable {
     @ApiModelProperty(value = "主键ID")
     private Long id;
 
+    @ApiModelProperty(value = "masterId")
+    private Long masterId;
+
     @ApiModelProperty(value = "角色")
     private String roleName;
 

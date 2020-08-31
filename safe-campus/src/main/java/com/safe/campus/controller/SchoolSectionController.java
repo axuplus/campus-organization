@@ -5,8 +5,11 @@ import com.safe.campus.about.annotation.Permission;
 import com.safe.campus.about.annotation.PermissionType;
 import com.safe.campus.about.controller.BaseController;
 import com.safe.campus.about.utils.wrapper.BaseQueryDto;
+import com.safe.campus.about.utils.wrapper.PageWrapper;
 import com.safe.campus.model.dto.SchoolSectionDto;
 import com.safe.campus.model.dto.SchoolSectionInfoDto;
+import com.safe.campus.model.vo.SchoolSectionVo;
+import com.safe.campus.model.vo.SchoolTeacherVo;
 import com.safe.campus.service.SchoolSectionService;
 import com.safe.campus.about.utils.wrapper.Wrapper;
 import io.swagger.annotations.Api;
@@ -15,6 +18,7 @@ import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -94,7 +98,7 @@ public class SchoolSectionController extends BaseController {
     @Permission(url = qxurl,type = PermissionType.QUERY)
     @GetMapping("/list")
     @ApiOperation("获取部门信息列表")
-    public Wrapper listSchoolSection(@RequestParam("masterId")Long masterId, @RequestParam("sectionId")Long sectionId, BaseQueryDto baseQueryDto) {
+    public PageWrapper<List<SchoolSectionVo>> listSchoolSection(@RequestParam("masterId")Long masterId, @RequestParam("sectionId")Long sectionId, BaseQueryDto baseQueryDto) {
         return sectionService.listSchoolSection(masterId,sectionId,baseQueryDto);
     }
 

@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.github.pagehelper.PageInfo;
 import com.safe.campus.about.dto.LoginAuthDto;
 import com.safe.campus.about.utils.wrapper.BaseQueryDto;
+import com.safe.campus.about.utils.wrapper.PageWrapper;
 import com.safe.campus.model.domain.BuildingNo;
 import com.safe.campus.model.dto.BuildingStudentDto;
 import com.safe.campus.model.vo.*;
@@ -38,7 +39,7 @@ public interface BuildingService extends IService<BuildingNo> {
 
     Wrapper deleteBuilding(Integer type, Long id);
 
-    Wrapper<PageInfo<BuildingManagerVo>> managerList(Long id, BaseQueryDto baseQueryDto);
+    PageWrapper<List<BuildingManagerVo>> managerList(Long id, BaseQueryDto baseQueryDto);
 
     Wrapper searchList(Long masterId,Integer type,String context);
 
@@ -48,9 +49,9 @@ public interface BuildingService extends IService<BuildingNo> {
 
     Wrapper saveBuildingStudent(BuildingStudentDto buildingStudentDto);
 
-    Wrapper<PageInfo<BuildingStudentListVo>> levelStudentList(Long id, BaseQueryDto baseQueryDto);
+    PageWrapper<List<BuildingStudentListVo>> levelStudentList(Long id, BaseQueryDto baseQueryDto);
 
-    Wrapper<PageInfo<BuildingStudentListVo>> roomStudentList(Long id,BaseQueryDto baseQueryDto);
+    PageWrapper<List<BuildingStudentListVo>> roomStudentList(Long id,BaseQueryDto baseQueryDto);
 
     Wrapper<Map<Long, String>> getBuildingTeachers(Long masterId);
 

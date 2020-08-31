@@ -5,6 +5,7 @@ import com.safe.campus.about.annotation.Permission;
 import com.safe.campus.about.annotation.PermissionType;
 import com.safe.campus.about.controller.BaseController;
 import com.safe.campus.about.utils.wrapper.BaseQueryDto;
+import com.safe.campus.about.utils.wrapper.PageWrapper;
 import com.safe.campus.model.dto.SchoolClassDto;
 import com.safe.campus.model.dto.SchoolClassInfoDto;
 import com.safe.campus.model.vo.SchoolClassEditVo;
@@ -98,10 +99,10 @@ public class SchoolClassController extends BaseController {
     @Permission(url = qxurl, type = PermissionType.QUERY)
     @GetMapping("/list/class")
     @ApiOperation("右边年级列表列表(点击年级/班级)")
-    public Wrapper<List<SchoolClassSearchVo>> listClass(@RequestParam("masterId") Long masterId,
-                                                        @RequestParam("id") Long id,
-                                                        @ApiParam("1年级 2班级") @RequestParam("type") Integer type,
-                                                        BaseQueryDto baseQueryDto) {
+    public PageWrapper<List<SchoolClassSearchVo>> listClass(@RequestParam("masterId") Long masterId,
+                                                            @RequestParam("id") Long id,
+                                                            @ApiParam("1年级 2班级") @RequestParam("type") Integer type,
+                                                            BaseQueryDto baseQueryDto) {
         return schoolClassService.listClass(masterId, id, type,baseQueryDto);
     }
 

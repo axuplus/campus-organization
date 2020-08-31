@@ -2,6 +2,7 @@ package com.safe.campus.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.safe.campus.model.domain.SchoolClassInfo;
+import com.safe.campus.model.domain.SchoolTeacher;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
@@ -16,6 +17,6 @@ import java.util.Map;
 @Mapper
 @Component
 public interface SchoolClassInfoMapper extends BaseMapper<SchoolClassInfo> {
-    @Select("select id,class_name from school_class_info where class_name = #{className}")
-    Map getClassInfo(@Param("className") String str);
+    @Select("select * from school_class_info where t_id = #{tId}")
+    SchoolClassInfo getClassInfoByTid(@Param("tId") Long tId);
 }

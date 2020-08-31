@@ -6,6 +6,7 @@ import com.safe.campus.about.annotation.Permission;
 import com.safe.campus.about.annotation.PermissionType;
 import com.safe.campus.about.controller.BaseController;
 import com.safe.campus.about.utils.wrapper.BaseQueryDto;
+import com.safe.campus.about.utils.wrapper.PageWrapper;
 import com.safe.campus.model.dto.BuildingStudentDto;
 import com.safe.campus.model.vo.*;
 import com.safe.campus.service.BuildingService;
@@ -123,20 +124,20 @@ public class BuildingController extends BaseController {
     @Permission(url = qxurl, type = PermissionType.QUERY)
     @ApiOperation("楼幢 管理员列表")
     @GetMapping("/managerList")
-    public Wrapper<PageInfo<BuildingManagerVo>> managerList(@ApiParam("楼幢ID ") @RequestParam("id") Long id, BaseQueryDto baseQueryDto) {
+    public PageWrapper<List<BuildingManagerVo>> managerList(@ApiParam("楼幢ID ") @RequestParam("id") Long id, BaseQueryDto baseQueryDto) {
         return buildingService.managerList(id, baseQueryDto);
     }
 
     @Permission(url = qxurl, type = PermissionType.QUERY)
     @ApiOperation("楼层 学生列表")
     @GetMapping("/levelStudentList")
-    public Wrapper<PageInfo<BuildingStudentListVo>> levelStudentList(@ApiParam("楼层ID ") @RequestParam("id") Long id, BaseQueryDto baseQueryDto) {
+    public  PageWrapper<List<BuildingStudentListVo>> levelStudentList(@ApiParam("楼层ID ") @RequestParam("id") Long id, BaseQueryDto baseQueryDto) {
         return buildingService.levelStudentList(id, baseQueryDto);
     }
 
     @ApiOperation("宿舍 学生列表")
     @GetMapping("/roomStudentList")
-    public Wrapper<PageInfo<BuildingStudentListVo>> roomStudentList(@ApiParam("宿舍ID ") @RequestParam("id") Long id, BaseQueryDto baseQueryDto) {
+    public  PageWrapper<List<BuildingStudentListVo>> roomStudentList(@ApiParam("宿舍ID ") @RequestParam("id") Long id, BaseQueryDto baseQueryDto) {
         return buildingService.roomStudentList(id, baseQueryDto);
     }
 

@@ -2,11 +2,12 @@ package com.safe.campus.service.Impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.safe.campus.about.dto.LoginAuthDto;
 import com.safe.campus.about.exception.BizException;
-import com.safe.campus.about.utils.wrapper.BaseQueryDto;
+import com.safe.campus.about.utils.wrapper.*;
 import com.safe.campus.enums.ErrorCodeEnum;
 import com.safe.campus.mapper.*;
 import com.safe.campus.model.domain.*;
@@ -18,8 +19,6 @@ import com.safe.campus.service.SchoolStudentService;
 import com.safe.campus.service.SchoolTeacherService;
 import com.safe.campus.about.utils.PublicUtil;
 import com.safe.campus.about.utils.service.GobalInterface;
-import com.safe.campus.about.utils.wrapper.WrapMapper;
-import com.safe.campus.about.utils.wrapper.Wrapper;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -153,11 +152,12 @@ public class BuildingNoServiceImpl extends ServiceImpl<BuildingNoMapper, Buildin
     }
 
     @Override
-    public Wrapper<PageInfo<BuildingStudentListVo>> levelStudentList(Long id, BaseQueryDto baseQueryDto) {
+    public PageWrapper<List<BuildingStudentListVo>> levelStudentList(Long id, BaseQueryDto baseQueryDto) {
         QueryWrapper<BuildingStudent> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("level_id", id);
-        PageHelper.startPage(baseQueryDto.getPageNum(), baseQueryDto.getPageSize());
+        Page page = PageHelper.startPage(baseQueryDto.getPageNum(), baseQueryDto.getPageSize());
         List<BuildingStudent> buildingStudents = buildingStudentMapper.selectList(queryWrapper);
+        Long total = page.getTotal();
         if (PublicUtil.isNotEmpty(buildingStudents)) {
             List<BuildingStudentListVo> list = new ArrayList<>();
             buildingStudents.forEach(s -> {
@@ -181,7 +181,7 @@ public class BuildingNoServiceImpl extends ServiceImpl<BuildingNoMapper, Buildin
                 }
                 list.add(listVo);
             });
-            return WrapMapper.ok(new PageInfo<>(list));
+            return PageWrapMapper.wrap(list, new PageUtil(total.intValue(), baseQueryDto.getPageNum(), baseQueryDto.getPageSize()));
         }
         return null;
     }
@@ -320,14 +320,15 @@ public class BuildingNoServiceImpl extends ServiceImpl<BuildingNoMapper, Buildin
     }
 
     @Override
-    public Wrapper<PageInfo<BuildingManagerVo>> managerList(Long id, BaseQueryDto baseQueryDto) {
+    public PageWrapper<List<BuildingManagerVo>> managerList(Long id, BaseQueryDto baseQueryDto) {
         if (null != id) {
             List<BuildingManagerVo> list = new ArrayList<>();
             BuildingNo buildingNo = noMapper.selectById(id);
             QueryWrapper<BuildingLevel> queryWrapper = new QueryWrapper<>();
             queryWrapper.eq("building_no_id", id);
-            PageHelper.startPage(baseQueryDto.getPageNum(), baseQueryDto.getPageSize());
+            Page page = PageHelper.startPage(baseQueryDto.getPageNum(), baseQueryDto.getPageSize());
             List<BuildingLevel> levels = levelMapper.selectList(queryWrapper);
+            Long total = page.getTotal();
             if (PublicUtil.isNotEmpty(levels)) {
                 levels.forEach(level -> {
                     BuildingManagerVo buildingManagerVo = new BuildingManagerVo();
@@ -344,7 +345,7 @@ public class BuildingNoServiceImpl extends ServiceImpl<BuildingNoMapper, Buildin
                     list.add(buildingManagerVo);
                 });
             }
-            return WrapMapper.ok(new PageInfo<>(list));
+            return PageWrapMapper.wrap(list, new PageUtil(total.intValue(), baseQueryDto.getPageNum(), baseQueryDto.getPageSize()));
         }
         return null;
     }
@@ -408,12 +409,13 @@ public class BuildingNoServiceImpl extends ServiceImpl<BuildingNoMapper, Buildin
     }
 
     @Override
-    public Wrapper<PageInfo<BuildingStudentListVo>> roomStudentList(Long id, BaseQueryDto baseQueryDto) {
+    public PageWrapper<List<BuildingStudentListVo>> roomStudentList(Long id, BaseQueryDto baseQueryDto) {
         if (null != id) {
             QueryWrapper<BuildingStudent> queryWrapper = new QueryWrapper<>();
             queryWrapper.eq("room_id", id);
-            PageHelper.startPage(baseQueryDto.getPageNum(), baseQueryDto.getPageSize());
+            Page page = PageHelper.startPage(baseQueryDto.getPageNum(), baseQueryDto.getPageSize());
             List<BuildingStudent> buildingStudents = buildingStudentMapper.selectList(queryWrapper);
+            Long total = page.getTotal();
             if (PublicUtil.isNotEmpty(buildingStudents)) {
                 List<BuildingStudentListVo> list = new ArrayList<>();
                 buildingStudents.forEach(s -> {
@@ -437,7 +439,7 @@ public class BuildingNoServiceImpl extends ServiceImpl<BuildingNoMapper, Buildin
                     }
                     list.add(listVo);
                 });
-                return WrapMapper.ok(new PageInfo<>(list));
+                return PageWrapMapper.wrap(list, new PageUtil(total.intValue(), baseQueryDto.getPageNum(), baseQueryDto.getPageSize()));
             }
         }
         return null;

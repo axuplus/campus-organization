@@ -59,12 +59,6 @@ public class SchoolTeacher implements Serializable {
     @ApiModelProperty(value = "入职年份")
     private String joinTime;
 
-    @ApiModelProperty(value = "年级ID")
-    private Long classId;
-
-    @ApiModelProperty(value = "班级ID")
-    private Long classInfoId;
-
     @ApiModelProperty(value = "1：已离职 0：在职")
     private Integer state;
 

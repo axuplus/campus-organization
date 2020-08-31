@@ -2,10 +2,10 @@ package com.safe.campus.service.Impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
-import com.github.pagehelper.PageInfo;
 import com.safe.campus.about.dto.LoginAuthDto;
-import com.safe.campus.about.utils.wrapper.BaseQueryDto;
+import com.safe.campus.about.utils.wrapper.*;
 import com.safe.campus.mapper.SchoolClassInfoMapper;
 import com.safe.campus.mapper.SchoolClassMapper;
 import com.safe.campus.model.domain.SchoolClass;
@@ -18,8 +18,6 @@ import com.safe.campus.service.SchoolClassService;
 import com.safe.campus.service.SchoolTeacherService;
 import com.safe.campus.about.utils.PublicUtil;
 import com.safe.campus.about.utils.service.GobalInterface;
-import com.safe.campus.about.utils.wrapper.WrapMapper;
-import com.safe.campus.about.utils.wrapper.Wrapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -297,7 +295,7 @@ public class SchoolClassServiceImpl extends ServiceImpl<SchoolClassMapper, Schoo
     @Override
     public List<SchoolClass> getAllClass(Long masterId) {
         QueryWrapper<SchoolClass> wrapper = new QueryWrapper<>();
-        wrapper.eq("is_delete", 0).eq("master_id",masterId);
+        wrapper.eq("is_delete", 0).eq("master_id", masterId);
         return schoolClassMapper.selectList(wrapper);
     }
 
@@ -309,7 +307,7 @@ public class SchoolClassServiceImpl extends ServiceImpl<SchoolClassMapper, Schoo
     }
 
     @Override
-    public Wrapper listClass(Long masterId, Long id, Integer type, BaseQueryDto baseQueryDto) {
+    public PageWrapper<List<SchoolClassSearchVo>> listClass(Long masterId, Long id, Integer type, BaseQueryDto baseQueryDto) {
         if (1 == type) {
             QueryWrapper<SchoolClass> queryWrapper = new QueryWrapper<>();
             queryWrapper.eq("id", id).eq("is_delete", 0).eq("master_id", masterId);
@@ -317,8 +315,9 @@ public class SchoolClassServiceImpl extends ServiceImpl<SchoolClassMapper, Schoo
             List<SchoolClassSearchVo> list = new ArrayList<>();
             QueryWrapper<SchoolClassInfo> query = new QueryWrapper<>();
             query.eq("class_id", schoolClass.getId()).eq("is_delete", 0);
-            PageHelper.startPage(baseQueryDto.getPageNum(), baseQueryDto.getPageSize());
+            Page page = PageHelper.startPage(baseQueryDto.getPageNum(), baseQueryDto.getPageSize());
             List<SchoolClassInfo> infos = schoolClassInfoMapper.selectList(query);
+            Long total = page.getTotal();
             if (PublicUtil.isNotEmpty(infos)) {
                 infos.forEach(info -> {
                     SchoolClassSearchVo searchVo = new SchoolClassSearchVo();
@@ -349,10 +348,11 @@ public class SchoolClassServiceImpl extends ServiceImpl<SchoolClassMapper, Schoo
 //                vo.setType(1);
 //                list.add(vo);
             }
-            return WrapMapper.ok(new PageInfo<>(list));
+            return PageWrapMapper.wrap(list, new PageUtil(total.intValue(), baseQueryDto.getPageNum(), baseQueryDto.getPageSize()));
         } else {
-            PageHelper.startPage(baseQueryDto.getPageNum(), baseQueryDto.getPageSize());
+            Page page = PageHelper.startPage(baseQueryDto.getPageNum(), baseQueryDto.getPageSize());
             SchoolClassInfo schoolClassInfo = schoolClassInfoMapper.selectById(id);
+            Long total = page.getTotal();
             if (PublicUtil.isNotEmpty(schoolClassInfo)) {
                 List<SchoolClassSearchVo> list = new ArrayList<>();
                 SchoolClassSearchVo searchVo = new SchoolClassSearchVo();
@@ -369,20 +369,20 @@ public class SchoolClassServiceImpl extends ServiceImpl<SchoolClassMapper, Schoo
                     searchVo.setPhone(t.getPhone());
                 }
                 list.add(searchVo);
-                return WrapMapper.ok(new PageInfo<>(list));
+                return PageWrapMapper.wrap(list, new PageUtil(total.intValue(), baseQueryDto.getPageNum(), baseQueryDto.getPageSize()));
             }
         }
-        return WrapMapper.error("暂无数据");
+        return PageWrapMapper.wrap(200, "暂无数据");
     }
 
     @Override
     public Wrapper<Map<Long, String>> listTeachers(Long masterId) {
-            List<SchoolTeacher> teachers = teacherService.getTeachersToClass(masterId);
-            if (PublicUtil.isNotEmpty(teachers)) {
-                return WrapMapper.ok(teachers.stream().collect(Collectors.toMap(SchoolTeacher::getId, SchoolTeacher::getTName)));
-            }
-            return WrapMapper.error("暂无数据");
+        List<SchoolTeacher> teachers = teacherService.getTeachersToClass(masterId);
+        if (PublicUtil.isNotEmpty(teachers)) {
+            return WrapMapper.ok(teachers.stream().collect(Collectors.toMap(SchoolTeacher::getId, SchoolTeacher::getTName)));
         }
+        return WrapMapper.error("暂无数据");
+    }
 
     @Override
     public Wrapper<SchoolClassEditVo> getInfo(Integer type, Long id) {

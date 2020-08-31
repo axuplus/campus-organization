@@ -3,8 +3,12 @@ package com.safe.campus.service.Impl;
 import com.alibaba.excel.support.ExcelTypeEnum;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.github.pagehelper.Page;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import com.safe.campus.about.dto.LoginAuthDto;
 import com.safe.campus.about.utils.*;
+import com.safe.campus.about.utils.wrapper.*;
 import com.safe.campus.enums.ErrorCodeEnum;
 import com.safe.campus.about.exception.BizException;
 import com.safe.campus.mapper.*;
@@ -18,8 +22,6 @@ import com.safe.campus.model.vo.SysRoleVo;
 import com.safe.campus.service.SchoolTeacherService;
 import com.safe.campus.service.SysFileService;
 import com.safe.campus.about.utils.service.GobalInterface;
-import com.safe.campus.about.utils.wrapper.WrapMapper;
-import com.safe.campus.about.utils.wrapper.Wrapper;
 import org.apache.http.entity.ContentType;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
@@ -80,30 +82,57 @@ public class SchoolTeacherServiceImpl extends ServiceImpl<SchoolTeacherMapper, S
     @Autowired
     private SysRoleMapper roleMapper;
 
-    @Autowired
-    private SysFileService fileService;
+
+    @Override
+    public Wrapper saveTeacherInfo(TeacherInfoDto teacherInfoDto, LoginAuthDto loginAuthDto) {
+        if (PublicUtil.isEmpty(teacherInfoDto)) {
+            return WrapMapper.error("信息不能为空");
+        }
+        SchoolTeacher teacher = new SchoolTeacher();
+        teacher.setMasterId(teacherInfoDto.getMasterId());
+        teacher.setId(gobalInterface.generateId());
+        teacher.setCreatedTime(new Date());
+        teacher.setTName(teacherInfoDto.getTName());
+        teacher.setImgId(teacherInfoDto.getImgId());
+        teacher.setIdNumber(teacherInfoDto.getIdNumber());
+        teacher.setIsDelete(0);
+        teacher.setPhone(teacherInfoDto.getPhone());
+        teacher.setJoinTime(teacherInfoDto.getJoinTime());
+        teacher.setPosition(teacherInfoDto.getPosition());
+        teacher.setSectionId(teacherInfoDto.getSectionId());
+        teacher.setSex(teacherInfoDto.getSex());
+        teacher.setState(0);
+        teacher.setTNumber(teacherInfoDto.getTNumber());
+        teacher.setCreatedUser(loginAuthDto.getUserId());
+        teacherMapper.insert(teacher);
+        return WrapMapper.ok("保存成功");
+    }
 
 
     @Override
-    public Wrapper listTeacherInfo(Long id) {
+    public PageWrapper<List<SchoolTeacherVo>> listTeacherInfo(Long masterId, Long id, BaseQueryDto baseQueryDto) {
         if (null == id) {
-            return WrapMapper.error("参数不能为空");
+            throw new BizException(ErrorCodeEnum.PUB10000033);
         }
         QueryWrapper<SchoolTeacher> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("section_id", id);
+        queryWrapper.eq("master_id", masterId).eq("section_id", id);
+        Page page = PageHelper.startPage(baseQueryDto.getPageNum(), baseQueryDto.getPageSize());
         List<SchoolTeacher> teachers = teacherMapper.selectList(queryWrapper);
+        Long total = page.getTotal();
         if (PublicUtil.isNotEmpty(teachers)) {
             List<SchoolTeacherVo> list = new ArrayList<>();
             teachers.forEach(teacher -> {
                 SchoolTeacherVo vo = new ModelMapper().map(teacher, SchoolTeacherVo.class);
+                vo.setPhoto(sysFileService.getFileById(teacher.getImgId()).getFileUrl());
                 // 关联班级
-                if (null != teacher.getClassId() && null != teacher.getClassInfoId()) {
-                    SchoolClass schoolClass = classMapper.selectById(teacher.getClassId());
-                    SchoolClassInfo schoolClassInfo = classInfoMapper.selectById(teacher.getClassInfoId());
-                    vo.setClassInformation(schoolClass.getClassName() + " " + schoolClassInfo.getClassInfoName());
+                SchoolClassInfo classInfoByTid = classInfoMapper.getClassInfoByTid(teacher.getId());
+                if (PublicUtil.isNotEmpty(classInfoByTid)) {
+                    SchoolClass schoolClass = classMapper.selectById(classInfoByTid.getClassId());
+                    vo.setClassInformation(schoolClass.getClassName() + " " + classInfoByTid.getClassInfoName());
                 }
                 // 部门
                 SchoolSection section = sectionMapper.selectById(teacher.getSectionId());
+                System.out.println("section = " + section);
                 if (null != section) {
                     vo.setSectionName(section.getSectionName());
                 }
@@ -122,7 +151,7 @@ public class SchoolTeacherServiceImpl extends ServiceImpl<SchoolTeacherMapper, S
                 }
                 list.add(vo);
             });
-            return WrapMapper.ok(list);
+            return PageWrapMapper.wrap(list, new PageUtil(total.intValue(), baseQueryDto.getPageNum(), baseQueryDto.getPageSize()));
         }
         return null;
     }
@@ -148,10 +177,10 @@ public class SchoolTeacherServiceImpl extends ServiceImpl<SchoolTeacherMapper, S
         SchoolTeacher teacher = teacherMapper.selectById(id);
         if (PublicUtil.isNotEmpty(teacher)) {
             SchoolTeacherVo vo = new ModelMapper().map(teacher, SchoolTeacherVo.class);
-            SchoolClass schoolClass = classMapper.selectById(teacher.getClassId());
-            SchoolClassInfo schoolClassInfo = classInfoMapper.selectById(teacher.getClassInfoId());
-            if (null != schoolClass && null != schoolClassInfo) {
-                vo.setClassInformation(schoolClass.getClassName() + " " + schoolClassInfo.getClassInfoName());
+            SchoolClassInfo classInfoByTid = classInfoMapper.getClassInfoByTid(teacher.getId());
+            if (PublicUtil.isNotEmpty(classInfoByTid)) {
+                SchoolClass schoolClass = classMapper.selectById(classInfoByTid.getClassId());
+                vo.setClassInformation(schoolClass.getClassName() + " " + classInfoByTid.getClassInfoName());
             }
             SchoolSection section = sectionMapper.selectById(teacher.getSectionId());
             if (null != section) {
@@ -179,40 +208,12 @@ public class SchoolTeacherServiceImpl extends ServiceImpl<SchoolTeacherMapper, S
     }
 
     @Override
-    public Wrapper saveTeacherInfo(TeacherInfoDto teacherInfoDto, LoginAuthDto loginAuthDto) {
-        if (PublicUtil.isEmpty(teacherInfoDto)) {
-            return WrapMapper.error("信息不能为空");
-        }
-        SchoolTeacher teacher = new SchoolTeacher();
-        teacher.setId(gobalInterface.generateId());
-        teacher.setClassId(teacherInfoDto.getClassId());
-        teacher.setClassInfoId(teacherInfoDto.getClassInfoId());
-        teacher.setCreatedTime(new Date());
-        teacher.setTName(teacherInfoDto.getTName());
-        teacher.setImgId(teacherInfoDto.getImgId());
-        teacher.setIdNumber(teacherInfoDto.getIdNumber());
-        teacher.setIsDelete(0);
-        teacher.setPhone(teacherInfoDto.getPhone());
-        teacher.setJoinTime(teacherInfoDto.getJoinTime());
-        teacher.setPosition(teacherInfoDto.getPosition());
-        teacher.setSectionId(teacherInfoDto.getSectionId());
-        teacher.setSex(teacherInfoDto.getSex());
-        teacher.setState(0);
-        teacher.setTNumber(teacherInfoDto.getTNumber());
-        teacher.setCreatedUser(loginAuthDto.getUserId());
-        teacherMapper.insert(teacher);
-        return WrapMapper.ok("保存成功");
-    }
-
-    @Override
     public Wrapper editTeacherInfo(TeacherInfoDto teacherInfoDto) {
         if (PublicUtil.isEmpty(teacherInfoDto)) {
             return WrapMapper.error("修改参数不能为空");
         }
         SchoolTeacher teacher = teacherMapper.selectById(teacherInfoDto.getId());
         teacher.setTName(teacherInfoDto.getTName());
-        teacher.setClassId(teacherInfoDto.getClassId());
-        teacher.setClassInfoId(teacherInfoDto.getClassInfoId());
         teacher.setImgId(teacherInfoDto.getImgId());
         teacher.setIdNumber(teacherInfoDto.getIdNumber());
         teacher.setPhone(teacherInfoDto.getPhone());
@@ -221,31 +222,35 @@ public class SchoolTeacherServiceImpl extends ServiceImpl<SchoolTeacherMapper, S
         teacher.setSectionId(teacherInfoDto.getSectionId());
         teacher.setSex(teacherInfoDto.getSex());
         teacher.setTNumber(teacherInfoDto.getTNumber());
-        teacherMapper.updateById(teacher);
+        updateById(teacher);
         return WrapMapper.ok("修改成功");
     }
 
     @Override
-    public Wrapper searchTeacherInfo(String context) {
+    public PageWrapper<List<SchoolTeacherVo>> searchTeacherInfo(Long masterId, String context, BaseQueryDto baseQueryDto) {
         if ("".equals(context)) {
-            return WrapMapper.error("搜索条件不能为空");
+            return PageWrapMapper.wrap(200, "搜索条件不能为空");
         }
         QueryWrapper<SchoolTeacher> queryWrapper = new QueryWrapper<>();
-        queryWrapper.like("t_name", context).or()
+        queryWrapper.eq("master_id", masterId)
+                .like("t_name", context).or()
                 .like("t_number", context).or()
                 .like("phone", context).or()
                 .like("join_time", context)
                 .orderByAsc("created_time");
+        Page page = PageHelper.startPage(baseQueryDto.getPageNum(), baseQueryDto.getPageSize());
         List<SchoolTeacher> teachers = teacherMapper.selectList(queryWrapper);
+        Long total = page.getTotal();
         List<SchoolTeacherVo> list = new ArrayList<>();
         if (PublicUtil.isNotEmpty(teachers)) {
             teachers.forEach(teacher -> {
                 SchoolTeacherVo vo = new ModelMapper().map(teacher, SchoolTeacherVo.class);
+                vo.setPhoto(sysFileService.getFileById(teacher.getImgId()).getFileUrl());
                 // 关联班级
-                SchoolClass schoolClass = classMapper.selectById(teacher.getClassId());
-                SchoolClassInfo schoolClassInfo = classInfoMapper.selectById(teacher.getClassInfoId());
-                if (null != schoolClass && null != schoolClassInfo) {
-                    vo.setClassInformation(schoolClass.getClassName() + " " + schoolClassInfo.getClassInfoName());
+                SchoolClassInfo classInfoByTid = classInfoMapper.getClassInfoByTid(teacher.getId());
+                if (PublicUtil.isNotEmpty(classInfoByTid)) {
+                    SchoolClass schoolClass = classMapper.selectById(classInfoByTid.getClassId());
+                    vo.setClassInformation(schoolClass.getClassName() + " " + classInfoByTid.getClassInfoName());
                 }
                 // 部门
                 SchoolSection section = sectionMapper.selectById(teacher.getSectionId());
@@ -267,9 +272,9 @@ public class SchoolTeacherServiceImpl extends ServiceImpl<SchoolTeacherMapper, S
                 }
                 list.add(vo);
             });
-            return WrapMapper.ok(list);
+            return PageWrapMapper.wrap(list, new PageUtil(total.intValue(), baseQueryDto.getPageNum(), baseQueryDto.getPageSize()));
         }
-        return WrapMapper.error("暂无数据");
+        return PageWrapMapper.wrap(200, "暂无数据");
     }
 
 
@@ -420,9 +425,9 @@ public class SchoolTeacherServiceImpl extends ServiceImpl<SchoolTeacherMapper, S
 
     @Override
     public List<SchoolTeacher> getTeachersToClass(Long masterId) {
-            QueryWrapper<SchoolTeacher> queryWrapper = new QueryWrapper<>();
-            queryWrapper.eq("master_id",masterId);
-            return teacherMapper.selectList(queryWrapper);
+        QueryWrapper<SchoolTeacher> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("master_id", masterId);
+        return teacherMapper.selectList(queryWrapper);
     }
 
     @Override
@@ -433,9 +438,9 @@ public class SchoolTeacherServiceImpl extends ServiceImpl<SchoolTeacherMapper, S
     }
 
     @Override
-    public Wrapper listRoles(LoginAuthDto loginAuthDto) {
+    public Wrapper listRoles(Long masterId, LoginAuthDto loginAuthDto) {
         QueryWrapper<SysRole> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("state", 0).or().eq("state", 1);
+        queryWrapper.eq("master_id", masterId).eq("state", 0);
         List<SysRole> sysRoles = roleMapper.selectList(queryWrapper);
         if (PublicUtil.isNotEmpty(sysRoles)) {
             List<SysRoleVo> vos = new ArrayList<>();
@@ -455,7 +460,7 @@ public class SchoolTeacherServiceImpl extends ServiceImpl<SchoolTeacherMapper, S
             // 去查admin表有没有启用教职工的账号
             SysAdmin adminUserByTId = adminUserMapper.getAdminUserByTId(teacher.getId());
             if (PublicUtil.isEmpty(adminUserByTId)) {
-                return WrapMapper.error("无教工暂无账号,请先启用账户");
+                return WrapMapper.error("此教工暂无账号,请先启用账户");
             }
             setRoleDto.getRoleId().forEach(i -> {
                 SysUserRole userRole = new SysUserRole();
@@ -532,7 +537,7 @@ public class SchoolTeacherServiceImpl extends ServiceImpl<SchoolTeacherMapper, S
     }
 
     @Override
-    public Wrapper active(LoginAuthDto loginAuthDto, Long id,Long masterId, Integer state) {
+    public Wrapper active(LoginAuthDto loginAuthDto, Long id, Long masterId, Integer state) {
         if (null != id && null != state) {
             if (0 == state) {
                 // 先查询admin表看其是否存在
@@ -578,7 +583,7 @@ public class SchoolTeacherServiceImpl extends ServiceImpl<SchoolTeacherMapper, S
     @Override
     public List<SchoolTeacher> searchTeachersByName(String context, Long masterId) {
         QueryWrapper<SchoolTeacher> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("master_id",masterId).like("t_name",context);
+        queryWrapper.eq("master_id", masterId).like("t_name", context);
         return teacherMapper.selectList(queryWrapper);
     }
 }

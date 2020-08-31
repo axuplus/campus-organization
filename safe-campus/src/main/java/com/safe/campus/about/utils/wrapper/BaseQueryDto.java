@@ -9,7 +9,12 @@ public class BaseQueryDto {
      * 当前页
      */
     @ApiModelProperty(value = "页码", name = "pageNum")
-    private Integer pageNum = 1;
+    private Integer pageNum = 1
+
+
+
+
+            ;
 
     /**
      * 每页条数

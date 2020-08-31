@@ -3,12 +3,14 @@ package com.safe.campus.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.safe.campus.about.dto.LoginAuthDto;
 import com.safe.campus.about.utils.wrapper.BaseQueryDto;
+import com.safe.campus.about.utils.wrapper.PageWrapper;
 import com.safe.campus.model.domain.SchoolClass;
 import com.safe.campus.model.domain.SchoolClassInfo;
 import com.safe.campus.model.dto.SchoolClassDto;
 import com.safe.campus.model.dto.SchoolClassInfoDto;
 import com.safe.campus.model.vo.SchoolClassEditVo;
 import com.safe.campus.about.utils.wrapper.Wrapper;
+import com.safe.campus.model.vo.SchoolClassSearchVo;
 
 import java.util.List;
 import java.util.Map;
@@ -33,7 +35,7 @@ public interface SchoolClassService extends IService<SchoolClass> {
 
     List<SchoolClassInfo> getAllClassInfo(Long classId);
 
-    Wrapper listClass(Long masterId, Long id, Integer type, BaseQueryDto baseQueryDto);
+    PageWrapper<List<SchoolClassSearchVo>> listClass(Long masterId, Long id, Integer type, BaseQueryDto baseQueryDto);
 
     Wrapper<Map<Long, String>> listTeachers(Long masterId);
 
