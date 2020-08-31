@@ -7,8 +7,8 @@ import lombok.Data;
 public class BuildingManagerVo {
 
 
-    @ApiModelProperty(value = "楼幢ID")
-    private Long buildingId;
+    @ApiModelProperty(value = "楼层ID")
+    private Long buildingLevelId;
     @ApiModelProperty(value = "楼幢")
     private String buildingNo;
     @ApiModelProperty(value = "楼层")

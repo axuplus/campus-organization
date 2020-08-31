@@ -1,7 +1,11 @@
 package com.safe.campus.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.github.pagehelper.PageInfo;
+import com.safe.campus.about.dto.LoginAuthDto;
+import com.safe.campus.about.utils.wrapper.BaseQueryDto;
 import com.safe.campus.model.domain.BuildingNo;
+import com.safe.campus.model.dto.BuildingStudentDto;
 import com.safe.campus.model.vo.*;
 import com.safe.campus.about.utils.wrapper.Wrapper;
 
@@ -18,11 +22,11 @@ import java.util.Map;
  */
 public interface BuildingService extends IService<BuildingNo> {
 
-    Wrapper saveBuilding(String buildingName);
+    Wrapper saveBuilding(String buildingName, Long masterId, LoginAuthDto loginAuthDto);
 
     Wrapper<BuildingRoomVo> getBuilding(Long id);
 
-    Wrapper<List<BuildingClassVo>> getAllClass();
+    Wrapper<List<BuildingClassVo>> getAllClass(Long masterId);
 
     Wrapper<List<BuildingClassVo>> getAllClassInfo(Long classId);
 
@@ -30,37 +34,39 @@ public interface BuildingService extends IService<BuildingNo> {
 
     Wrapper editBuilding(Long id, Long studentId);
 
-    Wrapper<List<BuildingTreeVo>> getBuildingTree();
+    Wrapper<List<BuildingTreeVo>> getBuildingTree(Long masterId);
 
     Wrapper deleteBuilding(Integer type, Long id);
 
-    Wrapper<List<BuildingManagerVo>> managerList(Long id);
+    Wrapper<PageInfo<BuildingManagerVo>> managerList(Long id, BaseQueryDto baseQueryDto);
 
-    Wrapper<List<BuildingStudentListVo>> searchList(String context);
+    Wrapper searchList(Long masterId,Integer type,String context);
 
-    Wrapper saveBuildingLevel(Long buildingNoId, Integer level);
+    Wrapper saveBuildingLevel(Long buildingNoId, Integer level,LoginAuthDto loginAuthDto);
 
-    Wrapper saveBuildingRoom(Long buildingLevelId, Integer buildingRoom);
+    Wrapper saveBuildingRoom(Long buildingLevelId, Integer buildingRoom,LoginAuthDto loginAuthDto);
 
-    Wrapper saveBuildingStudent(Long buildingRoomId, Long studentId, Long bedNo);
+    Wrapper saveBuildingStudent(BuildingStudentDto buildingStudentDto);
 
-    Wrapper<List<BuildingStudentListVo>> studentList(Long id);
+    Wrapper<PageInfo<BuildingStudentListVo>> levelStudentList(Long id, BaseQueryDto baseQueryDto);
 
-    Wrapper<Map<Long, String>> getBuildingTeachers();
+    Wrapper<PageInfo<BuildingStudentListVo>> roomStudentList(Long id,BaseQueryDto baseQueryDto);
 
-    Wrapper<BuildingTeacherVo> getBuildingTeacher(Long buildingNoId);
+    Wrapper<Map<Long, String>> getBuildingTeachers(Long masterId);
 
-    Wrapper setBuildingTeacher(Long buildingNoId, List<Long> levels, Long teacherId);
+    Wrapper<BuildingTeacherVo> getBuildingTeacher(Long levelId);
 
-    Wrapper deleteBuildingManger(Long id, Long levelId);
+    Wrapper setBuildingTeacher(Long levelId, Long teacherId);
+
+    Wrapper deleteBuildingManger( Long levelId);
 
     Boolean checkBuildingBedIsFull(String buildingBed,String buildingLevel,String buildingRoom,String buildingNo );
 
-    Wrapper saveBuildingBed(Long buildingRoomId, Integer buildingBed);
-
+    Wrapper saveBuildingBed(Long buildingRoomId, Integer buildingBed,LoginAuthDto loginAuthDto);
     Long getBuildingNoId(String buildingNo);
     Long getBuildingLevelId(Long noId, String buildingLevel);
     Long getBuildingRoomId(Long levelId,String buildingRoom);
+
     Long getBuildingBedId(Long roomId,String buildingBed);
 
 

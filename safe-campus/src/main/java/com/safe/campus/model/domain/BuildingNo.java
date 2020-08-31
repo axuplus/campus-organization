@@ -22,13 +22,16 @@ import java.util.Date;
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
-@ApiModel(value="BuildingNo对象", description="楼幢表")
+@ApiModel(value = "BuildingNo对象", description = "楼幢表")
 public class BuildingNo implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
     @ApiModelProperty(value = "主键ID")
     private Long id;
+
+    @ApiModelProperty(value = "学校ID")
+    private Long masterId;
 
     @ApiModelProperty(value = "楼幢信息")
     private String buildingNo;
@@ -43,7 +46,7 @@ public class BuildingNo implements Serializable {
     private Long createUser;
 
     @ApiModelProperty(value = "创建时间")
-    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone="GMT+8")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date createTime;
 
 

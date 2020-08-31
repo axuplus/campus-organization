@@ -295,9 +295,9 @@ public class SchoolClassServiceImpl extends ServiceImpl<SchoolClassMapper, Schoo
     }
 
     @Override
-    public List<SchoolClass> getAllClass() {
+    public List<SchoolClass> getAllClass(Long masterId) {
         QueryWrapper<SchoolClass> wrapper = new QueryWrapper<>();
-        wrapper.eq("is_delete", 0);
+        wrapper.eq("is_delete", 0).eq("master_id",masterId);
         return schoolClassMapper.selectList(wrapper);
     }
 

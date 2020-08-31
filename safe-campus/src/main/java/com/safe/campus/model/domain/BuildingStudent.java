@@ -12,6 +12,12 @@ public class BuildingStudent {
     @ApiModelProperty(value = "主键Id")
     private Long id;
 
+    @ApiModelProperty(value = "楼幢ID")
+    private Long noId;
+
+    @ApiModelProperty(value = "房间ID")
+    private Long levelId;
+
     @ApiModelProperty(value = "房间ID")
     private Long roomId;
 

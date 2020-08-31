@@ -46,7 +46,7 @@ public interface SchoolTeacherService extends IService<SchoolTeacher> {
 
     List<SchoolTeacher> getTeachersToClass(Long masterId);
 
-    List<SchoolTeacher> getBuildingTeachers();
+    List<SchoolTeacher> getBuildingTeachers(Long masterId);
 
     Wrapper listRoles(LoginAuthDto loginAuthDto);
 
@@ -55,4 +55,7 @@ public interface SchoolTeacherService extends IService<SchoolTeacher> {
     Wrapper importTeacherPictureConcentrator(MultipartFile file, LoginAuthDto loginAuthDto);
 
     Wrapper active(LoginAuthDto loginAuthDto, Long id, Long masterId,Integer state);
+
+    List<SchoolTeacher> searchTeachersByName(String context,Long masterId);
+
 }

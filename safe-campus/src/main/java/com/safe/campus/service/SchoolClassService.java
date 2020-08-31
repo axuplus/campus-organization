@@ -29,7 +29,7 @@ public interface SchoolClassService extends IService<SchoolClass> {
 
     Wrapper nodeTreeSchoolClass(Long masterId);
 
-    List<SchoolClass> getAllClass();
+    List<SchoolClass> getAllClass(Long masterId);
 
     List<SchoolClassInfo> getAllClassInfo(Long classId);
 

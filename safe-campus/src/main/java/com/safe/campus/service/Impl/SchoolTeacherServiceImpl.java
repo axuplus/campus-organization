@@ -426,9 +426,9 @@ public class SchoolTeacherServiceImpl extends ServiceImpl<SchoolTeacherMapper, S
     }
 
     @Override
-    public List<SchoolTeacher> getBuildingTeachers() {
+    public List<SchoolTeacher> getBuildingTeachers(Long masterId) {
         QueryWrapper<SchoolTeacher> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("type", 2);
+        queryWrapper.eq("master_id", masterId);
         return teacherMapper.selectList(queryWrapper);
     }
 
@@ -573,6 +573,13 @@ public class SchoolTeacherServiceImpl extends ServiceImpl<SchoolTeacherMapper, S
             }
         }
         return WrapMapper.error("参数不正确");
+    }
+
+    @Override
+    public List<SchoolTeacher> searchTeachersByName(String context, Long masterId) {
+        QueryWrapper<SchoolTeacher> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("master_id",masterId).like("t_name",context);
+        return teacherMapper.selectList(queryWrapper);
     }
 }
 

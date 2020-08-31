@@ -21,5 +21,6 @@ public class BuildingStudentListVo {
     private String classInfo;
     @ApiModelProperty(value = "学生号")
     private String sNumber;
-
+    @ApiModelProperty(value = "有无学生 1有人 0无人")
+    private Integer state;
 }
