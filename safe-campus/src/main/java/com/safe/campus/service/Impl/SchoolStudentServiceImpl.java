@@ -3,24 +3,26 @@ package com.safe.campus.service.Impl;
 import com.alibaba.excel.support.ExcelTypeEnum;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.github.pagehelper.Page;
+import com.github.pagehelper.PageHelper;
 import com.safe.campus.about.dto.LoginAuthDto;
 import com.safe.campus.about.exception.BizException;
 import com.safe.campus.about.utils.EasyExcelUtil;
 import com.safe.campus.about.utils.FileUtils;
 import com.safe.campus.about.utils.PathUtils;
 import com.safe.campus.about.utils.service.GobalInterface;
+import com.safe.campus.about.utils.wrapper.*;
 import com.safe.campus.enums.ErrorCodeEnum;
 import com.safe.campus.mapper.*;
 import com.safe.campus.model.domain.*;
 import com.safe.campus.model.dto.SchoolStudentDto;
 import com.safe.campus.model.dto.StudentExcelDto;
+import com.safe.campus.model.vo.SchoolStudentListVo;
 import com.safe.campus.model.vo.SchoolStudentVo;
 import com.safe.campus.model.vo.SysFileVo;
 import com.safe.campus.service.BuildingService;
 import com.safe.campus.service.SchoolStudentService;
 import com.safe.campus.about.utils.PublicUtil;
-import com.safe.campus.about.utils.wrapper.WrapMapper;
-import com.safe.campus.about.utils.wrapper.Wrapper;
 import com.safe.campus.service.SysFileService;
 import org.apache.http.entity.ContentType;
 import org.modelmapper.ModelMapper;
@@ -82,21 +84,27 @@ public class SchoolStudentServiceImpl extends ServiceImpl<SchoolStudentMapper, S
 
 
     @Override
-    public Wrapper saveStudent(SchoolStudentDto dto) {
+    public Wrapper saveStudent(SchoolStudentDto dto, LoginAuthDto loginAuthDto) {
         if (PublicUtil.isNotEmpty(dto)) {
             SchoolStudent map = new ModelMapper().map(dto, SchoolStudent.class);
             map.setId(gobalInterface.generateId());
+            map.setJoinTime(dto.getJoinTime());
             map.setCreatedTime(new Date());
             map.setIsDelete(0);
+            map.setCreatedUser(loginAuthDto.getUserId());
             studentMapper.insert(map);
-            BuildingStudent buildingStudent = new BuildingStudent();
-            buildingStudent.setId(gobalInterface.generateId());
-            buildingStudent.setIsDelete(0);
-            buildingStudent.setBedId(dto.getBuildingBedNoId());
-            buildingStudent.setRoomId(dto.getBuildingRoomId());
-            buildingStudent.setStudentId(map.getId());
-            buildingStudent.setCreateTime(new Date());
-            buildingStudentMapper.insert(buildingStudent);
+            if (0 != dto.getBuildingBedNoId() && null != dto.getBuildingBedNoId()) {
+                BuildingStudent buildingStudent = new BuildingStudent();
+                buildingStudent.setId(gobalInterface.generateId());
+                buildingStudent.setIsDelete(0);
+                buildingStudent.setNoId(dto.getBuildingNoId());
+                buildingStudent.setLevelId(dto.getBuildingLevelId());
+                buildingStudent.setBedId(dto.getBuildingBedNoId());
+                buildingStudent.setRoomId(dto.getBuildingRoomId());
+                buildingStudent.setStudentId(map.getId());
+                buildingStudent.setCreateTime(new Date());
+                buildingStudentMapper.insert(buildingStudent);
+            }
             return WrapMapper.ok("保存成功");
         }
         return null;
@@ -115,9 +123,11 @@ public class SchoolStudentServiceImpl extends ServiceImpl<SchoolStudentMapper, S
                 }
                 if (1 == byId.getType()) {
                     map.setType("住校生");
+                    map.setLivingInfo(buildingService.getLivingInfoByStudentId(map.getId()));
                 } else {
                     map.setType("同校生");
                 }
+                map.setImgId(sysFileService.getFileById(byId.getImgId()).getFileUrl());
                 return WrapMapper.ok(map);
             }
         }
@@ -141,30 +151,43 @@ public class SchoolStudentServiceImpl extends ServiceImpl<SchoolStudentMapper, S
     }
 
     @Override
-    public Wrapper searchStudent(String context) {
+    public PageWrapper<List<SchoolStudentListVo>> searchStudent(Long masterId, String context, BaseQueryDto baseQueryDto) {
         if (null != context) {
             QueryWrapper<SchoolStudent> queryWrapper = new QueryWrapper<>();
-            queryWrapper.like("s_name", context);
+            queryWrapper.eq("master_id",masterId).like("s_name", context);
+            Page page = PageHelper.startPage(baseQueryDto.getPageNum(), baseQueryDto.getPageSize());
             List<SchoolStudent> students = studentMapper.selectList(queryWrapper);
+            Long total = page.getTotal();
             if (PublicUtil.isNotEmpty(students)) {
-                List<SchoolStudentVo> vos = new ArrayList<>();
+                List<SchoolStudentListVo> vos = new ArrayList<>();
                 students.forEach(s -> {
-                    SchoolStudentVo map = new ModelMapper().map(s, SchoolStudentVo.class);
+                    SchoolStudentListVo listVo = new SchoolStudentListVo();
+                    listVo.setId(s.getId());
+                    listVo.setIdNumber(s.getIdNumber());
+                    listVo.setSNumber(s.getSNumber());
+                    if (null != s.getClassId()) {
+                        listVo.setClassName(s.getClassName());
+                    }
+                    if (null != s.getClassInfoName()) {
+                        listVo.setClassInfoName(s.getClassInfoName());
+                    }
                     if (1 == s.getSex()) {
-                        map.setSex("男");
+                        listVo.setSex("男");
                     } else {
-                        map.setSex("女");
+                        listVo.setSex("女");
                     }
-                    if (1 == s.getType()) {
-                        map.setType("住校生");
-                    } else {
-                        map.setType("同校生");
+                    if (null != s.getType()) {
+                        if (1 == s.getType()) {
+                            listVo.setType("住校生");
+                        } else {
+                            listVo.setType("同校生");
+                        }
                     }
-                    vos.add(map);
+                    vos.add(listVo);
                 });
-                return WrapMapper.ok(vos);
+                return PageWrapMapper.wrap(vos, new PageUtil(total.intValue(), baseQueryDto.getPageNum(), baseQueryDto.getPageSize()));
             }
-            return WrapMapper.error("暂无数据");
+            return PageWrapMapper.wrap(200, "暂无数据");
         }
         return null;
     }
@@ -327,6 +350,47 @@ public class SchoolStudentServiceImpl extends ServiceImpl<SchoolStudentMapper, S
             }
         } else {
             return WrapMapper.error("暂时只支持zip压缩包");
+        }
+        return null;
+    }
+
+    @Override
+    public PageWrapper<List<SchoolStudentListVo>> listStudent(Long masterId, Long classId, BaseQueryDto baseQueryDto) {
+        if (null != masterId && null != classId) {
+            QueryWrapper<SchoolStudent> queryWrapper = new QueryWrapper<>();
+            queryWrapper.eq("master_id",masterId).eq("class_id",classId);
+            Page page = PageHelper.startPage(baseQueryDto.getPageNum(), baseQueryDto.getPageSize());
+            List<SchoolStudent> students = studentMapper.selectList(queryWrapper);
+            Long total = page.getTotal();
+            if (PublicUtil.isNotEmpty(students)) {
+                List<SchoolStudentListVo> vos = new ArrayList<>();
+                students.forEach(s -> {
+                    SchoolStudentListVo listVo = new SchoolStudentListVo();
+                    listVo.setId(s.getId());
+                    listVo.setIdNumber(s.getIdNumber());
+                    listVo.setSNumber(s.getSNumber());
+                    if (null != s.getClassId()) {
+                        listVo.setClassName(s.getClassName());
+                    }
+                    if (null != s.getClassInfoName()) {
+                        listVo.setClassInfoName(s.getClassInfoName());
+                    }
+                    if (1 == s.getSex()) {
+                        listVo.setSex("男");
+                    } else {
+                        listVo.setSex("女");
+                    }
+                    if (null != s.getType()) {
+                        if (1 == s.getType()) {
+                            listVo.setType("住校生");
+                        } else {
+                            listVo.setType("同校生");
+                        }
+                    }
+                    vos.add(listVo);
+                });
+                return PageWrapMapper.wrap(vos, new PageUtil(total.intValue(), baseQueryDto.getPageNum(), baseQueryDto.getPageSize()));
+            }
         }
         return null;
     }

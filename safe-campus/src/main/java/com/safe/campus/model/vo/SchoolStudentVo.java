@@ -1,5 +1,6 @@
 package com.safe.campus.model.vo;
 
+import com.safe.campus.model.dto.BuildingBedDto;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -19,7 +20,7 @@ public class SchoolStudentVo {
     @ApiModelProperty(value = "1：住校生 2：同校生")
     private String type;
     @ApiModelProperty(value = "图片ID")
-    private Long imgId;
+    private String imgId;
     @ApiModelProperty(value = "年级ID")
     private Long classId;
     @ApiModelProperty(value = "年级")
@@ -28,4 +29,6 @@ public class SchoolStudentVo {
     private Long classInfoId;
     @ApiModelProperty(value = "班级")
     private String classInfoName;
+    @ApiModelProperty(value = "住宿信息")
+    private BuildingBedDto livingInfo;
 }

@@ -6,6 +6,7 @@ import com.safe.campus.about.dto.LoginAuthDto;
 import com.safe.campus.about.utils.wrapper.BaseQueryDto;
 import com.safe.campus.about.utils.wrapper.PageWrapper;
 import com.safe.campus.model.domain.BuildingNo;
+import com.safe.campus.model.dto.BuildingBedDto;
 import com.safe.campus.model.dto.BuildingStudentDto;
 import com.safe.campus.model.vo.*;
 import com.safe.campus.about.utils.wrapper.Wrapper;
@@ -71,4 +72,5 @@ public interface BuildingService extends IService<BuildingNo> {
     Long getBuildingBedId(Long roomId,String buildingBed);
 
 
+    BuildingBedDto getLivingInfoByStudentId(Long id);
 }

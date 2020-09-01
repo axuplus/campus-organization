@@ -1,9 +1,14 @@
 package com.safe.campus.controller;
 
 
+import com.safe.campus.about.annotation.Permission;
+import com.safe.campus.about.annotation.PermissionType;
 import com.safe.campus.about.controller.BaseController;
 import com.safe.campus.about.dto.LoginAuthDto;
+import com.safe.campus.about.utils.wrapper.BaseQueryDto;
+import com.safe.campus.about.utils.wrapper.PageWrapper;
 import com.safe.campus.model.dto.SchoolStudentDto;
+import com.safe.campus.model.vo.SchoolStudentListVo;
 import com.safe.campus.service.SchoolStudentService;
 import com.safe.campus.about.utils.wrapper.Wrapper;
 import io.swagger.annotations.Api;
@@ -14,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 
 /**
  * <p>
@@ -27,15 +33,19 @@ import javax.servlet.http.HttpServletRequest;
 @Api(value = "学生管理", tags = {"学生管理"})
 public class SchoolStudentController extends BaseController {
 
+    private final static String qxurl = "/campus/school/student";
+
+
 
     @Autowired
     private SchoolStudentService schoolStudentService;
 
 
+    @Permission(url = qxurl,type = PermissionType.ADD)
     @ApiOperation("添加学生")
     @PostMapping("/save")
     public Wrapper saveStudent(@RequestBody SchoolStudentDto dto){
-        return schoolStudentService.saveStudent(dto);
+        return schoolStudentService.saveStudent(dto,getLoginAuthDto());
     }
 
     @ApiOperation("获取学生")
@@ -44,22 +54,32 @@ public class SchoolStudentController extends BaseController {
         return schoolStudentService.getStudent(id);
     }
 
+    @Permission(url = qxurl,type = PermissionType.EDIT)
     @ApiOperation("修改学生")
     @PutMapping("/edit")
     public Wrapper editStudent(@RequestBody SchoolStudentDto dto){
         return schoolStudentService.editStudent(dto);
     }
 
+    @Permission(url = qxurl,type = PermissionType.DEL)
     @ApiOperation("删除学生")
     @DeleteMapping("/delete/{id}")
     public Wrapper deleteStudent(@PathVariable("id")Long id){
         return schoolStudentService.deleteStudent(id);
     }
 
+    @Permission(url = qxurl,type = PermissionType.QUERY)
     @ApiOperation("搜索学生")
     @GetMapping("/search")
-    public Wrapper searchStudent(@RequestParam("context")String context){
-        return schoolStudentService.searchStudent(context);
+    public PageWrapper<List<SchoolStudentListVo>> searchStudent(@RequestParam("masterId")Long masterId, @RequestParam("context")String context, BaseQueryDto baseQueryDto){
+        return schoolStudentService.searchStudent(masterId,context,baseQueryDto);
+    }
+
+    @Permission(url = qxurl,type = PermissionType.QUERY)
+    @ApiOperation("学生列表")
+    @GetMapping("/list")
+    public PageWrapper<List<SchoolStudentListVo>> listStudent(@RequestParam("masterId")Long masterId,@RequestParam("classId")Long classId,BaseQueryDto baseQueryDto){
+        return schoolStudentService.listStudent(masterId,classId,baseQueryDto);
     }
 
     @PostMapping("/import/student")

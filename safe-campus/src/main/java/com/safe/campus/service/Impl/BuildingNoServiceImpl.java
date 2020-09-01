@@ -11,6 +11,7 @@ import com.safe.campus.about.utils.wrapper.*;
 import com.safe.campus.enums.ErrorCodeEnum;
 import com.safe.campus.mapper.*;
 import com.safe.campus.model.domain.*;
+import com.safe.campus.model.dto.BuildingBedDto;
 import com.safe.campus.model.dto.BuildingStudentDto;
 import com.safe.campus.model.vo.*;
 import com.safe.campus.service.BuildingService;
@@ -540,6 +541,13 @@ public class BuildingNoServiceImpl extends ServiceImpl<BuildingNoMapper, Buildin
             throw new BizException(ErrorCodeEnum.PUB10000031);
         }
         return bed.getId();
+    }
+
+    @Override
+    public BuildingBedDto getLivingInfoByStudentId(Long id) {
+        BuildingStudent buildingStudent = buildingStudentMapper.selectOne(new QueryWrapper<BuildingStudent>().eq("student_id", id));
+        return bedMapper.getLivingInfo(buildingStudent.getBedId());
+
     }
 
     @Override

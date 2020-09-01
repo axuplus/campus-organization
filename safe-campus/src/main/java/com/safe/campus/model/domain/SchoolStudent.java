@@ -30,6 +30,9 @@ public class SchoolStudent implements Serializable {
     @ApiModelProperty(value = "主键ID")
     private Long id;
 
+    @ApiModelProperty(value = "masterId")
+    private Long masterId;
+
     @ApiModelProperty(value = "学生姓名")
     private String sName;
 

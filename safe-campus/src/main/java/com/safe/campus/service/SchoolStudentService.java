@@ -2,9 +2,12 @@ package com.safe.campus.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.safe.campus.about.dto.LoginAuthDto;
+import com.safe.campus.about.utils.wrapper.BaseQueryDto;
+import com.safe.campus.about.utils.wrapper.PageWrapper;
 import com.safe.campus.model.domain.SchoolStudent;
 import com.safe.campus.model.dto.SchoolStudentDto;
 import com.safe.campus.about.utils.wrapper.Wrapper;
+import com.safe.campus.model.vo.SchoolStudentListVo;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
@@ -19,7 +22,7 @@ import java.util.List;
  */
 public interface SchoolStudentService extends IService<SchoolStudent> {
 
-    Wrapper saveStudent(SchoolStudentDto dto);
+    Wrapper saveStudent(SchoolStudentDto dto,LoginAuthDto loginAuthDto);
 
     Wrapper getStudent(Long id);
 
@@ -27,7 +30,7 @@ public interface SchoolStudentService extends IService<SchoolStudent> {
 
     Wrapper deleteStudent(Long id);
 
-    Wrapper searchStudent(String context);
+    PageWrapper<List<SchoolStudentListVo>> searchStudent(Long masterId, String context, BaseQueryDto baseQueryDto);
 
     Wrapper importSchoolConcentrator(MultipartFile file,  LoginAuthDto loginAuthDto);
 
@@ -38,4 +41,7 @@ public interface SchoolStudentService extends IService<SchoolStudent> {
     List<SchoolStudent> getAllIdsByName(String context);
 
     Wrapper importStudentPictureConcentrator(MultipartFile file, LoginAuthDto loginAuthDto);
+
+    PageWrapper<List<SchoolStudentListVo>> listStudent(Long masterId, Long classId, BaseQueryDto baseQueryDto);
+
 }
