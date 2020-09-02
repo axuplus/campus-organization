@@ -2,8 +2,13 @@ package com.safe.campus.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.safe.campus.about.dto.LoginAuthDto;
+import com.safe.campus.about.utils.wrapper.BaseQueryDto;
+import com.safe.campus.about.utils.wrapper.PageWrapper;
 import com.safe.campus.about.utils.wrapper.Wrapper;
 import com.safe.campus.model.domain.SysAdmin;
+import com.safe.campus.model.vo.AdminUserVo;
+
+import java.util.List;
 
 /**
  * <p>
@@ -15,7 +20,7 @@ import com.safe.campus.model.domain.SysAdmin;
  */
 public interface SysAdminService extends IService<SysAdmin> {
 
-    Wrapper saveAdminUser(String userName, String password, LoginAuthDto loginAuthDto);
+    Wrapper saveAdminUser(String userName, String password,Long matserId, LoginAuthDto loginAuthDto);
 
     boolean havePermission(Long userId,String url,String type);
 
@@ -25,6 +30,6 @@ public interface SysAdminService extends IService<SysAdmin> {
 
     Wrapper getAdminUser(Long userId, LoginAuthDto loginAuthDto);
 
-    Wrapper listAdminUser(LoginAuthDto loginAuthDto);
+    PageWrapper<List<AdminUserVo>> listAdminUser(Long masterId, LoginAuthDto loginAuthDto, BaseQueryDto baseQueryDto);
 
 }

@@ -2,8 +2,13 @@ package com.safe.campus.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.safe.campus.about.dto.LoginAuthDto;
+import com.safe.campus.about.utils.wrapper.BaseQueryDto;
+import com.safe.campus.about.utils.wrapper.PageWrapper;
 import com.safe.campus.about.utils.wrapper.Wrapper;
 import com.safe.campus.model.domain.SysRole;
+import com.safe.campus.model.vo.SysRoleVo;
+
+import java.util.List;
 
 /**
  * <p>
@@ -15,7 +20,7 @@ import com.safe.campus.model.domain.SysRole;
  */
 public interface SysRoleService extends IService<SysRole> {
 
-    Wrapper saveRole(String roleName, String description, LoginAuthDto loginAuthDto);
+    Wrapper saveRole(Long masterId,String roleName, String description, LoginAuthDto loginAuthDto);
 
     Wrapper deleteRole(Long id, LoginAuthDto loginAuthDto);
 
@@ -23,8 +28,7 @@ public interface SysRoleService extends IService<SysRole> {
 
     Wrapper getRole(Long id, LoginAuthDto loginAuthDto);
 
-    Wrapper listRole(LoginAuthDto loginAuthDto);
+    PageWrapper<List<SysRoleVo>> listRole(Long masterId, BaseQueryDto baseQueryDto, LoginAuthDto loginAuthDto);
 
     Wrapper setRole(Long id, Integer state, LoginAuthDto loginAuthDto);
-
 }

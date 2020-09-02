@@ -3,12 +3,13 @@ package com.safe.campus.service.Impl;
 import com.alibaba.druid.sql.visitor.functions.If;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.github.pagehelper.Page;
+import com.github.pagehelper.PageHelper;
 import com.safe.campus.about.dto.LoginAuthDto;
 import com.safe.campus.about.utils.Md5Utils;
 import com.safe.campus.about.utils.PublicUtil;
 import com.safe.campus.about.utils.service.GobalInterface;
-import com.safe.campus.about.utils.wrapper.WrapMapper;
-import com.safe.campus.about.utils.wrapper.Wrapper;
+import com.safe.campus.about.utils.wrapper.*;
 import com.safe.campus.mapper.SysAdminUserMapper;
 import com.safe.campus.mapper.SysMenuMapper;
 import com.safe.campus.mapper.SysUserRoleMapper;
@@ -48,11 +49,12 @@ public class SysAdminServiceImpl extends ServiceImpl<SysAdminUserMapper, SysAdmi
     private SysMenuMapper menuMapper;
 
     @Override
-    public Wrapper saveAdminUser(String userName, String password, LoginAuthDto loginAuthDto) {
+    public Wrapper saveAdminUser(String userName, String password,Long masterId, LoginAuthDto loginAuthDto) {
         if (null != userName && 0 != userName.length() && null != password && 0 != password.length()) {
             SysAdmin sysAdmin = adminUserMapper.selectById(loginAuthDto.getUserId());
             SysAdmin admin = new SysAdmin();
             admin.setId(gobalInterface.generateId());
+            admin.setMasterId(masterId);
             admin.setState(0);
             admin.setCreateTime(new Date());
             admin.setPassword(Md5Utils.md5Str(password));
@@ -141,10 +143,12 @@ public class SysAdminServiceImpl extends ServiceImpl<SysAdminUserMapper, SysAdmi
     }
 
     @Override
-    public Wrapper listAdminUser(LoginAuthDto loginAuthDto) {
-        List<Long> ids = adminUserMapper.getAdminUsers(loginAuthDto.getUserId());
-        ids.add(loginAuthDto.getUserId());
-        List<SysAdmin> sysAdmins = adminUserMapper.selectBatchIds(ids);
+    public PageWrapper<List<AdminUserVo>> listAdminUser(Long masterId, LoginAuthDto loginAuthDto, BaseQueryDto baseQueryDto) {
+        QueryWrapper<SysAdmin> adminQueryWrapper = new QueryWrapper<>();
+        adminQueryWrapper.eq("master_id",masterId);
+        Page page = PageHelper.startPage(baseQueryDto.getPageNum(), baseQueryDto.getPageSize());
+        List<SysAdmin> sysAdmins = adminUserMapper.selectList(adminQueryWrapper);
+        Long total = page.getTotal();
         if (PublicUtil.isNotEmpty(sysAdmins)) {
             List<AdminUserVo> vos = new ArrayList<>();
             sysAdmins.forEach(a -> {
@@ -152,8 +156,8 @@ public class SysAdminServiceImpl extends ServiceImpl<SysAdminUserMapper, SysAdmi
                 map.setParentName(adminUserMapper.selectById(a.getCreateUser()).getUserName());
                 vos.add(map);
             });
-            return WrapMapper.ok(vos);
+            return PageWrapMapper.wrap(vos, new PageUtil(total.intValue(), baseQueryDto.getPageNum(), baseQueryDto.getPageSize()));
         }
-        return null;
+        return PageWrapMapper.wrap(200,"暂无数据");
     }
 }

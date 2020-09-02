@@ -5,14 +5,19 @@ import com.safe.campus.about.annotation.Permission;
 import com.safe.campus.about.annotation.PermissionType;
 import com.safe.campus.about.controller.BaseController;
 import com.safe.campus.about.dto.LoginAuthDto;
+import com.safe.campus.about.utils.wrapper.BaseQueryDto;
+import com.safe.campus.about.utils.wrapper.PageWrapper;
 import com.safe.campus.about.utils.wrapper.WrapMapper;
 import com.safe.campus.about.utils.wrapper.Wrapper;
+import com.safe.campus.model.vo.AdminUserVo;
 import com.safe.campus.service.SysAdminService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 /**
  * <p>
@@ -36,8 +41,10 @@ public class SysAdminController extends BaseController {
     @PostMapping("/saveUser")
     @Permission(url = qxurl, type = PermissionType.ADD)
     @ApiOperation("添加用户")
-    public Wrapper saveAdminUser(@RequestParam("userName") String userName, @RequestParam("password") String password) {
-        return adminService.saveAdminUser(userName, password, getLoginAuthDto());
+    public Wrapper saveAdminUser(@RequestParam("userName") String userName,
+                                 @RequestParam("password") String password,
+                                 @RequestParam("masterId") Long masterId) {
+        return adminService.saveAdminUser(userName, password, masterId, getLoginAuthDto());
     }
 
     @DeleteMapping("/delUser")
@@ -65,8 +72,8 @@ public class SysAdminController extends BaseController {
     @GetMapping("/listUser")
     @Permission(url = qxurl, type = PermissionType.QUERY)
     @ApiOperation("用户列表")
-    public Wrapper listAdminUser() {
-        return adminService.listAdminUser(getLoginAuthDto());
+    public PageWrapper<List<AdminUserVo>> listAdminUser(@RequestParam("masterId") Long masterId, BaseQueryDto baseQueryDto) {
+        return adminService.listAdminUser(masterId, getLoginAuthDto(), baseQueryDto);
     }
 
 }
