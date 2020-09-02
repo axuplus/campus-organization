@@ -3,6 +3,7 @@ package com.safe.campus.model.dto;
 import com.alibaba.excel.annotation.ExcelProperty;
 import com.alibaba.excel.metadata.BaseRowModel;
 import lombok.Data;
+import org.springframework.format.annotation.DateTimeFormat;
 
 @Data
 public class TeacherExcelDto extends BaseRowModel {
@@ -10,7 +11,7 @@ public class TeacherExcelDto extends BaseRowModel {
     @ExcelProperty(value = "姓名",index = 0)
     private String name;
     @ExcelProperty(value = "工号",index = 1)
-    private String tNumber;
+    private String teacherNumber;
     @ExcelProperty(value = "性别",index = 2)
     private String sex;
     @ExcelProperty(value = "身份证号",index = 3)
@@ -23,8 +24,6 @@ public class TeacherExcelDto extends BaseRowModel {
     private String sectionName;
     @ExcelProperty(value = "职务",index = 7)
     private String positionName;
-    @ExcelProperty(value = "角色",index = 8)
-    private String roleName;
-    @ExcelProperty(value = "状态",index = 9)
+    @ExcelProperty(value = "状态",index = 8)
     private String shape;
 }

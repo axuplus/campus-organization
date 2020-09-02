@@ -15,6 +15,7 @@ import com.safe.campus.about.utils.wrapper.*;
 import com.safe.campus.enums.ErrorCodeEnum;
 import com.safe.campus.mapper.*;
 import com.safe.campus.model.domain.*;
+import com.safe.campus.model.dto.BuildingNoMapperDto;
 import com.safe.campus.model.dto.SchoolStudentDto;
 import com.safe.campus.model.dto.StudentExcelDto;
 import com.safe.campus.model.vo.SchoolStudentListVo;
@@ -38,10 +39,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.Enumeration;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
@@ -154,7 +153,7 @@ public class SchoolStudentServiceImpl extends ServiceImpl<SchoolStudentMapper, S
     public PageWrapper<List<SchoolStudentListVo>> searchStudent(Long masterId, String context, BaseQueryDto baseQueryDto) {
         if (null != context) {
             QueryWrapper<SchoolStudent> queryWrapper = new QueryWrapper<>();
-            queryWrapper.eq("master_id",masterId).like("s_name", context);
+            queryWrapper.eq("master_id", masterId).like("s_name", context);
             Page page = PageHelper.startPage(baseQueryDto.getPageNum(), baseQueryDto.getPageSize());
             List<SchoolStudent> students = studentMapper.selectList(queryWrapper);
             Long total = page.getTotal();
@@ -193,7 +192,7 @@ public class SchoolStudentServiceImpl extends ServiceImpl<SchoolStudentMapper, S
     }
 
     @Override
-    public Wrapper importSchoolConcentrator(MultipartFile file, LoginAuthDto loginAuthDto) {
+    public Wrapper importSchoolConcentrator(Long masterId, MultipartFile file, LoginAuthDto loginAuthDto) {
         if (file.isEmpty()) {
             logger.info("上传文件为空");
             throw new BizException(ErrorCodeEnum.PUB10000006);
@@ -210,67 +209,82 @@ public class SchoolStudentServiceImpl extends ServiceImpl<SchoolStudentMapper, S
             logger.info("Excel导入失败", e);
         }
         logger.info("Excel {}", list);
-
         if (PublicUtil.isNotEmpty(list)) {
+            QueryWrapper<SchoolStudent> studentQueryWrapper = new QueryWrapper<>();
+            studentQueryWrapper.eq("master_id", masterId);
+            List<SchoolStudent> students = studentMapper.selectList(studentQueryWrapper);
+            Map<String, Long> maps = students.stream().collect(Collectors.toMap(SchoolStudent::getIdNumber, SchoolStudent::getId));
             list.forEach(s -> {
                 SchoolStudent student = new SchoolStudent();
-                student.setId(gobalInterface.generateId());
-                student.setIsDelete(0);
-                if (null != s.getSNumber()) {
-                    student.setSNumber(s.getSNumber());
+                Long id = maps.get(s.getIdNumber());
+                // 更新
+                if (null != id) {
+                    student = studentMapper.selectById(id);
+                    // 新增
+                } else {
+                    student.setId(gobalInterface.generateId());
+                    student.setMasterId(masterId);
+                    student.setIdNumber(checkIdNumber(s.getIdNumber()));
+                    student.setSName(s.getName());
+                    student.setCreatedTime(new Date());
+                    student.setCreatedUser(loginAuthDto.getUserId());
+                    student.setIsDelete(0);
                 }
-                student.setSName(s.getName());
-                student.setCreatedTime(new Date());
-                student.setCreatedUser(loginAuthDto.getUserId());
+                if (null != s.getStudentNumber()) {
+                    student.setSNumber(s.getStudentNumber());
+                }
                 if (null != s.getStart()) {
-                    student.setJoinTime(s.getStart());
+                    String time = EasyExcelUtil.formatExcelDate(Integer.valueOf(s.getStart()));
+                    student.setJoinTime(time);
                 }
                 if (null != s.getEnd()) {
-                    student.setEndTime(s.getEnd());
+                    String time = EasyExcelUtil.formatExcelDate(Integer.valueOf(s.getEnd()));
+                    student.setEndTime(time);
                 }
-                // 检查是否相同
-                checkIsSame(s.getIdNumber());
-                student.setIdNumber(s.getIdNumber());
                 // 检查性别
                 if (null != s.getSex()) {
                     student.setSex(checkSex(s.getSex()));
                 }
                 // 检查年级
-                student.setClassId(getThisStudentClass(s.getClassLevel()));
-                student.setClassName(s.getClassLevel());
-                // 检查班级
-                student.setClassInfoId(getThisStudentClassInfo(s.getClassInfo()));
-                student.setClassInfoName(s.getClassInfo());
-                if (1 == checkStudentType(s.getType())) {
-                    // 检查类型
-                    student.setType(checkStudentType(s.getType()));
-                    // 检查床位
-                    if (null != s.getBuildingBed() && null != s.getBuildingLevel() && null != s.getBuildingRoom() && null != s.getBuildingNo()) {
-                        checkBuildingInfo(s.getBuildingBed(), s.getBuildingLevel(), s.getBuildingRoom(), s.getBuildingNo());
-                    }
-                    // 这里固定死床位 因为学生是跟床位关联的 只有楼层或者宿舍没用 查不到 家长问题？？？
-                    BuildingStudent bu = new BuildingStudent();
-                    bu.setId(gobalInterface.generateId());
-                    bu.setCreateTime(new Date());
-                    bu.setIsDelete(0);
-                    bu.setStudentId(student.getId());
-                    // 全部检查确认是这幢楼下面的床位
-                    Long noId = buildingService.getBuildingNoId(s.getBuildingNo());
-                    Long levelId = buildingService.getBuildingLevelId(noId, s.getBuildingLevel());
-                    Long roomId = buildingService.getBuildingRoomId(levelId, s.getBuildingRoom());
-                    Long bedId = buildingService.getBuildingBedId(roomId, s.getBuildingBed());
-                    bu.setBedId(bedId);
-                    bu.setRoomId(roomId);
-                    buildingStudentMapper.insert(bu);
-                } else if (2 == checkStudentType(s.getType())) {
-                    // 检查类型
-                    student.setType(checkStudentType(s.getType()));
+                if (null != s.getClassLevel()) {
+                    student.setClassId(getThisStudentClass(s.getClassLevel(), masterId));
+                    student.setClassName(s.getClassLevel());
                 }
-                studentMapper.insert(student);
+                // 检查班级
+                if (null != s.getClassInfo()) {
+                    student.setClassInfoId(getThisStudentClassInfo(s.getClassInfo()));
+                    student.setClassInfoName(s.getClassInfo());
+                }
+                if(null != s.getType()) {
+                    if (1 == checkStudentType(s.getType())) {
+                        student.setType(1);
+                        // 检查床位
+                        if (null != s.getBuildingBed() && null != s.getBuildingLevel() && null != s.getBuildingRoom() && null != s.getBuildingNo()) {
+                            BuildingNoMapperDto buildingNoMapperDto = checkBuildingInfo(masterId, s.getBuildingNo(), s.getBuildingLevel(), s.getBuildingRoom(), s.getBuildingBed());
+                            if (PublicUtil.isEmpty(buildingNoMapperDto)) {
+                                throw new BizException(ErrorCodeEnum.PUB10000033);
+                            }
+                            if (checkThisBedHasTaken(buildingNoMapperDto)) {
+                                BuildingStudent bu = new BuildingStudent();
+                                bu.setId(gobalInterface.generateId());
+                                bu.setCreateTime(new Date());
+                                bu.setIsDelete(0);
+                                bu.setStudentId(student.getId());
+                                bu.setNoId(buildingNoMapperDto.getNoId());
+                                bu.setLevelId(buildingNoMapperDto.getLevelId());
+                                bu.setRoomId(buildingNoMapperDto.getRoomId());
+                                bu.setBedId(buildingNoMapperDto.getBedId());
+                                buildingStudentMapper.insert(bu);
+                            }
+                        }
+                    } else {
+                        student.setType(2);
+                    }
+                }
+                saveOrUpdate(student);
             });
         }
-
-        return null;
+        return WrapMapper.ok("导入成功");
     }
 
     @Override
@@ -294,7 +308,7 @@ public class SchoolStudentServiceImpl extends ServiceImpl<SchoolStudentMapper, S
     }
 
     @Override
-    public Wrapper importStudentPictureConcentrator(MultipartFile file, LoginAuthDto loginAuthDto) {
+    public Wrapper importStudentPictureConcentrator(Long masterId, MultipartFile file, LoginAuthDto loginAuthDto) {
         if (file.isEmpty()) {
             logger.info("上传文件为空");
             throw new BizException(ErrorCodeEnum.PUB10000006);
@@ -331,9 +345,9 @@ public class SchoolStudentServiceImpl extends ServiceImpl<SchoolStudentMapper, S
                         if ("".equals(name) || "".equals(idNumber)) {
                             throw new BizException(ErrorCodeEnum.PUB10000019);
                         }
-                        QueryWrapper<SchoolStudent> teacherQueryWrapper = new QueryWrapper<>();
-                        teacherQueryWrapper.eq("s_name", name).eq("id_number", idNumber);
-                        SchoolStudent student = studentMapper.selectOne(teacherQueryWrapper);
+                        QueryWrapper<SchoolStudent> studentQueryWrapper = new QueryWrapper<>();
+                        studentQueryWrapper.eq("s_name", name).eq("id_number", idNumber).eq("master_id",masterId);
+                        SchoolStudent student = studentMapper.selectOne(studentQueryWrapper);
                         if (PublicUtil.isEmpty(student)) {
                             throw new BizException(ErrorCodeEnum.PUB10000020);
                         }
@@ -351,14 +365,14 @@ public class SchoolStudentServiceImpl extends ServiceImpl<SchoolStudentMapper, S
         } else {
             return WrapMapper.error("暂时只支持zip压缩包");
         }
-        return null;
+        return WrapMapper.ok("导入成功");
     }
 
     @Override
     public PageWrapper<List<SchoolStudentListVo>> listStudent(Long masterId, Long classId, BaseQueryDto baseQueryDto) {
         if (null != masterId && null != classId) {
             QueryWrapper<SchoolStudent> queryWrapper = new QueryWrapper<>();
-            queryWrapper.eq("master_id",masterId).eq("class_id",classId);
+            queryWrapper.eq("master_id", masterId).eq("class_id", classId);
             Page page = PageHelper.startPage(baseQueryDto.getPageNum(), baseQueryDto.getPageSize());
             List<SchoolStudent> students = studentMapper.selectList(queryWrapper);
             Long total = page.getTotal();
@@ -396,16 +410,11 @@ public class SchoolStudentServiceImpl extends ServiceImpl<SchoolStudentMapper, S
     }
 
 
-    private void checkIsSame(String idNumber) {
+    private String checkIdNumber(String idNumber) {
         if (idNumber.length() != 18) {
             throw new BizException(ErrorCodeEnum.PUB10000022);
         }
-        QueryWrapper<SchoolStudent> studentQueryWrapper = new QueryWrapper<>();
-        studentQueryWrapper.eq("id_number", idNumber);
-        SchoolStudent student = studentMapper.selectOne(studentQueryWrapper);
-        if (PublicUtil.isNotEmpty(student)) {
-            throw new BizException(ErrorCodeEnum.PUB10000021);
-        }
+        return idNumber;
     }
 
     private Integer checkSex(String str) {
@@ -418,17 +427,14 @@ public class SchoolStudentServiceImpl extends ServiceImpl<SchoolStudentMapper, S
         }
     }
 
-    private void checkBuildingInfo(String buildingBed, String buildingLevel, String
-            buildingRoom, String buildingNo) {
-        Boolean check = buildingService.checkBuildingBedIsFull(buildingBed, buildingLevel, buildingRoom, buildingNo);
-        if (!check) {
-            throw new BizException(ErrorCodeEnum.PUB10000023);
-        }
+    private BuildingNoMapperDto checkBuildingInfo(Long masterId, String buildingNo, String buildingLevel, String
+            buildingRoom, String buildingBed) {
+        return buildingService.checkBuildingInfo(masterId, buildingNo, buildingLevel, buildingRoom, buildingBed);
     }
 
-    private Long getThisStudentClass(String classLevel) {
+    private Long getThisStudentClass(String classLevel, Long masterId) {
         QueryWrapper<SchoolClass> classQueryWrapper = new QueryWrapper<>();
-        classQueryWrapper.eq("class_name", classLevel);
+        classQueryWrapper.eq("class_name", classLevel).eq("master_id", masterId);
         SchoolClass schoolClass = classMapper.selectOne(classQueryWrapper);
         if (PublicUtil.isEmpty(schoolClass)) {
             throw new BizException(ErrorCodeEnum.PUB10000025);
@@ -447,13 +453,26 @@ public class SchoolStudentServiceImpl extends ServiceImpl<SchoolStudentMapper, S
     }
 
     private Integer checkStudentType(String type) {
+        System.out.println("type = " + type);
         if ("住校生".equals(type)) {
             return 1;
-        } else if ("同校生".equals(type)) {
+        } else if ("通校生".equals(type)) {
             return 2;
         }
         throw new BizException(ErrorCodeEnum.PUB10000024);
     }
 
+    private Boolean checkThisBedHasTaken(BuildingNoMapperDto buildingNoMapperDto) {
+        QueryWrapper<BuildingStudent> studentQueryWrapper = new QueryWrapper<>();
+        studentQueryWrapper.eq("no_id", buildingNoMapperDto.getNoId())
+                .eq("level_id", buildingNoMapperDto.getLevelId())
+                .eq("room_id", buildingNoMapperDto.getRoomId())
+                .eq("bed_id", buildingNoMapperDto.getBedId());
+        BuildingStudent buildingStudent = buildingStudentMapper.selectOne(studentQueryWrapper);
+        if (PublicUtil.isNotEmpty(buildingStudent)) {
+            throw new BizException(ErrorCodeEnum.PUB10000023);
+        }
+        return true;
+    }
 
 }

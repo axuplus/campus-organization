@@ -39,4 +39,6 @@ public class SchoolStudentDto {
     private String classInfoName;
     @ApiModelProperty(value = "入学年月")
     private String joinTime;
+    @ApiModelProperty(value = "毕业年份")
+    private String endTime;
 }

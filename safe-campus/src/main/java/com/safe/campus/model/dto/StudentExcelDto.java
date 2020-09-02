@@ -9,7 +9,7 @@ public class StudentExcelDto extends BaseRowModel {
     @ExcelProperty(value = "姓名", index = 0)
     private String name;
     @ExcelProperty(value = "学号", index = 1)
-    private String sNumber;
+    private String studentNumber;
     @ExcelProperty(value = "性别", index = 2)
     private String sex;
     @ExcelProperty(value = "身份证号", index = 3)

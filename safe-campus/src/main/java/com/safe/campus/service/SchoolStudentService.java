@@ -32,15 +32,15 @@ public interface SchoolStudentService extends IService<SchoolStudent> {
 
     PageWrapper<List<SchoolStudentListVo>> searchStudent(Long masterId, String context, BaseQueryDto baseQueryDto);
 
-    Wrapper importSchoolConcentrator(MultipartFile file,  LoginAuthDto loginAuthDto);
-
     List<SchoolStudent> getAllStudent(Long classInfoId);
 
     SchoolStudent selectById(Long id);
 
     List<SchoolStudent> getAllIdsByName(String context);
 
-    Wrapper importStudentPictureConcentrator(MultipartFile file, LoginAuthDto loginAuthDto);
+    Wrapper importSchoolConcentrator(Long masterId,MultipartFile file,  LoginAuthDto loginAuthDto);
+
+    Wrapper importStudentPictureConcentrator(Long masterId,MultipartFile file, LoginAuthDto loginAuthDto);
 
     PageWrapper<List<SchoolStudentListVo>> listStudent(Long masterId, Long classId, BaseQueryDto baseQueryDto);
 

@@ -1,5 +1,5 @@
 package com.safe.campus.about.utils;
-
+import com.safe.campus.about.utils.date.DateUtil;
 import com.alibaba.excel.ExcelWriter;
 import com.alibaba.excel.context.AnalysisContext;
 import com.alibaba.excel.event.AnalysisEventListener;
@@ -10,8 +10,7 @@ import com.alibaba.excel.support.ExcelTypeEnum;
 import com.alibaba.excel.ExcelReader;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public class EasyExcelUtil {
     /**
@@ -143,5 +142,13 @@ public class EasyExcelUtil {
         writer.write(data, sheet1);
         writer.finish();
     }
+
+    public static String formatExcelDate(int day) {
+        Calendar calendar = new GregorianCalendar(1900,0,-1);
+        Date gregorianDate = calendar.getTime();
+        String formatExcelDate = DateUtil.format(DateUtil.addDays(gregorianDate, day), "yyyy年MM月");
+        return formatExcelDate;
+    }
+
 
 }

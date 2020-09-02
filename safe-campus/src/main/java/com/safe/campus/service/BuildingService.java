@@ -7,6 +7,7 @@ import com.safe.campus.about.utils.wrapper.BaseQueryDto;
 import com.safe.campus.about.utils.wrapper.PageWrapper;
 import com.safe.campus.model.domain.BuildingNo;
 import com.safe.campus.model.dto.BuildingBedDto;
+import com.safe.campus.model.dto.BuildingNoMapperDto;
 import com.safe.campus.model.dto.BuildingStudentDto;
 import com.safe.campus.model.vo.*;
 import com.safe.campus.about.utils.wrapper.Wrapper;
@@ -62,15 +63,9 @@ public interface BuildingService extends IService<BuildingNo> {
 
     Wrapper deleteBuildingManger( Long levelId);
 
-    Boolean checkBuildingBedIsFull(String buildingBed,String buildingLevel,String buildingRoom,String buildingNo );
-
     Wrapper saveBuildingBed(Long buildingRoomId, Integer buildingBed,LoginAuthDto loginAuthDto);
-    Long getBuildingNoId(String buildingNo);
-    Long getBuildingLevelId(Long noId, String buildingLevel);
-    Long getBuildingRoomId(Long levelId,String buildingRoom);
-
-    Long getBuildingBedId(Long roomId,String buildingBed);
-
 
     BuildingBedDto getLivingInfoByStudentId(Long id);
+
+    BuildingNoMapperDto checkBuildingInfo(Long masterId, String buildingNo, String buildingLevel, String buildingRoom, String buildingBed);
 }

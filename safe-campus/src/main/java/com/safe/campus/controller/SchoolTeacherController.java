@@ -91,15 +91,15 @@ public class SchoolTeacherController extends BaseController {
     @Permission(url = qxurl,type = PermissionType.ADD)
     @PostMapping("/import/teacher")
     @ApiOperation("导入")
-    public Wrapper importTeacherConcentrator(@ApiParam(value = "file", required = true) MultipartFile file, HttpServletRequest request) throws Exception {
-        return teacherService.importTeacherConcentrator(file, getLoginAuthDto());
+    public Wrapper importTeacherConcentrator(@ApiParam(value = "file", required = true) MultipartFile file,@RequestParam("masterId")Long masterId, HttpServletRequest request) throws Exception {
+        return teacherService.importTeacherConcentrator(file, masterId,getLoginAuthDto());
     }
 
     @Permission(url = qxurl,type = PermissionType.ADD)
     @PostMapping("/import/teacher/pictures")
     @ApiOperation("导入照片")
-    public Wrapper importTeacherPictureConcentrator(@ApiParam(value = "file", required = true) MultipartFile file, HttpServletRequest request) throws Exception {
-        return teacherService.importTeacherPictureConcentrator(file, getLoginAuthDto());
+    public Wrapper importTeacherPictureConcentrator(@ApiParam(value = "file", required = true) MultipartFile file,@RequestParam("masterId")Long masterId, HttpServletRequest request) throws Exception {
+        return teacherService.importTeacherPictureConcentrator(file,masterId, getLoginAuthDto());
     }
 
 

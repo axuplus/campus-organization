@@ -14,6 +14,7 @@ import com.safe.campus.about.utils.wrapper.Wrapper;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -82,16 +83,18 @@ public class SchoolStudentController extends BaseController {
         return schoolStudentService.listStudent(masterId,classId,baseQueryDto);
     }
 
+    @Permission(url = qxurl,type = PermissionType.ADD)
     @PostMapping("/import/student")
     @ApiOperation("导入excel")
-    public Wrapper importStudentConcentrator(@ApiParam(value = "file", required = true) MultipartFile file) throws Exception {
-        return schoolStudentService.importSchoolConcentrator(file,getLoginAuthDto());
+    public Wrapper importStudentConcentrator(@RequestParam("masterId")Long masterId,@ApiParam(value = "file", required = true) MultipartFile file) throws Exception {
+        return schoolStudentService.importSchoolConcentrator(masterId,file,getLoginAuthDto());
     }
 
+    @Permission(url = qxurl,type = PermissionType.ADD)
     @PostMapping("/import/student/picture")
     @ApiOperation("导入照片")
-    public Wrapper importStudentPictureConcentrator(@ApiParam(value = "file", required = true) MultipartFile file) throws Exception {
-        return schoolStudentService.importStudentPictureConcentrator(file,getLoginAuthDto());
+    public Wrapper importStudentPictureConcentrator(@Param("masterId") Long masterId, @ApiParam(value = "file", required = true) MultipartFile file) throws Exception {
+        return schoolStudentService.importStudentPictureConcentrator(masterId,file,getLoginAuthDto());
     }
 
 }

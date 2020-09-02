@@ -34,6 +34,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.*;
 import java.nio.charset.Charset;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
@@ -280,13 +281,12 @@ public class SchoolTeacherServiceImpl extends ServiceImpl<SchoolTeacherMapper, S
 
     /**
      * excel导入
-     *
      * @param file
      * @return
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public Wrapper importTeacherConcentrator(MultipartFile file, LoginAuthDto loginAuthDto) {
+    public Wrapper importTeacherConcentrator(MultipartFile file, Long masterId, LoginAuthDto loginAuthDto) {
         if (file.isEmpty()) {
             logger.info("上传文件为空");
             throw new BizException(ErrorCodeEnum.PUB10000006);
@@ -305,64 +305,75 @@ public class SchoolTeacherServiceImpl extends ServiceImpl<SchoolTeacherMapper, S
         logger.info("Excel {}", list);
         // 循环导入
         if (PublicUtil.isNotEmpty(list)) {
+            QueryWrapper<SchoolTeacher> teacherQueryWrapper = new QueryWrapper<>();
+            teacherQueryWrapper.eq("master_id", masterId);
+            List<SchoolTeacher> teachers = teacherMapper.selectList(teacherQueryWrapper);
+            Map<String, Long> maps = teachers.stream().collect(Collectors.toMap(SchoolTeacher::getIdNumber, SchoolTeacher::getId));
             list.forEach(t -> {
-                SchoolTeacher teacher = new SchoolTeacher();
-                if (-1 == checkSex(t.getSex())) {
-                    throw new BizException(ErrorCodeEnum.PUB10000012);
-                }
-                // 插入
-                teacher.setId(gobalInterface.generateId());
-                teacher.setTName(t.getName());
-                teacher.setIdNumber(checkIsSame(t.getIdNumber()));
-                teacher.setCreatedTime(new Date());
-                teacher.setIsDelete(0);
-                teacher.setPhone(Long.valueOf(t.getPhone()));
-                teacher.setSectionId(checkSectionId(t.getSectionName()));
-                teacher.setCreatedUser(loginAuthDto.getUserId());
-                // 去判断非空字段
-                if (null != t.getSex()) {
-                    teacher.setSex(checkSex(t.getSex()));
-                }
-                if (null != t.getTNumber()) {
-                    teacher.setTNumber(t.getTNumber());
-                }
-                if (null != t.getJoinTime()) {
-                    teacher.setJoinTime(t.getJoinTime());
-                }
-                if (null != t.getPositionName()) {
-                    teacher.setPosition(t.getPositionName());
-                }
-                if (null != t.getShape()) {
-                    if ("在职".equals(t.getShape())) {
-                        teacher.setState(0);
-                    } else if ("离职".equals(t.getShape())) {
-                        teacher.setState(1);
-                    } else {
-                        throw new BizException(ErrorCodeEnum.PUB10000018);
+                Long id = maps.get(t.getIdNumber());
+                // 更新
+                if (null != id) {
+                    SchoolTeacher teacher = teacherMapper.selectById(id);
+                    // 检查部门
+                    if (null != t.getSectionName()) {
+                        teacher.setSectionId(checkSectionId(t.getSectionName()));
                     }
+                    // 去判断非空字段
+                    if (null != t.getSex()) {
+                        teacher.setSex(checkSex(t.getSex()));
+                    }
+                    if (null != t.getTeacherNumber()) {
+                        teacher.setTNumber(t.getTeacherNumber());
+                    }
+                    if (null != t.getJoinTime()) {
+                        String s = EasyExcelUtil.formatExcelDate(Integer.valueOf(t.getJoinTime()));
+                        teacher.setJoinTime(s);
+                    }
+                    if (null != t.getPositionName()) {
+                        teacher.setPosition(t.getPositionName());
+                    }
+                    if (null != t.getShape()) {
+                        teacher.setState(getState(t.getShape()));
+                    }
+                    teacherMapper.updateById(teacher);
+                } else {
+                    // 插入
+                    SchoolTeacher teacher = new SchoolTeacher();
+                    teacher.setId(gobalInterface.generateId());
+                    teacher.setMasterId(masterId);
+                    teacher.setTName(t.getName());
+                    teacher.setIdNumber(t.getIdNumber());
+                    teacher.setPhone(Long.valueOf(t.getPhone()));
+                    teacher.setCreatedTime(new Date());
+                    teacher.setIsDelete(0);
+                    teacher.setCreatedUser(loginAuthDto.getUserId());
+                    // 检查部门
+                    if (null != t.getSectionName()) {
+                        teacher.setSectionId(checkSectionId(t.getSectionName()));
+                    }
+                    // 去判断非空字段
+                    if (null != t.getSex()) {
+                        teacher.setSex(checkSex(t.getSex()));
+                    }
+                    if (null != t.getTeacherNumber()) {
+                        teacher.setTNumber(t.getTeacherNumber());
+                    }
+                    if (null != t.getJoinTime()) {
+                        String s = EasyExcelUtil.formatExcelDate(Integer.valueOf(t.getJoinTime()));
+                        teacher.setJoinTime(s);
+                    }
+                    if (null != t.getPositionName()) {
+                        teacher.setPosition(t.getPositionName());
+                    }
+                    if (null != t.getShape()) {
+                        teacher.setState(getState(t.getShape()));
+                    }
+                    teacherMapper.insert(teacher);
                 }
-                teacherMapper.insert(teacher);
             });
             return WrapMapper.ok("导入成功");
         }
         return WrapMapper.error("位置错误");
-    }
-
-    /**
-     * 检查是否有重复的人员
-     */
-    private String checkIsSame(String idNumber) {
-        if (idNumber.length() != 18) {
-            throw new BizException(ErrorCodeEnum.PUB10000022);
-        }
-        QueryWrapper<SchoolTeacher> wrapper = new QueryWrapper<>();
-        wrapper.eq("id_number", idNumber);
-        SchoolTeacher teacher = teacherMapper.selectOne(wrapper);
-        if (null != teacher) {
-            logger.info("表格有身份证号码相同的人员 {}", teacher.getIdNumber());
-            throw new BizException(ErrorCodeEnum.PUB10000009);
-        }
-        return idNumber;
     }
 
     /**
@@ -374,7 +385,7 @@ public class SchoolTeacherServiceImpl extends ServiceImpl<SchoolTeacherMapper, S
         } else if ("女".equals(str)) {
             return 0;
         } else {
-            return -1;
+            throw new BizException(ErrorCodeEnum.PUB10000012);
         }
     }
 
@@ -387,6 +398,19 @@ public class SchoolTeacherServiceImpl extends ServiceImpl<SchoolTeacherMapper, S
             throw new BizException(ErrorCodeEnum.PUB10000010);
         }
         return sectionByName.getId();
+    }
+
+    /**
+     *
+     */
+    private Integer getState(String str) {
+        if ("在职".equals(str)) {
+            return 0;
+        } else if ("离职".equals(str)) {
+            return 1;
+        } else {
+            throw new BizException(ErrorCodeEnum.PUB10000018);
+        }
     }
 
 
@@ -475,7 +499,7 @@ public class SchoolTeacherServiceImpl extends ServiceImpl<SchoolTeacherMapper, S
     }
 
     @Override
-    public Wrapper importTeacherPictureConcentrator(MultipartFile file, LoginAuthDto loginAuthDto) {
+    public Wrapper importTeacherPictureConcentrator(MultipartFile file, Long masterId,LoginAuthDto loginAuthDto) {
         if (file.isEmpty()) {
             logger.info("上传文件为空");
             throw new BizException(ErrorCodeEnum.PUB10000006);
@@ -513,7 +537,7 @@ public class SchoolTeacherServiceImpl extends ServiceImpl<SchoolTeacherMapper, S
                             throw new BizException(ErrorCodeEnum.PUB10000019);
                         }
                         QueryWrapper<SchoolTeacher> teacherQueryWrapper = new QueryWrapper<>();
-                        teacherQueryWrapper.eq("t_name", name).eq("phone", phone);
+                        teacherQueryWrapper.eq("t_name", name).eq("phone", phone).eq("master_id",masterId);
                         SchoolTeacher teacher = teacherMapper.selectOne(teacherQueryWrapper);
                         if (PublicUtil.isEmpty(teacher)) {
                             throw new BizException(ErrorCodeEnum.PUB10000020);

@@ -12,6 +12,7 @@ import com.safe.campus.enums.ErrorCodeEnum;
 import com.safe.campus.mapper.*;
 import com.safe.campus.model.domain.*;
 import com.safe.campus.model.dto.BuildingBedDto;
+import com.safe.campus.model.dto.BuildingNoMapperDto;
 import com.safe.campus.model.dto.BuildingStudentDto;
 import com.safe.campus.model.vo.*;
 import com.safe.campus.service.BuildingService;
@@ -491,63 +492,15 @@ public class BuildingNoServiceImpl extends ServiceImpl<BuildingNoMapper, Buildin
     }
 
     @Override
-    public Boolean checkBuildingBedIsFull(String buildingBed, String buildingLevel, String buildingRoom, String buildingNo) {
-        BuildingStudent buildingStudent = buildingStudentMapper.checkBedIsFull(buildingBed, buildingRoom, buildingLevel, buildingNo);
-        if (PublicUtil.isEmpty(buildingStudent)) {
-            return true;
-        }
-        return false;
-    }
-
-    @Override
-    public Long getBuildingNoId(String buildingNo) {
-        QueryWrapper<BuildingNo> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("building_no", buildingNo);
-        BuildingNo no = noMapper.selectOne(queryWrapper);
-        if (PublicUtil.isEmpty(no)) {
-            throw new BizException(ErrorCodeEnum.PUB10000028);
-        }
-        return no.getId();
-    }
-
-    @Override
-    public Long getBuildingLevelId(Long noId, String buildingLevel) {
-        QueryWrapper<BuildingLevel> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("building_no_id", noId).eq("building_level", buildingLevel);
-        BuildingLevel level = levelMapper.selectOne(queryWrapper);
-        if (PublicUtil.isEmpty(level)) {
-            throw new BizException(ErrorCodeEnum.PUB10000029);
-        }
-        return level.getId();
-    }
-
-    @Override
-    public Long getBuildingRoomId(Long levelId, String buildingRoom) {
-        QueryWrapper<BuildingRoom> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("building_level_id", levelId).eq("building_room", buildingRoom);
-        BuildingRoom room = roomMapper.selectOne(queryWrapper);
-        if (PublicUtil.isEmpty(room)) {
-            throw new BizException(ErrorCodeEnum.PUB10000030);
-        }
-        return room.getId();
-    }
-
-    @Override
-    public Long getBuildingBedId(Long roomId, String buildingBed) {
-        QueryWrapper<BuildingBed> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("room_id", roomId).eq("bed_name", buildingBed);
-        BuildingBed bed = bedMapper.selectOne(queryWrapper);
-        if (PublicUtil.isEmpty(bed)) {
-            throw new BizException(ErrorCodeEnum.PUB10000031);
-        }
-        return bed.getId();
-    }
-
-    @Override
     public BuildingBedDto getLivingInfoByStudentId(Long id) {
         BuildingStudent buildingStudent = buildingStudentMapper.selectOne(new QueryWrapper<BuildingStudent>().eq("student_id", id));
         return bedMapper.getLivingInfo(buildingStudent.getBedId());
 
+    }
+
+    @Override
+    public BuildingNoMapperDto checkBuildingInfo(Long masterId, String buildingNo, String buildingLevel, String buildingRoom, String buildingBed) {
+      return  noMapper.checkBuildingInfo(masterId,buildingNo,buildingLevel,buildingRoom,buildingBed);
     }
 
     @Override

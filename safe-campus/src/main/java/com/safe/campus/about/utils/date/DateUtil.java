@@ -33,6 +33,23 @@ public class DateUtil {
         return dateFormat;
     }
 
+    public static Date addDays(Date date, int day) {
+        Calendar calendar = new GregorianCalendar();
+        calendar.setTime(date);
+        calendar.add(5, day);
+        date = calendar.getTime();
+        return date;
+    }
+
+    public static String format(Date date) {
+        return date != null ? (new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")).format(date) : "/";
+    }
+
+    public static String format(Date date, String format) {
+        return (new SimpleDateFormat(format)).format(date);
+    }
+
+
     private static int getInteger(Date date, int dateType) {
         int num = 0;
         Calendar calendar = Calendar.getInstance();

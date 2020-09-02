@@ -33,7 +33,7 @@ public interface SchoolTeacherService extends IService<SchoolTeacher> {
 
     Wrapper editTeacherInfo(TeacherInfoDto teacherInfoDto);
 
-    Wrapper importTeacherConcentrator(MultipartFile file,LoginAuthDto loginAuthDto);
+    Wrapper importTeacherConcentrator(MultipartFile file,Long masterId,LoginAuthDto loginAuthDto);
 
     PageWrapper<List<SchoolTeacherVo>> searchTeacherInfo(Long masterId,String context,BaseQueryDto baseQueryDto);
 
@@ -55,7 +55,7 @@ public interface SchoolTeacherService extends IService<SchoolTeacher> {
 
     Wrapper setRole(LoginAuthDto loginAuthDto, SetRoleDto setRoleDto);
 
-    Wrapper importTeacherPictureConcentrator(MultipartFile file, LoginAuthDto loginAuthDto);
+    Wrapper importTeacherPictureConcentrator(MultipartFile file,Long masterId, LoginAuthDto loginAuthDto);
 
     Wrapper active(LoginAuthDto loginAuthDto, Long id, Long masterId,Integer state);
 
