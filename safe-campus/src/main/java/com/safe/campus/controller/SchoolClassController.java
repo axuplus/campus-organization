@@ -97,13 +97,13 @@ public class SchoolClassController extends BaseController {
     }
 
     @Permission(url = qxurl, type = PermissionType.QUERY)
-    @GetMapping("/list/class")
+    @GetMapping("/list")
     @ApiOperation("右边年级列表列表(点击年级/班级)")
-    public PageWrapper<List<SchoolClassSearchVo>> listClass(@RequestParam("masterId") Long masterId,
+    public Wrapper<List<SchoolClassSearchVo>> listClass(@RequestParam("masterId") Long masterId,
                                                             @RequestParam("id") Long id,
-                                                            @ApiParam("1年级 2班级") @RequestParam("type") Integer type,
-                                                            BaseQueryDto baseQueryDto) {
-        return schoolClassService.listClass(masterId, id, type,baseQueryDto);
+                                                            @ApiParam("1年级 2班级 3全部") @RequestParam("type") Integer type
+                                                        ) {
+        return schoolClassService.listClass(masterId, id, type);
     }
 
 

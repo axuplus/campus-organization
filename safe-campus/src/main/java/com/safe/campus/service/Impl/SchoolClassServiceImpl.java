@@ -271,6 +271,7 @@ public class SchoolClassServiceImpl extends ServiceImpl<SchoolClassMapper, Schoo
             for (SchoolClass cl : classes) {
                 NodeTreeVo treeVo = new NodeTreeVo();
                 treeVo.setClassId(cl.getId());
+                treeVo.setType(1);
                 treeVo.setClassName(cl.getClassName());
                 QueryWrapper<SchoolClassInfo> query = new QueryWrapper<>();
                 query.eq("class_id", cl.getId()).eq("is_delete", 0);
@@ -280,6 +281,7 @@ public class SchoolClassServiceImpl extends ServiceImpl<SchoolClassMapper, Schoo
                     infos.forEach(info -> {
                         NodeTreeVo.SubClass subClass = new NodeTreeVo.SubClass();
                         subClass.setSubClassId(info.getId());
+                        subClass.setType(2);
                         subClass.setSubClassName(info.getClassInfoName());
                         list.add(subClass);
                         treeVo.setSubClassInfo(list);
@@ -307,17 +309,15 @@ public class SchoolClassServiceImpl extends ServiceImpl<SchoolClassMapper, Schoo
     }
 
     @Override
-    public PageWrapper<List<SchoolClassSearchVo>> listClass(Long masterId, Long id, Integer type, BaseQueryDto baseQueryDto) {
+    public Wrapper<List<SchoolClassSearchVo>> listClass(Long masterId, Long id, Integer type) {
         if (1 == type) {
             QueryWrapper<SchoolClass> queryWrapper = new QueryWrapper<>();
-            queryWrapper.eq("id", id).eq("is_delete", 0).eq("master_id", masterId);
+            queryWrapper.eq("id", id).eq("is_delete", 0).eq("master_id", masterId).orderByAsc("created_time");
             SchoolClass schoolClass = schoolClassMapper.selectOne(queryWrapper);
             List<SchoolClassSearchVo> list = new ArrayList<>();
             QueryWrapper<SchoolClassInfo> query = new QueryWrapper<>();
             query.eq("class_id", schoolClass.getId()).eq("is_delete", 0);
-            Page page = PageHelper.startPage(baseQueryDto.getPageNum(), baseQueryDto.getPageSize());
             List<SchoolClassInfo> infos = schoolClassInfoMapper.selectList(query);
-            Long total = page.getTotal();
             if (PublicUtil.isNotEmpty(infos)) {
                 infos.forEach(info -> {
                     SchoolClassSearchVo searchVo = new SchoolClassSearchVo();
@@ -327,32 +327,29 @@ public class SchoolClassServiceImpl extends ServiceImpl<SchoolClassMapper, Schoo
                     searchVo.setClassInfoName(info.getClassInfoName());
                     searchVo.setType(2);
                     searchVo.setState(info.getState());
-                    searchVo.setClassName(schoolClass.getClassName());
-                    SchoolTeacher t = teacherService.getTeacher(schoolClass.getTId());
+                    SchoolTeacher t = teacherService.getTeacher(info.getTId());
                     if (PublicUtil.isNotEmpty(t)) {
                         searchVo.setClassSuperiorName(t.getTName());
                         searchVo.setPhone(t.getPhone());
                     }
                     list.add(searchVo);
                 });
-                // 所属班级信息加不进去
-//                SchoolClassSearchVo vo = new SchoolClassSearchVo();
-//                vo.setClassId(schoolClass.getId());
-//                vo.setClassName(schoolClass.getClassName());
-//                vo.setState(schoolClass.getState());
-//                SchoolTeacher teacher = teacherService.getTeacher(schoolClass.getTId());
-//                if (PublicUtil.isNotEmpty(teacher)) {
-//                    vo.setClassSuperiorName(teacher.getTName());
-//                    vo.setPhone(teacher.getPhone());
-//                }
-//                vo.setType(1);
-//                list.add(vo);
+                // 所属年级
+                SchoolClassSearchVo vo = new SchoolClassSearchVo();
+                vo.setClassId(schoolClass.getId());
+                vo.setClassName(schoolClass.getClassName());
+                vo.setState(schoolClass.getState());
+                SchoolTeacher teacher = teacherService.getTeacher(schoolClass.getTId());
+                if (PublicUtil.isNotEmpty(teacher)) {
+                    vo.setClassSuperiorName(teacher.getTName());
+                    vo.setPhone(teacher.getPhone());
+                }
+                vo.setType(1);
+                list.add(vo);
             }
-            return PageWrapMapper.wrap(list, new PageUtil(total.intValue(), baseQueryDto.getPageNum(), baseQueryDto.getPageSize()));
-        } else {
-            Page page = PageHelper.startPage(baseQueryDto.getPageNum(), baseQueryDto.getPageSize());
+            return WrapMapper.ok(list);
+        } else if (2 == type) {
             SchoolClassInfo schoolClassInfo = schoolClassInfoMapper.selectById(id);
-            Long total = page.getTotal();
             if (PublicUtil.isNotEmpty(schoolClassInfo)) {
                 List<SchoolClassSearchVo> list = new ArrayList<>();
                 SchoolClassSearchVo searchVo = new SchoolClassSearchVo();
@@ -369,10 +366,49 @@ public class SchoolClassServiceImpl extends ServiceImpl<SchoolClassMapper, Schoo
                     searchVo.setPhone(t.getPhone());
                 }
                 list.add(searchVo);
-                return PageWrapMapper.wrap(list, new PageUtil(total.intValue(), baseQueryDto.getPageNum(), baseQueryDto.getPageSize()));
+                return WrapMapper.ok(list);
             }
+        } else {
+            // 全部
+            List<SchoolClass> classes = schoolClassMapper.selectList(new QueryWrapper<SchoolClass>().eq("master_id", masterId).orderByAsc("created_time"));
+            List<SchoolClassSearchVo> list = new ArrayList<>();
+            for (SchoolClass schoolClass : classes) {
+                SchoolClassSearchVo vo = new SchoolClassSearchVo();
+                vo.setClassId(schoolClass.getId());
+                vo.setClassId(schoolClass.getId());
+                vo.setClassName(schoolClass.getClassName());
+                vo.setState(schoolClass.getState());
+                SchoolTeacher teacher = teacherService.getTeacher(schoolClass.getTId());
+                if (PublicUtil.isNotEmpty(teacher)) {
+                    vo.setClassSuperiorName(teacher.getTName());
+                    vo.setPhone(teacher.getPhone());
+                }
+                vo.setType(1);
+                list.add(vo);
+                QueryWrapper<SchoolClassInfo> classInfoQueryWrapper = new QueryWrapper<>();
+                classInfoQueryWrapper.eq("class_id", schoolClass.getId());
+                List<SchoolClassInfo> infos = schoolClassInfoMapper.selectList(classInfoQueryWrapper);
+                if (PublicUtil.isNotEmpty(infos)) {
+                    infos.forEach(info -> {
+                        SchoolClassSearchVo classInfoVo = new SchoolClassSearchVo();
+                        classInfoVo.setClassId(schoolClass.getId());
+                        classInfoVo.setClassName(schoolClass.getClassName());
+                        classInfoVo.setClassInfoId(info.getId());
+                        classInfoVo.setClassInfoName(info.getClassInfoName());
+                        classInfoVo.setState(info.getState());
+                        SchoolTeacher t = teacherService.getTeacher(info.getTId());
+                        if (PublicUtil.isNotEmpty(t)) {
+                            classInfoVo.setClassSuperiorName(t.getTName());
+                            classInfoVo.setPhone(t.getPhone());
+                        }
+                        classInfoVo.setType(2);
+                        list.add(classInfoVo);
+                    });
+                }
+            }
+            return WrapMapper.ok(list);
         }
-        return PageWrapMapper.wrap(200, "暂无数据");
+        return WrapMapper.error("暂无数据");
     }
 
     @Override

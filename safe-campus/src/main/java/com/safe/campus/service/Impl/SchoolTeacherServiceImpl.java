@@ -430,14 +430,6 @@ public class SchoolTeacherServiceImpl extends ServiceImpl<SchoolTeacherMapper, S
     }
 
     @Override
-    public void updateSectionTeacher(Long sectionId, Long tId) {
-        // 1：先置空老的关联ID
-        teacherMapper.updateBySectionId(sectionId);
-        // 2: 关联新的sectionId
-        teacherMapper.updateNewSectionId(sectionId, tId);
-    }
-
-    @Override
     public void addSectionId(Long sectionId, Long tId) {
         teacherMapper.updateNewSectionId(sectionId, tId);
     }

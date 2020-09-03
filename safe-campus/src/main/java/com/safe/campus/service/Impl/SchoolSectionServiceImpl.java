@@ -96,7 +96,7 @@ public class SchoolSectionServiceImpl extends ServiceImpl<SchoolSectionMapper, S
         section.setPId(schoolSectionInfoDto.getPid());
         section.setLevel(schoolSectionMapper.selectById(schoolSectionInfoDto.getPid()).getLevel() + 1);
         if (0L != schoolSectionInfoDto.getTId() && null != schoolSectionInfoDto.getTId()) {
-            teacherService.updateSectionTeacher(schoolSectionInfoDto.getId(), schoolSectionInfoDto.getTId());
+            section.setTId(schoolSectionInfoDto.getTId());
         }
         updateById(section);
         return WrapMapper.ok("修改成功");
@@ -113,9 +113,10 @@ public class SchoolSectionServiceImpl extends ServiceImpl<SchoolSectionMapper, S
             vo.setSectionId(schoolSection.getId());
             vo.setSectionName(schoolSection.getSectionName());
             vo.setPreSectionName(schoolSectionMapper.selectById(schoolSection.getId()).getSectionName());
-            SchoolTeacher teacher = teacherService.getTeacherBySection(schoolSection.getId());
+            SchoolTeacher teacher = teacherService.getTeacherBySection(schoolSection.getTId());
             if (PublicUtil.isNotEmpty(teacher)) {
                 vo.setName(teacher.getTName());
+                vo.setTId(teacher.getId());
             }
             return WrapMapper.ok(vo);
         }

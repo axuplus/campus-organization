@@ -14,10 +14,8 @@ public class SchoolClassSearchVo {
     private Long classInfoId;
     @ApiModelProperty(value = "班级名称")
     private String classInfoName;
-    @ApiModelProperty(value = "年级主任名称")
+    @ApiModelProperty(value = "年级主任/班主任名称")
     private String classSuperiorName;
-    @ApiModelProperty(value = "班主任名称")
-    private String classInfoSuperiorName;
     @ApiModelProperty(value = "电话")
     private Long phone;
     @ApiModelProperty(value = "状态")

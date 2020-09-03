@@ -35,7 +35,7 @@ public interface SchoolClassService extends IService<SchoolClass> {
 
     List<SchoolClassInfo> getAllClassInfo(Long classId);
 
-    PageWrapper<List<SchoolClassSearchVo>> listClass(Long masterId, Long id, Integer type, BaseQueryDto baseQueryDto);
+    Wrapper<List<SchoolClassSearchVo>> listClass(Long masterId, Long id, Integer type);
 
     Wrapper<Map<Long, String>> listTeachers(Long masterId);
 
