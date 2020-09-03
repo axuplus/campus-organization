@@ -9,6 +9,7 @@ import com.safe.campus.model.dto.SchoolSectionDto;
 import com.safe.campus.model.dto.SchoolSectionInfoDto;
 import com.safe.campus.about.utils.wrapper.Wrapper;
 import com.safe.campus.model.vo.SchoolSectionVo;
+import com.safe.campus.model.vo.SectionTeachersVo;
 
 import java.util.List;
 import java.util.Map;
@@ -33,7 +34,7 @@ public interface SchoolSectionService extends IService<SchoolSection> {
 
     Wrapper searchSchoolSection(Long masterId,String name);
 
-    Wrapper<Map<Long, String>> getCharge(Long masterId);
+    Wrapper<List<SectionTeachersVo>> getCharge(Long masterId);
 
     Wrapper<Map<Long, String>> getSchools(Long masterId, LoginAuthDto loginAuthDto);
 

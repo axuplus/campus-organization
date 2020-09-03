@@ -10,6 +10,7 @@ import com.safe.campus.model.dto.SchoolSectionDto;
 import com.safe.campus.model.dto.SchoolSectionInfoDto;
 import com.safe.campus.model.vo.SchoolSectionVo;
 import com.safe.campus.model.vo.SchoolTeacherVo;
+import com.safe.campus.model.vo.SectionTeachersVo;
 import com.safe.campus.service.SchoolSectionService;
 import com.safe.campus.about.utils.wrapper.Wrapper;
 import io.swagger.annotations.Api;
@@ -57,9 +58,17 @@ public class SchoolSectionController extends BaseController {
         return sectionService.saveSchoolSection(schoolSectionDto);
     }
 
+    @Permission(url = qxurl,type = PermissionType.QUERY)
+    @GetMapping("/get")
+    @ApiOperation("获取部门信息")
+    public Wrapper getSchoolSection(@RequestParam("id") Long id) {
+        return sectionService.getSchoolSection(id);
+    }
+
+
     @GetMapping("/charge")
     @ApiOperation("获取部门负责人")
-    public Wrapper<Map<Long, String>> getCharge(@RequestParam("masterId")Long masterId) {
+    public Wrapper<List<SectionTeachersVo>> getCharge(@RequestParam("masterId")Long masterId) {
         return sectionService.getCharge(masterId);
     }
 
@@ -69,14 +78,6 @@ public class SchoolSectionController extends BaseController {
     @ApiOperation("修改部门信息")
     public Wrapper editSchoolSection(@RequestBody SchoolSectionInfoDto schoolSectionInfoDto) {
         return sectionService.editSchoolSection(schoolSectionInfoDto);
-    }
-
-
-    @Permission(url = qxurl,type = PermissionType.QUERY)
-    @GetMapping("/get")
-    @ApiOperation("获取部门信息")
-    public Wrapper getSchoolSection(@RequestParam("id") Long id) {
-        return sectionService.getSchoolSection(id);
     }
 
 

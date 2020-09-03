@@ -15,6 +15,7 @@ import com.safe.campus.model.dto.SchoolSectionDto;
 import com.safe.campus.model.dto.SchoolSectionInfoDto;
 import com.safe.campus.model.vo.SchoolSectionVo;
 import com.safe.campus.model.vo.SchoolTeacherVo;
+import com.safe.campus.model.vo.SectionTeachersVo;
 import com.safe.campus.model.vo.SectionTreeVo;
 import com.safe.campus.service.SchoolSectionService;
 import com.safe.campus.service.SchoolTeacherService;
@@ -130,6 +131,9 @@ public class SchoolSectionServiceImpl extends ServiceImpl<SchoolSectionMapper, S
         }
         if (PublicUtil.isNotEmpty(schoolSectionMapper.getSubTrees(id))) {
             return WrapMapper.error("请先处理此部门下面的子部门");
+        }
+        if (PublicUtil.isNotEmpty(teacherService.getTeacherBySection(id))) {
+            return WrapMapper.error("此部门下还有教职工信息");
         }
         int deleteById = schoolSectionMapper.deleteById(id);
         if (1 == deleteById) {
@@ -259,10 +263,18 @@ public class SchoolSectionServiceImpl extends ServiceImpl<SchoolSectionMapper, S
     }
 
     @Override
-    public Wrapper<Map<Long, String>> getCharge(Long masterId) {
+    public Wrapper<List<SectionTeachersVo>> getCharge(Long masterId) {
         List<SchoolTeacher> charge = teacherService.getCharge(masterId);
         if (PublicUtil.isNotEmpty(charge)) {
-            return WrapMapper.ok(charge.stream().collect(Collectors.toMap(SchoolTeacher::getId, SchoolTeacher::getTName)));
+            List<SectionTeachersVo> list = new ArrayList<>();
+            charge.forEach(c -> {
+                SectionTeachersVo teachersVo = new SectionTeachersVo();
+                teachersVo.setTId(c.getId());
+                teachersVo.setTName(c.getTName());
+                teachersVo.setSectionName(schoolSectionMapper.selectById(c.getSectionId()).getSectionName());
+                list.add(teachersVo);
+            });
+            return WrapMapper.ok(list);
         }
         return WrapMapper.error("暂无数据");
     }
