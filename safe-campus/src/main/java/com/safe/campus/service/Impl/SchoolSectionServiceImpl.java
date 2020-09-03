@@ -95,7 +95,7 @@ public class SchoolSectionServiceImpl extends ServiceImpl<SchoolSectionMapper, S
         section.setSectionName(schoolSectionInfoDto.getName());
         section.setPId(schoolSectionInfoDto.getPid());
         section.setLevel(schoolSectionMapper.selectById(schoolSectionInfoDto.getPid()).getLevel() + 1);
-        if (0L != schoolSectionInfoDto.getTId() && null != schoolSectionInfoDto.getTId()){
+        if (0L != schoolSectionInfoDto.getTId() && null != schoolSectionInfoDto.getTId()) {
             teacherService.updateSectionTeacher(schoolSectionInfoDto.getId(), schoolSectionInfoDto.getTId());
         }
         updateById(section);
@@ -114,7 +114,7 @@ public class SchoolSectionServiceImpl extends ServiceImpl<SchoolSectionMapper, S
             vo.setSectionName(schoolSection.getSectionName());
             vo.setPreSectionName(schoolSectionMapper.selectById(schoolSection.getId()).getSectionName());
             SchoolTeacher teacher = teacherService.getTeacherBySection(schoolSection.getId());
-            if(PublicUtil.isNotEmpty(teacher) ){
+            if (PublicUtil.isNotEmpty(teacher)) {
                 vo.setName(teacher.getTName());
             }
             return WrapMapper.ok(vo);
@@ -138,35 +138,31 @@ public class SchoolSectionServiceImpl extends ServiceImpl<SchoolSectionMapper, S
     }
 
     @Override
-    public Wrapper activeSchoolSection(Long id, Integer type) {
-        if (null == id || null == type) {
-            return WrapMapper.error("参数不能为空");
-        }
-        SchoolSection schoolSection = schoolSectionMapper.selectById(id);
-        if (1 == type) {
-            schoolSection.setState(1);
-        } else if (0 == type) {
-            schoolSection.setState(0);
-        } else {
-            return WrapMapper.error("参数有误");
-        }
-        schoolSectionMapper.updateById(schoolSection);
-        return WrapMapper.ok("操作成功");
-    }
-
-    @Override
-    public PageWrapper<List<SchoolSectionVo>> listSchoolSection(Long masterId, Long id, BaseQueryDto baseQueryDto) {
+    public PageWrapper<List<SchoolSectionVo>> listSchoolSection(Long masterId, Integer type, Long id, BaseQueryDto baseQueryDto) {
         if (PublicUtil.isEmpty(id)) {
-            return PageWrapMapper.wrap(500,"参数不能为空");
+            return PageWrapMapper.wrap(500, "参数不能为空");
         }
-        List<Long> subTrees = schoolSectionMapper.getSubTrees(id);
-        if (PublicUtil.isEmpty(subTrees)) {
-            return PageWrapMapper.wrap(200,"暂无数据");
+        List<SchoolSection> list = null;
+        List<Long> subTrees = null;
+        Page page = null;
+        Long total = null;
+        if (0 == type) {
+            subTrees = schoolSectionMapper.getSubTrees(id);
+            System.out.println("subTrees = " + subTrees);
+            if (PublicUtil.isEmpty(subTrees)) {
+                return PageWrapMapper.wrap(200, "暂无数据");
+            }
+            subTrees.add(id);
+            page = PageHelper.startPage(baseQueryDto.getPageNum(), baseQueryDto.getPageSize());
+            list = schoolSectionMapper.selectBatchIds(subTrees);
+            total = page.getTotal();
+        } else if (1 == type) {
+            page = PageHelper.startPage(baseQueryDto.getPageNum(), baseQueryDto.getPageSize());
+            list = schoolSectionMapper.selectList(new QueryWrapper<SchoolSection>().eq("master_id", masterId));
+            total = page.getTotal();
+        } else {
+            return null;
         }
-        subTrees.add(id);
-        Page page = PageHelper.startPage(baseQueryDto.getPageNum(), baseQueryDto.getPageSize());
-        List<SchoolSection> list = schoolSectionMapper.selectBatchIds(subTrees);
-        Long total = page.getTotal();
         List<SchoolSectionVo> vos = new ArrayList<>();
         for (int i = 0; i < list.size(); i++) {
             SchoolSection section = list.get(i);
@@ -181,8 +177,8 @@ public class SchoolSectionServiceImpl extends ServiceImpl<SchoolSectionMapper, S
                 pre = list.get(i - 1);
             }
             vo.setPreSectionName(pre.getSectionName());
-            SchoolTeacher teacherBySection = teacherService.getTeacherBySection(section.getId());
-            if (PublicUtil.isNotEmpty(teacherBySection)) {
+            if (PublicUtil.isNotEmpty(section.getTId())) {
+                SchoolTeacher teacherBySection = teacherService.getTeacherBySection(section.getTId());
                 vo.setTId(teacherBySection.getId());
                 vo.setName(teacherBySection.getTName());
                 vo.setPhone(teacherBySection.getPhone());
@@ -226,7 +222,7 @@ public class SchoolSectionServiceImpl extends ServiceImpl<SchoolSectionMapper, S
 
 
     @Override
-    public Wrapper searchSchoolSection(Long masterId,String name) {
+    public Wrapper searchSchoolSection(Long masterId, String name) {
         if (null == name) {
             return WrapMapper.error("搜索参数不能为空");
         }

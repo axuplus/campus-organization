@@ -29,9 +29,7 @@ public interface SchoolSectionService extends IService<SchoolSection> {
 
     Wrapper deleteSchoolSection(Long id);
 
-    Wrapper activeSchoolSection(Long id, Integer type);
-
-    PageWrapper<List<SchoolSectionVo>> listSchoolSection(Long masterId, Long id, BaseQueryDto baseQueryDto);
+    PageWrapper<List<SchoolSectionVo>> listSchoolSection(Long masterId,Integer type, Long id, BaseQueryDto baseQueryDto);
 
     Wrapper searchSchoolSection(Long masterId,String name);
 

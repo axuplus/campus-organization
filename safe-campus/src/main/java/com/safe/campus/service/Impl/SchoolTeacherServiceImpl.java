@@ -422,9 +422,9 @@ public class SchoolTeacherServiceImpl extends ServiceImpl<SchoolTeacherMapper, S
     }
 
     @Override
-    public SchoolTeacher getTeacherBySection(Long sectionId) {
+    public SchoolTeacher getTeacherBySection(Long id) {
         QueryWrapper<SchoolTeacher> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("section_id", sectionId);
+        queryWrapper.eq("id", id);
         return teacherMapper.selectOne(queryWrapper);
 
     }

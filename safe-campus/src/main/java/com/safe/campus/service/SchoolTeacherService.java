@@ -39,7 +39,7 @@ public interface SchoolTeacherService extends IService<SchoolTeacher> {
 
     List<SchoolTeacher> getCharge(Long masterId);
 
-    SchoolTeacher getTeacherBySection(Long sectionId);
+    SchoolTeacher getTeacherBySection(Long id);
 
     void updateSectionTeacher(Long sectionId,Long tId);
 

@@ -31,6 +31,8 @@ public class SchoolSection implements Serializable {
     @Id
     private Long id;
 
+    private Long tId;
+
 
     private Integer level;
 
