@@ -41,10 +41,6 @@ public interface SchoolTeacherService extends IService<SchoolTeacher> {
 
     SchoolTeacher getTeacherBySection(Long id);
 
-    List<SchoolTeacher> getTeacherBySectionId(Long id);
-
-    void addSectionId(Long sectionId,Long tId);
-
     SchoolTeacher getTeacher(Long tId);
 
     List<SchoolTeacher> getTeachersToClass(Long masterId);

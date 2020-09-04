@@ -430,18 +430,6 @@ public class SchoolTeacherServiceImpl extends ServiceImpl<SchoolTeacherMapper, S
     }
 
     @Override
-    public List<SchoolTeacher> getTeacherBySectionId(Long id) {
-        QueryWrapper<SchoolTeacher> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("section_id", id);
-        return teacherMapper.selectList(queryWrapper);
-    }
-
-    @Override
-    public void addSectionId(Long sectionId, Long tId) {
-        teacherMapper.updateNewSectionId(sectionId, tId);
-    }
-
-    @Override
     public SchoolTeacher getTeacher(Long tId) {
         return teacherMapper.selectById(tId);
     }

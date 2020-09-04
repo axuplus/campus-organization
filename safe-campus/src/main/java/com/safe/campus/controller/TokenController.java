@@ -31,8 +31,8 @@ public class TokenController extends BaseController {
      */
     @PostMapping(value = "/token")
     @ApiOperation(value = "获取token", notes = "获取token")
-    public Wrapper<LoginTokenVo> token(@RequestParam("userName")String userName,@RequestParam("password")String password) {
-        final LoginTokenVo result= tokenService.token(userName, password);
+    public Wrapper<LoginTokenVo> token(@RequestParam("userName") String userName, @RequestParam("password") String password) {
+        final LoginTokenVo result = tokenService.token(userName, password);
         return WrapMapper.ok(result);
     }
 
@@ -44,15 +44,16 @@ public class TokenController extends BaseController {
     public Wrapper exit() {
         final LoginAuthDto loginAuthDto = getLoginAuthDto();
         final Boolean flag = tokenService.exit(loginAuthDto.getUserId());
-        if(flag)
+        if (flag) {
             return WrapMapper.ok("退出成功");
-        return WrapMapper.wrap(100002,"退出失败");
+        }
+        return WrapMapper.wrap(100002, "退出失败");
     }
 
 
     @GetMapping(value = "/conf")
-    @ApiModelProperty(value = "获取当前模块配置 (登录成功后首先调这个接口)",notes = "获取当前模块配置")
-    public Wrapper<ModuleConfVo> getModuleConf(@RequestParam("userId")Long userId){
+    @ApiModelProperty(value = "获取当前模块配置 (登录成功后首先调这个接口)", notes = "获取当前模块配置")
+    public Wrapper<ModuleConfVo> getModuleConf(@RequestParam("userId") Long userId) {
         return tokenService.getModuleConf(userId);
     }
 }

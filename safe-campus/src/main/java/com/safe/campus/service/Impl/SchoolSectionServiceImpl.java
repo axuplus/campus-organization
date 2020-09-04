@@ -76,9 +76,8 @@ public class SchoolSectionServiceImpl extends ServiceImpl<SchoolSectionMapper, S
         section.setIsDelete(0);
         section.setState(0);
         section.setCreatedTime(new Date());
-        // 配置负责人
-        if (schoolSectionDto.getTId() != null) {
-            teacherService.addSectionId(section.getId(), schoolSectionDto.getTId());
+        if (null != schoolSectionDto.getSectionId()) {
+            section.setTId(schoolSectionDto.getSectionId());
         }
         int insert = schoolSectionMapper.insert(section);
         if (1 == insert) {

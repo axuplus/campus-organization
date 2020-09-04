@@ -19,9 +19,5 @@ import org.springframework.stereotype.Component;
 @Mapper
 public interface SchoolTeacherMapper extends BaseMapper<SchoolTeacher> {
 
-    @Update("update school_teacher set section_id = null where section_id = #{sectionId}")
-    void updateBySectionId(@Param("sectionId") Long sectionId);
 
-    @Update("update school_teacher set section_id = #{sectionId} where id = #{tId}")
-    void updateNewSectionId(@Param("sectionId") Long sectionId, @Param("tId") Long tId);
 }
