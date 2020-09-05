@@ -85,9 +85,6 @@ public class TokenServiceImpl extends ServiceImpl<SysAdminUserMapper, SysAdmin> 
         userTokenDto.setUserName(sysAdminUser.getUserName());
         userTokenDto.setToken(jwtInfo.getToken());
         userTokenDto.setType(sysAdminUser.getType());
-        if (3 == sysAdminUser.getType()) {
-            userTokenDto.setMasterId(sysAdminUser.getMasterId());
-        }
         userTokenDto.setExpireTime(jwtInfo.getExpireIn());
         userTokenDto.setCreateTime(DateUtil.currentTime(nowDate));
         redisTemplate.opsForHash().put(GlobalConstant.LOGIN_TOKEN, String.valueOf(sysAdminUser.getId()), userTokenDto);
@@ -99,7 +96,8 @@ public class TokenServiceImpl extends ServiceImpl<SysAdminUserMapper, SysAdmin> 
         loginTokenVo.setType(sysAdminUser.getType());
         if (3 == sysAdminUser.getType()) {
             loginTokenVo.setMasterId(sysAdminUser.getMasterId());
-            loginTokenVo.setType(sysAdminUser.getType());
+        }else if(2 == sysAdminUser.getType()){
+            loginTokenVo.setMasterId(sysAdminUser.getId());
         }
         return loginTokenVo;
     }

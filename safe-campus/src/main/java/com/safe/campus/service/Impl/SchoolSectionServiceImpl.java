@@ -157,11 +157,11 @@ public class SchoolSectionServiceImpl extends ServiceImpl<SchoolSectionMapper, S
                 return PageWrapMapper.wrap(200, "暂无数据");
             }
             subTrees.add(id);
-            page = PageHelper.startPage(baseQueryDto.getPageNum(), baseQueryDto.getPageSize());
+            page = PageHelper.startPage(baseQueryDto.getPage(), baseQueryDto.getPage_size());
             list = schoolSectionMapper.selectBatchIds(subTrees);
             total = page.getTotal();
         } else if (1 == type) {
-            page = PageHelper.startPage(baseQueryDto.getPageNum(), baseQueryDto.getPageSize());
+            page = PageHelper.startPage(baseQueryDto.getPage(), baseQueryDto.getPage_size());
             list = schoolSectionMapper.selectList(new QueryWrapper<SchoolSection>().eq("master_id", masterId));
             total = page.getTotal();
         } else {
@@ -189,7 +189,7 @@ public class SchoolSectionServiceImpl extends ServiceImpl<SchoolSectionMapper, S
             }
             vos.add(vo);
         }
-        return PageWrapMapper.wrap(vos, new PageUtil(total.intValue(), baseQueryDto.getPageNum(), baseQueryDto.getPageSize()));
+        return PageWrapMapper.wrap(vos, new PageUtil(total.intValue(), baseQueryDto.getPage(), baseQueryDto.getPage_size()));
     }
 
     @Override

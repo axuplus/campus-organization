@@ -117,7 +117,7 @@ public class SchoolTeacherServiceImpl extends ServiceImpl<SchoolTeacherMapper, S
         }
         QueryWrapper<SchoolTeacher> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("master_id", masterId).eq("section_id", id);
-        Page page = PageHelper.startPage(baseQueryDto.getPageNum(), baseQueryDto.getPageSize());
+        Page page = PageHelper.startPage(baseQueryDto.getPage(), baseQueryDto.getPage_size());
         List<SchoolTeacher> teachers = teacherMapper.selectList(queryWrapper);
         Long total = page.getTotal();
         if (PublicUtil.isNotEmpty(teachers)) {
@@ -152,7 +152,7 @@ public class SchoolTeacherServiceImpl extends ServiceImpl<SchoolTeacherMapper, S
                 }
                 list.add(vo);
             });
-            return PageWrapMapper.wrap(list, new PageUtil(total.intValue(), baseQueryDto.getPageNum(), baseQueryDto.getPageSize()));
+            return PageWrapMapper.wrap(list, new PageUtil(total.intValue(), baseQueryDto.getPage(), baseQueryDto.getPage_size()));
         }
         return null;
     }
@@ -239,7 +239,7 @@ public class SchoolTeacherServiceImpl extends ServiceImpl<SchoolTeacherMapper, S
                 .like("phone", context).or()
                 .like("join_time", context)
                 .orderByAsc("created_time");
-        Page page = PageHelper.startPage(baseQueryDto.getPageNum(), baseQueryDto.getPageSize());
+        Page page = PageHelper.startPage(baseQueryDto.getPage(), baseQueryDto.getPage_size());
         List<SchoolTeacher> teachers = teacherMapper.selectList(queryWrapper);
         Long total = page.getTotal();
         List<SchoolTeacherVo> list = new ArrayList<>();
@@ -273,7 +273,7 @@ public class SchoolTeacherServiceImpl extends ServiceImpl<SchoolTeacherMapper, S
                 }
                 list.add(vo);
             });
-            return PageWrapMapper.wrap(list, new PageUtil(total.intValue(), baseQueryDto.getPageNum(), baseQueryDto.getPageSize()));
+            return PageWrapMapper.wrap(list, new PageUtil(total.intValue(), baseQueryDto.getPage(), baseQueryDto.getPage_size()));
         }
         return PageWrapMapper.wrap(200, "暂无数据");
     }

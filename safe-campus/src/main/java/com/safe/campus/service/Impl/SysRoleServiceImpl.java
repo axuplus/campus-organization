@@ -88,7 +88,7 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> impl
     public PageWrapper<List<SysRoleVo>> listRole(Long masterId, BaseQueryDto baseQueryDto, LoginAuthDto loginAuthDto) {
         QueryWrapper<SysRole> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("master_id", masterId);
-        Page page = PageHelper.startPage(baseQueryDto.getPageNum(), baseQueryDto.getPageSize());
+        Page page = PageHelper.startPage(baseQueryDto.getPage(), baseQueryDto.getPage_size());
         List<SysRole> sysRoles = roleMapper.selectList(queryWrapper);
         Long total = page.getTotal();
         if (PublicUtil.isNotEmpty(sysRoles)) {
@@ -97,7 +97,7 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> impl
                 SysRoleVo map = new ModelMapper().map(s, SysRoleVo.class);
                 vos.add(map);
             });
-            return PageWrapMapper.wrap(vos, new PageUtil(total.intValue(), baseQueryDto.getPageNum(), baseQueryDto.getPageSize()));
+            return PageWrapMapper.wrap(vos, new PageUtil(total.intValue(), baseQueryDto.getPage(), baseQueryDto.getPage_size()));
         }
         return PageWrapMapper.wrap(200, "暂无数据");
     }

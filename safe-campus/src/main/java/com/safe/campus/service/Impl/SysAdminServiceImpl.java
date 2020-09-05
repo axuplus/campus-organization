@@ -146,7 +146,7 @@ public class SysAdminServiceImpl extends ServiceImpl<SysAdminUserMapper, SysAdmi
     public PageWrapper<List<AdminUserVo>> listAdminUser(Long masterId, LoginAuthDto loginAuthDto, BaseQueryDto baseQueryDto) {
         QueryWrapper<SysAdmin> adminQueryWrapper = new QueryWrapper<>();
         adminQueryWrapper.eq("master_id",masterId);
-        Page page = PageHelper.startPage(baseQueryDto.getPageNum(), baseQueryDto.getPageSize());
+        Page page = PageHelper.startPage(baseQueryDto.getPage(), baseQueryDto.getPage_size());
         List<SysAdmin> sysAdmins = adminUserMapper.selectList(adminQueryWrapper);
         Long total = page.getTotal();
         if (PublicUtil.isNotEmpty(sysAdmins)) {
@@ -156,7 +156,7 @@ public class SysAdminServiceImpl extends ServiceImpl<SysAdminUserMapper, SysAdmi
                 map.setParentName(adminUserMapper.selectById(a.getCreateUser()).getUserName());
                 vos.add(map);
             });
-            return PageWrapMapper.wrap(vos, new PageUtil(total.intValue(), baseQueryDto.getPageNum(), baseQueryDto.getPageSize()));
+            return PageWrapMapper.wrap(vos, new PageUtil(total.intValue(), baseQueryDto.getPage(), baseQueryDto.getPage_size()));
         }
         return PageWrapMapper.wrap(200,"暂无数据");
     }

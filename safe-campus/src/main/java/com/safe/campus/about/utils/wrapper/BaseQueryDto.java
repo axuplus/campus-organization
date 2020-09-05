@@ -8,8 +8,8 @@ public class BaseQueryDto {
     /**
      * 当前页
      */
-    @ApiModelProperty(value = "页码", name = "pageNum")
-    private Integer pageNum = 1
+    @ApiModelProperty(value = "页码", name = "page")
+    private Integer page = 1
 
 
 
@@ -17,10 +17,10 @@ public class BaseQueryDto {
             ;
 
     /**
-     * 每页条数
+     * 每页条数 别问我为什么下划线 前端让改的
      */
-    @ApiModelProperty(value = "条数", name = "pageSize")
-    private Integer pageSize = 3;
+    @ApiModelProperty(value = "条数", name = "page_size")
+    private Integer page_size = 3;
 
 
 }

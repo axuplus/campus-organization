@@ -154,7 +154,7 @@ public class SchoolStudentServiceImpl extends ServiceImpl<SchoolStudentMapper, S
         if (null != context) {
             QueryWrapper<SchoolStudent> queryWrapper = new QueryWrapper<>();
             queryWrapper.eq("master_id", masterId).like("s_name", context);
-            Page page = PageHelper.startPage(baseQueryDto.getPageNum(), baseQueryDto.getPageSize());
+            Page page = PageHelper.startPage(baseQueryDto.getPage(), baseQueryDto.getPage_size());
             List<SchoolStudent> students = studentMapper.selectList(queryWrapper);
             Long total = page.getTotal();
             if (PublicUtil.isNotEmpty(students)) {
@@ -184,7 +184,7 @@ public class SchoolStudentServiceImpl extends ServiceImpl<SchoolStudentMapper, S
                     }
                     vos.add(listVo);
                 });
-                return PageWrapMapper.wrap(vos, new PageUtil(total.intValue(), baseQueryDto.getPageNum(), baseQueryDto.getPageSize()));
+                return PageWrapMapper.wrap(vos, new PageUtil(total.intValue(), baseQueryDto.getPage(), baseQueryDto.getPage_size()));
             }
             return PageWrapMapper.wrap(200, "暂无数据");
         }
@@ -373,7 +373,7 @@ public class SchoolStudentServiceImpl extends ServiceImpl<SchoolStudentMapper, S
         if (null != masterId && null != classId) {
             QueryWrapper<SchoolStudent> queryWrapper = new QueryWrapper<>();
             queryWrapper.eq("master_id", masterId).eq("class_id", classId);
-            Page page = PageHelper.startPage(baseQueryDto.getPageNum(), baseQueryDto.getPageSize());
+            Page page = PageHelper.startPage(baseQueryDto.getPage(), baseQueryDto.getPage_size());
             List<SchoolStudent> students = studentMapper.selectList(queryWrapper);
             Long total = page.getTotal();
             if (PublicUtil.isNotEmpty(students)) {
@@ -403,7 +403,7 @@ public class SchoolStudentServiceImpl extends ServiceImpl<SchoolStudentMapper, S
                     }
                     vos.add(listVo);
                 });
-                return PageWrapMapper.wrap(vos, new PageUtil(total.intValue(), baseQueryDto.getPageNum(), baseQueryDto.getPageSize()));
+                return PageWrapMapper.wrap(vos, new PageUtil(total.intValue(), baseQueryDto.getPage(), baseQueryDto.getPage_size()));
             }
         }
         return null;

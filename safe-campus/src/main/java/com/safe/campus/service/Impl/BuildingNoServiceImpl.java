@@ -157,7 +157,7 @@ public class BuildingNoServiceImpl extends ServiceImpl<BuildingNoMapper, Buildin
     public PageWrapper<List<BuildingStudentListVo>> levelStudentList(Long id, BaseQueryDto baseQueryDto) {
         QueryWrapper<BuildingStudent> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("level_id", id);
-        Page page = PageHelper.startPage(baseQueryDto.getPageNum(), baseQueryDto.getPageSize());
+        Page page = PageHelper.startPage(baseQueryDto.getPage(), baseQueryDto.getPage_size());
         List<BuildingStudent> buildingStudents = buildingStudentMapper.selectList(queryWrapper);
         Long total = page.getTotal();
         if (PublicUtil.isNotEmpty(buildingStudents)) {
@@ -183,7 +183,7 @@ public class BuildingNoServiceImpl extends ServiceImpl<BuildingNoMapper, Buildin
                 }
                 list.add(listVo);
             });
-            return PageWrapMapper.wrap(list, new PageUtil(total.intValue(), baseQueryDto.getPageNum(), baseQueryDto.getPageSize()));
+            return PageWrapMapper.wrap(list, new PageUtil(total.intValue(), baseQueryDto.getPage(), baseQueryDto.getPage_size()));
         }
         return null;
     }
@@ -328,7 +328,7 @@ public class BuildingNoServiceImpl extends ServiceImpl<BuildingNoMapper, Buildin
             BuildingNo buildingNo = noMapper.selectById(id);
             QueryWrapper<BuildingLevel> queryWrapper = new QueryWrapper<>();
             queryWrapper.eq("building_no_id", id);
-            Page page = PageHelper.startPage(baseQueryDto.getPageNum(), baseQueryDto.getPageSize());
+            Page page = PageHelper.startPage(baseQueryDto.getPage(), baseQueryDto.getPage_size());
             List<BuildingLevel> levels = levelMapper.selectList(queryWrapper);
             Long total = page.getTotal();
             if (PublicUtil.isNotEmpty(levels)) {
@@ -347,7 +347,7 @@ public class BuildingNoServiceImpl extends ServiceImpl<BuildingNoMapper, Buildin
                     list.add(buildingManagerVo);
                 });
             }
-            return PageWrapMapper.wrap(list, new PageUtil(total.intValue(), baseQueryDto.getPageNum(), baseQueryDto.getPageSize()));
+            return PageWrapMapper.wrap(list, new PageUtil(total.intValue(), baseQueryDto.getPage(), baseQueryDto.getPage_size()));
         }
         return null;
     }
@@ -415,7 +415,7 @@ public class BuildingNoServiceImpl extends ServiceImpl<BuildingNoMapper, Buildin
         if (null != id) {
             QueryWrapper<BuildingStudent> queryWrapper = new QueryWrapper<>();
             queryWrapper.eq("room_id", id);
-            Page page = PageHelper.startPage(baseQueryDto.getPageNum(), baseQueryDto.getPageSize());
+            Page page = PageHelper.startPage(baseQueryDto.getPage(), baseQueryDto.getPage_size());
             List<BuildingStudent> buildingStudents = buildingStudentMapper.selectList(queryWrapper);
             Long total = page.getTotal();
             if (PublicUtil.isNotEmpty(buildingStudents)) {
@@ -441,7 +441,7 @@ public class BuildingNoServiceImpl extends ServiceImpl<BuildingNoMapper, Buildin
                     }
                     list.add(listVo);
                 });
-                return PageWrapMapper.wrap(list, new PageUtil(total.intValue(), baseQueryDto.getPageNum(), baseQueryDto.getPageSize()));
+                return PageWrapMapper.wrap(list, new PageUtil(total.intValue(), baseQueryDto.getPage(), baseQueryDto.getPage_size()));
             }
         }
         return null;

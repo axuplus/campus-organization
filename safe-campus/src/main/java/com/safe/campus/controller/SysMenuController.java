@@ -9,10 +9,7 @@ import com.safe.campus.service.SysMenuService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -35,7 +32,7 @@ public class SysMenuController extends BaseController {
     private SysMenuService menuService;
 
 
-    @PostMapping("/listMenu")
+    @GetMapping("/listMenu")
     @Permission(url = qxurl, type = PermissionType.QUERY)
     @ApiOperation("权限列表")
     public Wrapper listMenu() {

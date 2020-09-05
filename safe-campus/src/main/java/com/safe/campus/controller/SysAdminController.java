@@ -29,7 +29,7 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/sys/admin")
-@Api(value = "admin接口", tags = {"admin接口"})
+// @Api(value = "admin接口", tags = {"admin接口"})
 public class SysAdminController extends BaseController {
 
     private final static String qxurl = "/sys/admin";
