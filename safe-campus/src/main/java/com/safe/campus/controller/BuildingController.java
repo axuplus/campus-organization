@@ -129,16 +129,13 @@ public class BuildingController extends BaseController {
     }
 
     @Permission(url = qxurl, type = PermissionType.QUERY)
-    @ApiOperation("楼层 学生列表")
-    @GetMapping("/levelStudentList")
-    public  PageWrapper<List<BuildingStudentListVo>> levelStudentList(@ApiParam("楼层ID ") @RequestParam("id") Long id, BaseQueryDto baseQueryDto) {
-        return buildingService.levelStudentList(id, baseQueryDto);
-    }
-
-    @ApiOperation("宿舍 学生列表")
-    @GetMapping("/roomStudentList")
-    public  PageWrapper<List<BuildingStudentListVo>> roomStudentList(@ApiParam("宿舍ID ") @RequestParam("id") Long id, BaseQueryDto baseQueryDto) {
-        return buildingService.roomStudentList(id, baseQueryDto);
+    @ApiOperation("楼层/宿舍 学生列表")
+    @GetMapping("/studentList")
+    public  PageWrapper<List<BuildingStudentListVo>> studentList(@ApiParam("1:全部2:楼层3:宿舍")@RequestParam("type") Integer type,
+                                                                 @ApiParam("楼层/宿舍ID ") @RequestParam("id") Long id,
+                                                                 @RequestParam("masterId")Long masterId,
+                                                                 BaseQueryDto baseQueryDto) {
+        return buildingService.studentList(type,id,masterId, baseQueryDto);
     }
 
     @Permission(url = qxurl, type = PermissionType.QUERY)

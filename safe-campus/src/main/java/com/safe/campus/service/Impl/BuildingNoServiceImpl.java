@@ -14,6 +14,7 @@ import com.safe.campus.model.domain.*;
 import com.safe.campus.model.dto.BuildingBedDto;
 import com.safe.campus.model.dto.BuildingNoMapperDto;
 import com.safe.campus.model.dto.BuildingStudentDto;
+import com.safe.campus.model.dto.BuildingStudentListDto;
 import com.safe.campus.model.vo.*;
 import com.safe.campus.service.BuildingService;
 import com.safe.campus.service.SchoolClassService;
@@ -152,42 +153,6 @@ public class BuildingNoServiceImpl extends ServiceImpl<BuildingNoMapper, Buildin
         buildingStudentMapper.insert(student);
         return WrapMapper.ok("保存成功");
     }
-
-    @Override
-    public PageWrapper<List<BuildingStudentListVo>> levelStudentList(Long id, BaseQueryDto baseQueryDto) {
-        QueryWrapper<BuildingStudent> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("level_id", id);
-        Page page = PageHelper.startPage(baseQueryDto.getPage(), baseQueryDto.getPage_size());
-        List<BuildingStudent> buildingStudents = buildingStudentMapper.selectList(queryWrapper);
-        Long total = page.getTotal();
-        if (PublicUtil.isNotEmpty(buildingStudents)) {
-            List<BuildingStudentListVo> list = new ArrayList<>();
-            buildingStudents.forEach(s -> {
-                BuildingStudentListVo listVo = new BuildingStudentListVo();
-                listVo.setId(s.getId());
-                listVo.setBedNo(bedMapper.selectById(s.getBedId()).getBedName());
-                BuildingRoom room = roomMapper.selectById(s.getRoomId());
-                listVo.setBuildingRoom(room.getBuildingRoom());
-                BuildingLevel level = levelMapper.selectById(room.getBuildingLevelId());
-                listVo.setBuildingLevel(level.getBuildingLevel());
-                listVo.setBuildingNo(noMapper.selectById(level.getBuildingNoId()).getBuildingNo());
-                SchoolStudent student = studentService.selectById(s.getStudentId());
-                if (PublicUtil.isNotEmpty(student)) {
-                    listVo.setState(1);
-                    listVo.setSName(student.getSName());
-                    listVo.setSNumber(student.getSNumber());
-                    SchoolStudent selectById = studentService.selectById(s.getStudentId());
-                    listVo.setClassInfo(selectById.getClassName() + selectById.getClassInfoName());
-                } else {
-                    listVo.setState(0);
-                }
-                list.add(listVo);
-            });
-            return PageWrapMapper.wrap(list, new PageUtil(total.intValue(), baseQueryDto.getPage(), baseQueryDto.getPage_size()));
-        }
-        return null;
-    }
-
 
     @Override
     public Wrapper<BuildingRoomVo> getBuilding(Long id) {
@@ -410,42 +375,6 @@ public class BuildingNoServiceImpl extends ServiceImpl<BuildingNoMapper, Buildin
         return WrapMapper.error("暂无数据");
     }
 
-    @Override
-    public PageWrapper<List<BuildingStudentListVo>> roomStudentList(Long id, BaseQueryDto baseQueryDto) {
-        if (null != id) {
-            QueryWrapper<BuildingStudent> queryWrapper = new QueryWrapper<>();
-            queryWrapper.eq("room_id", id);
-            Page page = PageHelper.startPage(baseQueryDto.getPage(), baseQueryDto.getPage_size());
-            List<BuildingStudent> buildingStudents = buildingStudentMapper.selectList(queryWrapper);
-            Long total = page.getTotal();
-            if (PublicUtil.isNotEmpty(buildingStudents)) {
-                List<BuildingStudentListVo> list = new ArrayList<>();
-                buildingStudents.forEach(s -> {
-                    BuildingStudentListVo listVo = new BuildingStudentListVo();
-                    listVo.setId(s.getId());
-                    listVo.setBedNo(bedMapper.selectById(s.getBedId()).getBedName());
-                    BuildingRoom room = roomMapper.selectById(s.getRoomId());
-                    listVo.setBuildingRoom(room.getBuildingRoom());
-                    BuildingLevel level = levelMapper.selectById(room.getBuildingLevelId());
-                    listVo.setBuildingLevel(level.getBuildingLevel());
-                    listVo.setBuildingNo(noMapper.selectById(level.getBuildingNoId()).getBuildingNo());
-                    SchoolStudent student = studentService.selectById(s.getStudentId());
-                    if (PublicUtil.isNotEmpty(student)) {
-                        listVo.setState(1);
-                        listVo.setSName(student.getSName());
-                        listVo.setSNumber(student.getSNumber());
-                        SchoolStudent selectById = studentService.selectById(s.getStudentId());
-                        listVo.setClassInfo(selectById.getClassName() + selectById.getClassInfoName());
-                    } else {
-                        listVo.setState(0);
-                    }
-                    list.add(listVo);
-                });
-                return PageWrapMapper.wrap(list, new PageUtil(total.intValue(), baseQueryDto.getPage(), baseQueryDto.getPage_size()));
-            }
-        }
-        return null;
-    }
 
     @Override
     public Wrapper<Map<Long, String>> getBuildingTeachers(Long masterId) {
@@ -500,7 +429,110 @@ public class BuildingNoServiceImpl extends ServiceImpl<BuildingNoMapper, Buildin
 
     @Override
     public BuildingNoMapperDto checkBuildingInfo(Long masterId, String buildingNo, String buildingLevel, String buildingRoom, String buildingBed) {
-      return  noMapper.checkBuildingInfo(masterId,buildingNo,buildingLevel,buildingRoom,buildingBed);
+        return noMapper.checkBuildingInfo(masterId, buildingNo, buildingLevel, buildingRoom, buildingBed);
+    }
+
+    @Override
+    public PageWrapper<List<BuildingStudentListVo>> studentList(Integer type, Long id, Long masterId, BaseQueryDto baseQueryDto) {
+        if (3 == type) {
+            QueryWrapper<BuildingBed> queryWrapper = new QueryWrapper<>();
+            queryWrapper.eq("room_id", id);
+            Page page = PageHelper.startPage(baseQueryDto.getPage(), baseQueryDto.getPage_size());
+            List<BuildingBed> beds = bedMapper.selectList(queryWrapper);
+            Long total = page.getTotal();
+            if (PublicUtil.isNotEmpty(beds)) {
+                List<BuildingStudentListVo> list = new ArrayList<>();
+                beds.forEach(bed -> {
+                    BuildingStudent s = buildingStudentMapper.selectOne(new QueryWrapper<BuildingStudent>().eq("bed_id", bed.getId()));
+                    BuildingStudentListVo listVo = new BuildingStudentListVo();
+                    if (PublicUtil.isNotEmpty(s)) {
+                        System.err.println("s.getId() = " + s.getId());
+                        listVo.setId(s.getId());
+                        BuildingStudentListDto buildingStudentListDto = noMapper.checkBuildingInfoByIds(s.getNoId(), s.getLevelId(), s.getRoomId(), s.getBedId());
+                        listVo.setBedNo(buildingStudentListDto.getBedName());
+                        listVo.setBuildingRoom(buildingStudentListDto.getBuildingRoom());
+                        listVo.setBuildingLevel(buildingStudentListDto.getBuildingLevel());
+                        listVo.setBuildingNo(buildingStudentListDto.getBuildingNo());
+                        SchoolStudent student = studentService.selectById(s.getStudentId());
+                        listVo.setState(1);
+                        listVo.setSName(student.getSName());
+                        if (null != student.getSNumber()) {
+                            listVo.setSNumber(student.getSNumber());
+                        }
+                        if (null != student.getClassName() && null != student.getClassInfoName()) {
+                            listVo.setClassInfo(student.getClassName() + student.getClassInfoName());
+                        }
+                    } else {
+                        BuildingBedDto livingInfo = bedMapper.getLivingInfo(bed.getId());
+                        listVo.setBedId(bed.getId());
+                        listVo.setBedNo(livingInfo.getBedName());
+                        listVo.setBuildingRoom(livingInfo.getBuildingRoom());
+                        listVo.setBuildingLevel(livingInfo.getBuildingLevel());
+                        listVo.setBuildingNo(livingInfo.getBuildingNo());
+                        listVo.setState(0);
+                    }
+                    list.add(listVo);
+                });
+                return PageWrapMapper.wrap(list, new PageUtil(total.intValue(), baseQueryDto.getPage(), baseQueryDto.getPage_size()));
+            }
+        } else if (2 == type) {
+            QueryWrapper<BuildingStudent> queryWrapper = new QueryWrapper<>();
+            queryWrapper.eq("level_id", id);
+            Page page = PageHelper.startPage(baseQueryDto.getPage(), baseQueryDto.getPage_size());
+            List<BuildingStudent> buildingStudents = buildingStudentMapper.selectList(queryWrapper);
+            Long total = page.getTotal();
+            if (PublicUtil.isNotEmpty(buildingStudents)) {
+                List<BuildingStudentListVo> list = new ArrayList<>();
+                buildingStudents.forEach(s -> {
+                    BuildingStudentListVo listVo = new BuildingStudentListVo();
+                    listVo.setId(s.getId());
+                    BuildingStudentListDto buildingStudentListDto = noMapper.checkBuildingInfoByIds(s.getNoId(), s.getLevelId(), s.getRoomId(), s.getBedId());
+                    listVo.setBedNo(buildingStudentListDto.getBedName());
+                    listVo.setBuildingRoom(buildingStudentListDto.getBuildingRoom());
+                    listVo.setBuildingLevel(buildingStudentListDto.getBuildingLevel());
+                    listVo.setBuildingNo(buildingStudentListDto.getBuildingNo());
+                    SchoolStudent student = studentService.selectById(s.getStudentId());
+                    listVo.setState(1);
+                    listVo.setSName(student.getSName());
+                    if (null != student.getSNumber()) {
+                        listVo.setSNumber(student.getSNumber());
+                    }
+                    if (null != student.getClassName() && null != student.getClassInfoName()) {
+                        listVo.setClassInfo(student.getClassName() + student.getClassInfoName());
+                    }
+                    list.add(listVo);
+                });
+                return PageWrapMapper.wrap(list, new PageUtil(total.intValue(), baseQueryDto.getPage(), baseQueryDto.getPage_size()));
+            }
+        } else if (1 == type) {
+            Page page = PageHelper.startPage(baseQueryDto.getPage(), baseQueryDto.getPage_size());
+            List<BuildingStudent> thisSchoolStudent = buildingStudentMapper.getThisSchoolStudent(masterId);
+            Long total = page.getTotal();
+            if (PublicUtil.isNotEmpty(thisSchoolStudent)) {
+                List<BuildingStudentListVo> list = new ArrayList<>();
+                thisSchoolStudent.forEach(s -> {
+                    BuildingStudentListVo listVo = new BuildingStudentListVo();
+                    listVo.setId(s.getId());
+                    BuildingStudentListDto buildingStudentListDto = noMapper.checkBuildingInfoByIds(s.getNoId(), s.getLevelId(), s.getRoomId(), s.getBedId());
+                    listVo.setBedNo(buildingStudentListDto.getBedName());
+                    listVo.setBuildingRoom(buildingStudentListDto.getBuildingRoom());
+                    listVo.setBuildingLevel(buildingStudentListDto.getBuildingLevel());
+                    listVo.setBuildingNo(buildingStudentListDto.getBuildingNo());
+                    SchoolStudent student = studentService.selectById(s.getStudentId());
+                    listVo.setState(1);
+                    listVo.setSName(student.getSName());
+                    if (null != student.getSNumber()) {
+                        listVo.setSNumber(student.getSNumber());
+                    }
+                    if (null != student.getClassName() && null != student.getClassInfoName()) {
+                        listVo.setClassInfo(student.getClassName() + student.getClassInfoName());
+                    }
+                    list.add(listVo);
+                });
+                return PageWrapMapper.wrap(list, new PageUtil(total.intValue(), baseQueryDto.getPage(), baseQueryDto.getPage_size()));
+            }
+        }
+        return PageWrapMapper.wrap(200, "暂无数据");
     }
 
     @Override

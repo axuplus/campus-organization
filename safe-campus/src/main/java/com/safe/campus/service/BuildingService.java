@@ -51,10 +51,6 @@ public interface BuildingService extends IService<BuildingNo> {
 
     Wrapper saveBuildingStudent(BuildingStudentDto buildingStudentDto);
 
-    PageWrapper<List<BuildingStudentListVo>> levelStudentList(Long id, BaseQueryDto baseQueryDto);
-
-    PageWrapper<List<BuildingStudentListVo>> roomStudentList(Long id,BaseQueryDto baseQueryDto);
-
     Wrapper<Map<Long, String>> getBuildingTeachers(Long masterId);
 
     Wrapper<BuildingTeacherVo> getBuildingTeacher(Long levelId);
@@ -68,4 +64,7 @@ public interface BuildingService extends IService<BuildingNo> {
     BuildingBedDto getLivingInfoByStudentId(Long id);
 
     BuildingNoMapperDto checkBuildingInfo(Long masterId, String buildingNo, String buildingLevel, String buildingRoom, String buildingBed);
+
+    PageWrapper<List<BuildingStudentListVo>> studentList(Integer type, Long id,Long masterId, BaseQueryDto baseQueryDto);
+
 }

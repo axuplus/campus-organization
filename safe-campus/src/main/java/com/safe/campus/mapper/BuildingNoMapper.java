@@ -3,7 +3,9 @@ package com.safe.campus.mapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.safe.campus.model.domain.BuildingNo;
 import com.safe.campus.model.dto.BuildingNoMapperDto;
+import com.safe.campus.model.dto.BuildingStudentListDto;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 import org.springframework.stereotype.Component;
 
@@ -37,4 +39,23 @@ public interface BuildingNoMapper extends BaseMapper<BuildingNo> {
             "\tAND c.building_room = #{buildingRoom}\n" +
             "\tAND d.bed_name = #{buildingBed}")
     BuildingNoMapperDto checkBuildingInfo(Long masterId, String buildingNo, String buildingLevel, String buildingRoom, String buildingBed);
+
+
+    @Select("SELECT\n" +
+            "\ta.building_no,\n" +
+            "\tb.building_level,\n" +
+            "\tc.building_room,\n" +
+            "\td.bed_name \n" +
+            "FROM\n" +
+            "\tbuilding_no a,\n" +
+            "\tbuilding_level b,\n" +
+            "\tbuilding_room c,\n" +
+            "\tbuilding_bed d \n" +
+            "WHERE\n" +
+            "\ta.id = #{aId}\n" +
+            "\tAND b.id = #{bId}\n" +
+            "\tAND c.id = #{cId}\n" +
+            "\tAND d.id = #{dId}")
+    BuildingStudentListDto checkBuildingInfoByIds(@Param("aId") Long aId,@Param("bId")Long bId,@Param("cId")Long cId,@Param("dId")Long dId);
+
 }
