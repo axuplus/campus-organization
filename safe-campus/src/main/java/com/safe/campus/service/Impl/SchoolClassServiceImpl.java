@@ -312,7 +312,7 @@ public class SchoolClassServiceImpl extends ServiceImpl<SchoolClassMapper, Schoo
     public Wrapper<List<SchoolClassSearchVo>> listClass(Long masterId, Long id, Integer type) {
         if (1 == type) {
             QueryWrapper<SchoolClass> queryWrapper = new QueryWrapper<>();
-            queryWrapper.eq("id", id).eq("is_delete", 0).eq("master_id", masterId).orderByAsc("created_time");
+            queryWrapper.eq("id", id).eq("is_delete", 0).eq("master_id", masterId).orderByDesc("created_time");
             SchoolClass schoolClass = schoolClassMapper.selectOne(queryWrapper);
             List<SchoolClassSearchVo> list = new ArrayList<>();
             QueryWrapper<SchoolClassInfo> query = new QueryWrapper<>();
@@ -370,7 +370,7 @@ public class SchoolClassServiceImpl extends ServiceImpl<SchoolClassMapper, Schoo
             }
         } else {
             // 全部
-            List<SchoolClass> classes = schoolClassMapper.selectList(new QueryWrapper<SchoolClass>().eq("master_id", masterId).orderByAsc("created_time"));
+            List<SchoolClass> classes = schoolClassMapper.selectList(new QueryWrapper<SchoolClass>().eq("master_id", masterId).orderByDesc("created_time"));
             List<SchoolClassSearchVo> list = new ArrayList<>();
             for (SchoolClass schoolClass : classes) {
                 SchoolClassSearchVo vo = new SchoolClassSearchVo();

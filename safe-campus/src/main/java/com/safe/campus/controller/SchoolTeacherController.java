@@ -53,8 +53,11 @@ public class SchoolTeacherController extends BaseController {
     @Permission(url = qxurl, type = PermissionType.QUERY)
     @GetMapping("/list")
     @ApiOperation("获取某个部门下面的教师列表")
-    public PageWrapper<List<SchoolTeacherVo>> listTeacherInfo(@RequestParam("masterId") Long masterId, @RequestParam("sectionId") Long id, BaseQueryDto baseQueryDto) {
-        return teacherService.listTeacherInfo(masterId, id, baseQueryDto);
+    public PageWrapper<List<SchoolTeacherVo>> listTeacherInfo(@ApiParam("1全部2部门")@RequestParam("type")Integer type,
+                                                              @RequestParam("masterId") Long masterId,
+                                                              @RequestParam("sectionId") Long id,
+                                                              BaseQueryDto baseQueryDto) {
+        return teacherService.listTeacherInfo(type,masterId, id, baseQueryDto);
     }
 
 

@@ -255,7 +255,7 @@ public class SchoolStudentServiceImpl extends ServiceImpl<SchoolStudentMapper, S
                     student.setClassInfoId(getThisStudentClassInfo(s.getClassInfo()));
                     student.setClassInfoName(s.getClassInfo());
                 }
-                if(null != s.getType()) {
+                if (null != s.getType()) {
                     if (1 == checkStudentType(s.getType())) {
                         student.setType(1);
                         // 检查床位
@@ -346,7 +346,7 @@ public class SchoolStudentServiceImpl extends ServiceImpl<SchoolStudentMapper, S
                             throw new BizException(ErrorCodeEnum.PUB10000019);
                         }
                         QueryWrapper<SchoolStudent> studentQueryWrapper = new QueryWrapper<>();
-                        studentQueryWrapper.eq("s_name", name).eq("id_number", idNumber).eq("master_id",masterId);
+                        studentQueryWrapper.eq("s_name", name).eq("id_number", idNumber).eq("master_id", masterId);
                         SchoolStudent student = studentMapper.selectOne(studentQueryWrapper);
                         if (PublicUtil.isEmpty(student)) {
                             throw new BizException(ErrorCodeEnum.PUB10000020);
@@ -369,10 +369,15 @@ public class SchoolStudentServiceImpl extends ServiceImpl<SchoolStudentMapper, S
     }
 
     @Override
-    public PageWrapper<List<SchoolStudentListVo>> listStudent(Long masterId, Long classId, BaseQueryDto baseQueryDto) {
-        if (null != masterId && null != classId) {
-            QueryWrapper<SchoolStudent> queryWrapper = new QueryWrapper<>();
-            queryWrapper.eq("master_id", masterId).eq("class_id", classId);
+    public PageWrapper<List<SchoolStudentListVo>> listStudent(Integer type, Long masterId, Long id, BaseQueryDto baseQueryDto) {
+        QueryWrapper<SchoolStudent> queryWrapper = new QueryWrapper<>();
+        if (1 == type) {
+            queryWrapper.eq("master_id", masterId).orderByDesc("created_time");
+        } else if (2 == type) {
+            queryWrapper.eq("master_id", masterId).eq("class_id", id).orderByDesc("created_time");
+        } else if (3 == type) {
+            queryWrapper.eq("master_id", masterId).eq("class_info_id", id).orderByDesc("created_time");
+        }
             Page page = PageHelper.startPage(baseQueryDto.getPage(), baseQueryDto.getPage_size());
             List<SchoolStudent> students = studentMapper.selectList(queryWrapper);
             Long total = page.getTotal();
@@ -381,6 +386,7 @@ public class SchoolStudentServiceImpl extends ServiceImpl<SchoolStudentMapper, S
                 students.forEach(s -> {
                     SchoolStudentListVo listVo = new SchoolStudentListVo();
                     listVo.setId(s.getId());
+                    listVo.setSName(s.getSName());
                     listVo.setIdNumber(s.getIdNumber());
                     listVo.setSNumber(s.getSNumber());
                     if (null != s.getClassId()) {
@@ -405,8 +411,7 @@ public class SchoolStudentServiceImpl extends ServiceImpl<SchoolStudentMapper, S
                 });
                 return PageWrapMapper.wrap(vos, new PageUtil(total.intValue(), baseQueryDto.getPage(), baseQueryDto.getPage_size()));
             }
-        }
-        return null;
+        return PageWrapMapper.wrap(200,"暂无数据");
     }
 
 

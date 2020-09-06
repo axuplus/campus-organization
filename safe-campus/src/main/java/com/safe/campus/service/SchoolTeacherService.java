@@ -25,7 +25,7 @@ public interface SchoolTeacherService extends IService<SchoolTeacher> {
 
     Wrapper saveTeacherInfo(TeacherInfoDto teacherInfoDto, LoginAuthDto loginAuthDto);
 
-    PageWrapper<List<SchoolTeacherVo>> listTeacherInfo(Long masterId, Long id, BaseQueryDto baseQueryDto);
+    PageWrapper<List<SchoolTeacherVo>> listTeacherInfo(Integer type,Long masterId, Long id, BaseQueryDto baseQueryDto);
 
     Wrapper deleteTeacherInfo(Long id);
 

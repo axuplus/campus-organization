@@ -79,8 +79,11 @@ public class SchoolStudentController extends BaseController {
     @Permission(url = qxurl,type = PermissionType.QUERY)
     @ApiOperation("学生列表")
     @GetMapping("/list")
-    public PageWrapper<List<SchoolStudentListVo>> listStudent(@RequestParam("masterId")Long masterId,@RequestParam("classId")Long classId,BaseQueryDto baseQueryDto){
-        return schoolStudentService.listStudent(masterId,classId,baseQueryDto);
+    public PageWrapper<List<SchoolStudentListVo>> listStudent(@ApiParam("1全部2年级3班级")@RequestParam("type")Integer type,
+                                                              @RequestParam("masterId")Long masterId,
+                                                              @ApiParam("type=2的话就是年级 3的话就是班级id")@RequestParam("id")Long id,
+                                                              BaseQueryDto baseQueryDto){
+        return schoolStudentService.listStudent(type,masterId,id,baseQueryDto);
     }
 
     @Permission(url = qxurl,type = PermissionType.ADD)

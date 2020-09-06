@@ -111,50 +111,50 @@ public class SchoolTeacherServiceImpl extends ServiceImpl<SchoolTeacherMapper, S
 
 
     @Override
-    public PageWrapper<List<SchoolTeacherVo>> listTeacherInfo(Long masterId, Long id, BaseQueryDto baseQueryDto) {
-        if (null == id) {
-            throw new BizException(ErrorCodeEnum.PUB10000033);
-        }
+    public PageWrapper<List<SchoolTeacherVo>> listTeacherInfo(Integer type, Long masterId, Long id, BaseQueryDto baseQueryDto) {
         QueryWrapper<SchoolTeacher> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("master_id", masterId).eq("section_id", id);
-        Page page = PageHelper.startPage(baseQueryDto.getPage(), baseQueryDto.getPage_size());
-        List<SchoolTeacher> teachers = teacherMapper.selectList(queryWrapper);
-        Long total = page.getTotal();
-        if (PublicUtil.isNotEmpty(teachers)) {
-            List<SchoolTeacherVo> list = new ArrayList<>();
-            teachers.forEach(teacher -> {
-                SchoolTeacherVo vo = new ModelMapper().map(teacher, SchoolTeacherVo.class);
-                vo.setPhoto(sysFileService.getFileById(teacher.getImgId()).getFileUrl());
-                // 关联班级
-                SchoolClassInfo classInfoByTid = classInfoMapper.getClassInfoByTid(teacher.getId());
-                if (PublicUtil.isNotEmpty(classInfoByTid)) {
-                    SchoolClass schoolClass = classMapper.selectById(classInfoByTid.getClassId());
-                    vo.setClassInformation(schoolClass.getClassName() + " " + classInfoByTid.getClassInfoName());
-                }
-                // 部门
-                SchoolSection section = sectionMapper.selectById(teacher.getSectionId());
-                System.out.println("section = " + section);
-                if (null != section) {
-                    vo.setSectionName(section.getSectionName());
-                }
-                SysAdmin adminUserByTId = adminUserMapper.getAdminUserByTId(teacher.getId());
-                if (PublicUtil.isNotEmpty(adminUserByTId)) {
-                    // 此教职工下面关联的账号
-                    QueryWrapper<SysUserRole> userRoleQueryWrapper = new QueryWrapper<>();
-                    userRoleQueryWrapper.eq("user_id", adminUserByTId.getId());
-                    List<SysUserRole> userRoles = userRoleMapper.selectList(userRoleQueryWrapper);
-                    if (PublicUtil.isNotEmpty(userRoles)) {
-                        List<Long> ids = userRoles.stream().map(SysUserRole::getRoleId).collect(Collectors.toList());
-                        List<SysRole> roles = roleMapper.selectBatchIds(ids);
-                        // 此账号下面关联的多个角色
-                        vo.setRoleInfo(roles.stream().collect(Collectors.toMap(SysRole::getId, SysRole::getRoleName)));
-                    }
-                }
-                list.add(vo);
-            });
-            return PageWrapMapper.wrap(list, new PageUtil(total.intValue(), baseQueryDto.getPage(), baseQueryDto.getPage_size()));
+        if (2 == type) {
+            queryWrapper.eq("master_id", masterId).eq("section_id", id).orderByDesc("created_time ");
+        }else if(1 == type) {
+            queryWrapper.eq("master_id", masterId).orderByDesc("created_time ");
         }
-        return null;
+            Page page = PageHelper.startPage(baseQueryDto.getPage(), baseQueryDto.getPage_size());
+            List<SchoolTeacher> teachers = teacherMapper.selectList(queryWrapper);
+            Long total = page.getTotal();
+            if (PublicUtil.isNotEmpty(teachers)) {
+                List<SchoolTeacherVo> list = new ArrayList<>();
+                teachers.forEach(teacher -> {
+                    SchoolTeacherVo vo = new ModelMapper().map(teacher, SchoolTeacherVo.class);
+                    vo.setPhoto(sysFileService.getFileById(teacher.getImgId()).getFileUrl());
+                    // 关联班级
+                    SchoolClassInfo classInfoByTid = classInfoMapper.getClassInfoByTid(teacher.getId());
+                    if (PublicUtil.isNotEmpty(classInfoByTid)) {
+                        SchoolClass schoolClass = classMapper.selectById(classInfoByTid.getClassId());
+                        vo.setClassInformation(schoolClass.getClassName() + " " + classInfoByTid.getClassInfoName());
+                    }
+                    // 部门
+                    SchoolSection section = sectionMapper.selectById(teacher.getSectionId());
+                    if (null != section) {
+                        vo.setSectionName(section.getSectionName());
+                    }
+                    SysAdmin adminUserByTId = adminUserMapper.getAdminUserByTId(teacher.getId());
+                    if (PublicUtil.isNotEmpty(adminUserByTId)) {
+                        // 此教职工下面关联的账号
+                        QueryWrapper<SysUserRole> userRoleQueryWrapper = new QueryWrapper<>();
+                        userRoleQueryWrapper.eq("user_id", adminUserByTId.getId());
+                        List<SysUserRole> userRoles = userRoleMapper.selectList(userRoleQueryWrapper);
+                        if (PublicUtil.isNotEmpty(userRoles)) {
+                            List<Long> ids = userRoles.stream().map(SysUserRole::getRoleId).collect(Collectors.toList());
+                            List<SysRole> roles = roleMapper.selectBatchIds(ids);
+                            // 此账号下面关联的多个角色
+                            vo.setRoleInfo(roles.stream().collect(Collectors.toMap(SysRole::getId, SysRole::getRoleName)));
+                        }
+                    }
+                    list.add(vo);
+                });
+                return PageWrapMapper.wrap(list, new PageUtil(total.intValue(), baseQueryDto.getPage(), baseQueryDto.getPage_size()));
+            }
+        return PageWrapMapper.wrap(200, "暂无数据");
     }
 
     @Override
@@ -238,7 +238,7 @@ public class SchoolTeacherServiceImpl extends ServiceImpl<SchoolTeacherMapper, S
                 .like("t_number", context).or()
                 .like("phone", context).or()
                 .like("join_time", context)
-                .orderByAsc("created_time");
+                .orderByDesc("created_time");
         Page page = PageHelper.startPage(baseQueryDto.getPage(), baseQueryDto.getPage_size());
         List<SchoolTeacher> teachers = teacherMapper.selectList(queryWrapper);
         Long total = page.getTotal();
@@ -281,6 +281,7 @@ public class SchoolTeacherServiceImpl extends ServiceImpl<SchoolTeacherMapper, S
 
     /**
      * excel导入
+     *
      * @param file
      * @return
      */
@@ -486,7 +487,7 @@ public class SchoolTeacherServiceImpl extends ServiceImpl<SchoolTeacherMapper, S
     }
 
     @Override
-    public Wrapper importTeacherPictureConcentrator(MultipartFile file, Long masterId,LoginAuthDto loginAuthDto) {
+    public Wrapper importTeacherPictureConcentrator(MultipartFile file, Long masterId, LoginAuthDto loginAuthDto) {
         if (file.isEmpty()) {
             logger.info("上传文件为空");
             throw new BizException(ErrorCodeEnum.PUB10000006);
@@ -524,7 +525,7 @@ public class SchoolTeacherServiceImpl extends ServiceImpl<SchoolTeacherMapper, S
                             throw new BizException(ErrorCodeEnum.PUB10000019);
                         }
                         QueryWrapper<SchoolTeacher> teacherQueryWrapper = new QueryWrapper<>();
-                        teacherQueryWrapper.eq("t_name", name).eq("phone", phone).eq("master_id",masterId);
+                        teacherQueryWrapper.eq("t_name", name).eq("phone", phone).eq("master_id", masterId);
                         SchoolTeacher teacher = teacherMapper.selectOne(teacherQueryWrapper);
                         if (PublicUtil.isEmpty(teacher)) {
                             throw new BizException(ErrorCodeEnum.PUB10000020);

@@ -42,6 +42,6 @@ public interface SchoolStudentService extends IService<SchoolStudent> {
 
     Wrapper importStudentPictureConcentrator(Long masterId,MultipartFile file, LoginAuthDto loginAuthDto);
 
-    PageWrapper<List<SchoolStudentListVo>> listStudent(Long masterId, Long classId, BaseQueryDto baseQueryDto);
+    PageWrapper<List<SchoolStudentListVo>> listStudent(Integer type,Long masterId, Long classId, BaseQueryDto baseQueryDto);
 
 }
