@@ -143,7 +143,7 @@ public class SchoolSectionServiceImpl extends ServiceImpl<SchoolSectionMapper, S
 
     @Override
     public PageWrapper<List<SchoolSectionVo>> listSchoolSection(Long masterId, Integer type, Long id, BaseQueryDto baseQueryDto) {
-        if (PublicUtil.isEmpty(id)) {
+        if (PublicUtil.isEmpty(masterId)) {
             return PageWrapMapper.wrap(500, "参数不能为空");
         }
         List<SchoolSection> list = null;
@@ -281,7 +281,7 @@ public class SchoolSectionServiceImpl extends ServiceImpl<SchoolSectionMapper, S
     @Override
     public Wrapper<Map<Long, String>> getSchools(Long masterId, LoginAuthDto loginAuthDto) {
         QueryWrapper<SchoolMaster> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("is_delete", 0).eq("master_id", masterId);
+        queryWrapper.eq("is_delete", 0).eq("id", masterId);
         List<SchoolMaster> masters = masterMapper.selectList(queryWrapper);
         if (PublicUtil.isNotEmpty(masters)) {
             return WrapMapper.ok(masters.stream().collect(Collectors.toMap(SchoolMaster::getId, SchoolMaster::getAreaName)));

@@ -93,7 +93,10 @@ public class SchoolSectionController extends BaseController {
     @Permission(url = qxurl,type = PermissionType.QUERY)
     @GetMapping("/list")
     @ApiOperation("获取部门信息列表")
-    public PageWrapper<List<SchoolSectionVo>> listSchoolSection(@RequestParam("masterId")Long masterId,@ApiParam("1:全部0:部门列表") @RequestParam("type")Integer type,@ApiParam("如果是学校节点不用传部门ID")@RequestParam(value = "sectionId",required = false)Long sectionId, BaseQueryDto baseQueryDto) {
+    public PageWrapper<List<SchoolSectionVo>> listSchoolSection(@RequestParam("masterId")Long masterId,
+                                                                @ApiParam("1:全部0:部门列表") @RequestParam("type")Integer type,
+                                                                @ApiParam("如果是学校节点不用传部门ID")@RequestParam(value = "sectionId", required = false)Long sectionId,
+                                                                BaseQueryDto baseQueryDto) {
         return sectionService.listSchoolSection(masterId,type,sectionId,baseQueryDto);
     }
 
