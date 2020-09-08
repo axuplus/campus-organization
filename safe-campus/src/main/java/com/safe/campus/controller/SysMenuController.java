@@ -5,6 +5,8 @@ import com.safe.campus.about.annotation.Permission;
 import com.safe.campus.about.annotation.PermissionType;
 import com.safe.campus.about.controller.BaseController;
 import com.safe.campus.about.utils.wrapper.Wrapper;
+import com.safe.campus.model.domain.SysModule;
+import com.safe.campus.model.vo.MenuListVo;
 import com.safe.campus.service.SysMenuService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -35,8 +37,8 @@ public class SysMenuController extends BaseController {
     @GetMapping("/listMenu")
     @Permission(url = qxurl, type = PermissionType.QUERY)
     @ApiOperation("权限列表")
-    public Wrapper listMenu() {
-        return menuService.listMenu();
+    public Wrapper<MenuListVo> listMenu(@RequestParam("roleId")Long roleId) {
+        return menuService.listMenu(roleId);
     }
 
     @PostMapping("/setMenu")

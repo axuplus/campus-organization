@@ -32,7 +32,7 @@ public interface SchoolSectionService extends IService<SchoolSection> {
 
     PageWrapper<List<SchoolSectionVo>> listSchoolSection(Long masterId,Integer type, Long id, BaseQueryDto baseQueryDto);
 
-    Wrapper searchSchoolSection(Long masterId,String name);
+    Wrapper<List<SchoolSectionVo>> searchSchoolSection(Long masterId,String name);
 
     Wrapper<List<SectionTeachersVo>> getCharge(Long masterId);
 

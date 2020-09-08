@@ -45,10 +45,10 @@ public class SysRoleController extends BaseController {
         return roleService.saveRole(masterId,roleName, description, getLoginAuthDto());
     }
 
-    @DeleteMapping("/deleteRole")
+    @DeleteMapping("/deleteRole/{id}")
     @Permission(url = qxurl, type = PermissionType.DEL)
     @ApiOperation("删除角色")
-    public Wrapper deleteRole(@RequestParam("id") Long id) {
+    public Wrapper deleteRole(@PathVariable("id") Long id) {
         return roleService.deleteRole(id, getLoginAuthDto());
     }
 
@@ -74,10 +74,10 @@ public class SysRoleController extends BaseController {
         return roleService.listRole(masterId,baseQueryDto,getLoginAuthDto());
     }
 
-    @PutMapping("/setRole")
+    @GetMapping("/setRole")
     @Permission(url = qxurl, type = PermissionType.EDIT)
     @ApiOperation("停用启用")
-    public Wrapper setRole(@RequestParam("id") Long id,@ApiParam("1：停用 0：启用") @RequestParam("state") Integer state) {
+    public Wrapper setRole(@RequestParam("id") Long id,@ApiParam("-1：停用 1：启用") @RequestParam("state") Integer state) {
         return roleService.setRole(id, state, getLoginAuthDto());
     }
 

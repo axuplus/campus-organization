@@ -1,21 +1,22 @@
 package com.safe.campus;
 
 
+import com.safe.campus.about.exception.BizException;
 import com.safe.campus.about.utils.Md5Utils;
 import com.safe.campus.about.utils.service.GobalInterface;
+import com.safe.campus.enums.ErrorCodeEnum;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 @SpringBootTest
+@Slf4j
 class SafeCampusApplicationTests {
 
 
@@ -37,5 +38,7 @@ class SafeCampusApplicationTests {
 
     @Test
     public void test3() {
+        List<Animal> zoo = new ArrayList<>();
+//        Optional.of(new Animal()).ifPresent(zoo.add());add
     }
 }

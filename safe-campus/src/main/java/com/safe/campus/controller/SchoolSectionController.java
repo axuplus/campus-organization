@@ -11,6 +11,7 @@ import com.safe.campus.model.dto.SchoolSectionInfoDto;
 import com.safe.campus.model.vo.SchoolSectionVo;
 import com.safe.campus.model.vo.SchoolTeacherVo;
 import com.safe.campus.model.vo.SectionTeachersVo;
+import com.safe.campus.model.vo.SectionTreeVo;
 import com.safe.campus.service.SchoolSectionService;
 import com.safe.campus.about.utils.wrapper.Wrapper;
 import io.swagger.annotations.Api;
@@ -46,7 +47,7 @@ public class SchoolSectionController extends BaseController {
 
     @GetMapping("/tree")
     @ApiOperation("2：获取部门以及下面节点")
-    public Wrapper getDetailsSchoolSection(@RequestParam("masterId") Long id) {
+    public Wrapper < List<SectionTreeVo>> getDetailsSchoolSection(@RequestParam("masterId") Long id) {
         return sectionService.getDetailsSection(id);
     }
 
@@ -61,7 +62,7 @@ public class SchoolSectionController extends BaseController {
     @Permission(url = qxurl,type = PermissionType.QUERY)
     @GetMapping("/get")
     @ApiOperation("获取部门信息")
-    public Wrapper getSchoolSection(@RequestParam("id") Long id) {
+    public Wrapper <SchoolSectionVo> getSchoolSection(@RequestParam("id") Long id) {
         return sectionService.getSchoolSection(id);
     }
 
@@ -100,7 +101,7 @@ public class SchoolSectionController extends BaseController {
     @Permission(url = qxurl,type = PermissionType.QUERY)
     @GetMapping("/search")
     @ApiOperation("搜索")
-    public Wrapper searchSchoolSection(@RequestParam("masterId")Long masterId,@RequestParam("context") String name) {
+    public Wrapper<List<SchoolSectionVo>> searchSchoolSection(@RequestParam("masterId")Long masterId,@RequestParam("context") String name) {
         return sectionService.searchSchoolSection(masterId,name);
     }
 }
