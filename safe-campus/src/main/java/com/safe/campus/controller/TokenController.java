@@ -5,6 +5,7 @@ import com.safe.campus.about.dto.LoginAuthDto;
 import com.safe.campus.about.utils.wrapper.WrapMapper;
 import com.safe.campus.about.utils.wrapper.Wrapper;
 import com.safe.campus.model.dto.LoginTokenDto;
+import com.safe.campus.model.dto.TokenDto;
 import com.safe.campus.model.vo.LoginTokenVo;
 import com.safe.campus.model.vo.ModuleConfVo;
 import com.safe.campus.service.TokenService;
@@ -31,8 +32,8 @@ public class TokenController extends BaseController {
      */
     @PostMapping(value = "/token")
     @ApiOperation(value = "获取token", notes = "获取token")
-    public Wrapper<LoginTokenVo> token(@RequestParam("userName") String userName, @RequestParam("password") String password) {
-        final LoginTokenVo result = tokenService.token(userName, password);
+    public Wrapper<LoginTokenVo> token(@RequestBody TokenDto tokenDto) {
+        final LoginTokenVo result = tokenService.token(tokenDto.getUserName(), tokenDto.getPassword());
         return WrapMapper.ok(result);
     }
 
