@@ -65,10 +65,8 @@ public class SchoolSectionController extends BaseController {
 
     @GetMapping("/superior")
     @ApiOperation("上级列表")
-    public Wrapper<List<SectionVo>> getSuperior(@ApiParam("1是第一层masterId 2就是部门的层级") @RequestParam("type") Integer type,
-                                                @RequestParam("masterId") Long masterId,
-                                                @RequestParam(value = "sectionId", required = false) Long sectionId) {
-        return sectionService.getSuperior(type, masterId, sectionId);
+    public Wrapper<List<SectionVo>> getSuperior(@ApiParam("学校ID")@RequestParam(value = "masterId") Long masterId) {
+        return sectionService.getSuperior(masterId);
     }
 
     @GetMapping("/charge")

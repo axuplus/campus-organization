@@ -92,15 +92,20 @@ public class SchoolSectionServiceImpl extends ServiceImpl<SchoolSectionMapper, S
 
     @Override
     public Wrapper editSchoolSection(SchoolSectionInfoDto schoolSectionInfoDto) {
-        log.info("========>>>>>>", schoolSectionInfoDto);
         if (PublicUtil.isEmpty(schoolSectionInfoDto)) {
             return WrapMapper.error("部门信息不能为空");
         }
         SchoolSection section = schoolSectionMapper.selectById(schoolSectionInfoDto.getId());
         section.setSectionName(schoolSectionInfoDto.getName());
         if (null != schoolSectionInfoDto.getPid() && 0 != schoolSectionInfoDto.getPid()) {
-            section.setPId(schoolSectionInfoDto.getPid());
-            section.setLevel(schoolSectionMapper.selectById(schoolSectionInfoDto.getPid()).getLevel() + 1);
+            if(0 == schoolSectionInfoDto.getType()) {
+                section.setPId(schoolSectionInfoDto.getPid());
+                section.setLevel(schoolSectionMapper.selectById(schoolSectionInfoDto.getPid()).getLevel() + 1);
+            }else {
+                // 直接换到学校下面了
+                section.setPId(0L);
+                section.setLevel(1);
+            }
         }
         if (null != schoolSectionInfoDto.getTId()) {
             section.setTId(schoolSectionInfoDto.getTId());
@@ -159,7 +164,6 @@ public class SchoolSectionServiceImpl extends ServiceImpl<SchoolSectionMapper, S
         Long total = null;
         if (0 == type) {
             subTrees = schoolSectionMapper.getSubTrees(id);
-            System.out.println("subTrees = " + subTrees);
             if (PublicUtil.isEmpty(subTrees)) {
                 return PageWrapMapper.wrap(200, "暂无数据");
             }
@@ -175,19 +179,19 @@ public class SchoolSectionServiceImpl extends ServiceImpl<SchoolSectionMapper, S
             return null;
         }
         List<SchoolSectionVo> vos = new ArrayList<>();
+        SchoolMaster schoolMaster = masterMapper.selectById(masterId);
         for (int i = 0; i < list.size(); i++) {
             SchoolSection section = list.get(i);
             SchoolSectionVo vo = new SchoolSectionVo();
             vo.setSectionId(section.getId());
             vo.setSectionName(section.getSectionName());
             vo.setState(section.getState());
-            SchoolSection pre = null;
-            if (0 == i) {
-                pre = list.get(i);
+            if (0 == section.getPId()) {
+                vo.setPreSectionName(schoolMaster.getAreaName());
             } else {
-                pre = list.get(i - 1);
+                SchoolSection pre = list.get(i - 1);
+                vo.setPreSectionName(pre.getSectionName());
             }
-            vo.setPreSectionName(pre.getSectionName());
             if (PublicUtil.isNotEmpty(section.getTId())) {
                 SchoolTeacher teacherBySection = teacherService.getTeacherBySection(section.getTId());
                 vo.setTId(teacherBySection.getId());
@@ -301,34 +305,27 @@ public class SchoolSectionServiceImpl extends ServiceImpl<SchoolSectionMapper, S
     }
 
     @Override
-    public Wrapper<List<SectionVo>> getSuperior(Integer type, Long masterId, Long sectionId) {
-        if (1 == type) {
+    public Wrapper<List<SectionVo>> getSuperior( Long masterId) {
             QueryWrapper<SchoolSection> sectionQueryWrapper = new QueryWrapper<>();
-            sectionQueryWrapper.eq("master_id", masterId).eq("level", 1).eq("p_id",0);
+            sectionQueryWrapper.eq("master_id", masterId);
             List<SchoolSection> schoolSections = schoolSectionMapper.selectList(sectionQueryWrapper);
             if (PublicUtil.isNotEmpty(schoolSections)) {
+                SchoolMaster master = masterMapper.selectById(masterId);
                 List<SectionVo> vos = new ArrayList<>();
+                SectionVo vo = new SectionVo();
+                vo.setType(1);
+                vo.setSectionId(master.getId());
+                vo.setSectionName(master.getAreaName());
+                vos.add(vo);
                 schoolSections.forEach(s -> {
                     SectionVo sectionVo = new SectionVo();
                     sectionVo.setSectionId(s.getId());
+                    sectionVo.setType(0);
                     sectionVo.setSectionName(s.getSectionName());
                     vos.add(sectionVo);
                 });
                 return WrapMapper.ok(vos);
             }
-        } else {
-            List<SchoolSection> schoolSections = schoolSectionMapper.selectList(new QueryWrapper<SchoolSection>().eq("p_id", sectionId).eq("master_id", masterId));
-            if (PublicUtil.isNotEmpty(schoolSections)) {
-                List<SectionVo> vos = new ArrayList<>();
-                schoolSections.forEach(s -> {
-                    SectionVo sectionVo = new SectionVo();
-                    sectionVo.setSectionId(s.getId());
-                    sectionVo.setSectionName(s.getSectionName());
-                    vos.add(sectionVo);
-                });
-                return WrapMapper.ok(vos);
-            }
-        }
         return WrapMapper.error("暂无下级部门");
     }
 }

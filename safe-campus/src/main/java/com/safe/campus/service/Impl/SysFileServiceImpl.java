@@ -1,6 +1,7 @@
 package com.safe.campus.service.Impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.safe.campus.about.utils.*;
 import com.safe.campus.enums.ErrorCodeEnum;
 import com.safe.campus.about.exception.BizException;
 import com.safe.campus.mapper.SysFileMapper;
@@ -8,10 +9,6 @@ import com.safe.campus.model.domain.SysFileDomain;
 import com.safe.campus.model.vo.FileVo;
 import com.safe.campus.model.vo.SysFileVo;
 import com.safe.campus.service.SysFileService;
-import com.safe.campus.about.utils.PathUtils;
-import com.safe.campus.about.utils.PictureUtils;
-import com.safe.campus.about.utils.PublicUtil;
-import com.safe.campus.about.utils.StringUtils;
 import com.safe.campus.about.utils.service.GobalInterface;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -78,7 +75,6 @@ public class SysFileServiceImpl extends ServiceImpl<SysFileMapper,SysFileDomain>
             throw new BizException(ErrorCodeEnum.PUB10000005);
         }
         filePath = imgPath + File.separator + fileName;
-
         File dest = new File(filePath);
         logger.info("save dest {}", dest.getPath());
         try {
