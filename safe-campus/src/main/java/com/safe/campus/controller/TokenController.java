@@ -40,11 +40,11 @@ public class TokenController extends BaseController {
     /**
      * 退出系统
      */
-    @PostMapping(value = "/exit")
+    @GetMapping(value = "/exit")
     @ApiOperation(value = "退出系统", notes = "退出系统")
-    public Wrapper exit() {
-        final LoginAuthDto loginAuthDto = getLoginAuthDto();
-        final Boolean flag = tokenService.exit(loginAuthDto.getUserId());
+    public Wrapper exit(@RequestParam("userId") Long userId) {
+        // final LoginAuthDto loginAuthDto = getLoginAuthDto();
+        final Boolean flag = tokenService.exit(userId);
         if (flag) {
             return WrapMapper.ok("退出成功");
         }

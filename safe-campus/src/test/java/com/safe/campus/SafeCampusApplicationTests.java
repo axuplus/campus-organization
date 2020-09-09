@@ -1,18 +1,13 @@
 package com.safe.campus;
 
 
-import com.safe.campus.about.exception.BizException;
 import com.safe.campus.about.utils.Md5Utils;
-import com.safe.campus.about.utils.service.GobalInterface;
-import com.safe.campus.enums.ErrorCodeEnum;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.*;
-import java.util.function.Consumer;
-import java.util.function.Supplier;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 @SpringBootTest
@@ -40,5 +35,36 @@ class SafeCampusApplicationTests {
     public void test3() {
         List<Animal> zoo = new ArrayList<>();
 //        Optional.of(new Animal()).ifPresent(zoo.add());add
+    }
+
+    @Test
+    public void test4() {
+        List<A> as = new ArrayList<>();
+        A a1 = new A();
+        a1.setName("joma");
+        a1.setScore(10);
+        a1.setYear(2020);
+        as.add(a1);
+        A a2 = new A();
+        a2.setName("joma");
+        a2.setScore(10);
+        a2.setYear(2020);
+        as.add(a2);
+        A a3 = new A();
+        a3.setName("jack");
+        a3.setScore(10);
+        a3.setYear(2020);
+        as.add(a3);
+        Map<String, Map<Integer, List<A>>> map = as.stream().collect(Collectors.groupingBy(A::getName, Collectors.groupingBy(A::getYear)));
+        map.forEach((k, v) -> {
+            AtomicInteger score = new AtomicInteger();
+            System.out.println("k = " + k);
+            v.forEach((a, b) -> {
+                Arrays.asList(b).stream().forEach(n -> n.stream().forEach(l -> {
+                    score.addAndGet(l.getScore());
+                }));
+            });
+            System.out.println("score = " + score);
+        });
     }
 }

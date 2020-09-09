@@ -8,19 +8,19 @@ import com.safe.campus.about.dto.LoginAuthDto;
 import com.safe.campus.about.utils.wrapper.*;
 import com.safe.campus.mapper.SchoolMasterMapper;
 import com.safe.campus.mapper.SchoolSectionMapper;
+import com.safe.campus.mapper.SysAdminUserMapper;
 import com.safe.campus.model.domain.SchoolMaster;
 import com.safe.campus.model.domain.SchoolSection;
 import com.safe.campus.model.domain.SchoolTeacher;
+import com.safe.campus.model.domain.SysAdmin;
 import com.safe.campus.model.dto.SchoolSectionDto;
 import com.safe.campus.model.dto.SchoolSectionInfoDto;
-import com.safe.campus.model.vo.SchoolSectionVo;
-import com.safe.campus.model.vo.SchoolTeacherVo;
-import com.safe.campus.model.vo.SectionTeachersVo;
-import com.safe.campus.model.vo.SectionTreeVo;
+import com.safe.campus.model.vo.*;
 import com.safe.campus.service.SchoolSectionService;
 import com.safe.campus.service.SchoolTeacherService;
 import com.safe.campus.about.utils.PublicUtil;
 import com.safe.campus.about.utils.service.GobalInterface;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -40,6 +40,7 @@ import java.util.stream.Collectors;
  * @since 2020-07-28
  */
 @Service
+@Slf4j
 @Transactional(rollbackFor = Exception.class)
 public class SchoolSectionServiceImpl extends ServiceImpl<SchoolSectionMapper, SchoolSection> implements SchoolSectionService {
 
@@ -54,6 +55,9 @@ public class SchoolSectionServiceImpl extends ServiceImpl<SchoolSectionMapper, S
 
     @Autowired
     private SchoolMasterMapper masterMapper;
+
+    @Autowired
+    private SysAdminUserMapper adminUserMapper;
 
     @Override
     public Wrapper saveSchoolSection(SchoolSectionDto schoolSectionDto) {
@@ -76,26 +80,29 @@ public class SchoolSectionServiceImpl extends ServiceImpl<SchoolSectionMapper, S
         section.setIsDelete(0);
         section.setState(0);
         section.setCreatedTime(new Date());
-        if (null != schoolSectionDto.getSectionId()) {
-            section.setTId(schoolSectionDto.getSectionId());
+        if (null != schoolSectionDto.getTId()) {
+            section.setTId(schoolSectionDto.getTId());
         }
         int insert = schoolSectionMapper.insert(section);
         if (1 == insert) {
-            return WrapMapper.ok("保存部门成功");
+            return WrapMapper.ok(section.getId());
         }
         return null;
     }
 
     @Override
     public Wrapper editSchoolSection(SchoolSectionInfoDto schoolSectionInfoDto) {
+        log.info("========>>>>>>", schoolSectionInfoDto);
         if (PublicUtil.isEmpty(schoolSectionInfoDto)) {
             return WrapMapper.error("部门信息不能为空");
         }
         SchoolSection section = schoolSectionMapper.selectById(schoolSectionInfoDto.getId());
         section.setSectionName(schoolSectionInfoDto.getName());
-        section.setPId(schoolSectionInfoDto.getPid());
-        section.setLevel(schoolSectionMapper.selectById(schoolSectionInfoDto.getPid()).getLevel() + 1);
-        if (0L != schoolSectionInfoDto.getTId() && null != schoolSectionInfoDto.getTId()) {
+        if (null != schoolSectionInfoDto.getPid() && 0 != schoolSectionInfoDto.getPid()) {
+            section.setPId(schoolSectionInfoDto.getPid());
+            section.setLevel(schoolSectionMapper.selectById(schoolSectionInfoDto.getPid()).getLevel() + 1);
+        }
+        if (null != schoolSectionInfoDto.getTId()) {
             section.setTId(schoolSectionInfoDto.getTId());
         }
         updateById(section);
@@ -226,13 +233,15 @@ public class SchoolSectionServiceImpl extends ServiceImpl<SchoolSectionMapper, S
 
 
     @Override
-    public Wrapper searchSchoolSection(Long masterId, String name) {
+    public PageWrapper<List<SchoolSectionVo>> searchSchoolSection(Long masterId, String name, BaseQueryDto baseQueryDto) {
         if (null == name) {
-            return WrapMapper.error("搜索参数不能为空");
+            return PageWrapMapper.wrap(200, "搜索参数不能为空");
         }
         QueryWrapper<SchoolSection> queryWrapper = new QueryWrapper<>();
         queryWrapper.like("section_name", name);
+        Page page = PageHelper.startPage(baseQueryDto.getPage(), baseQueryDto.getPage_size());
         List<SchoolSection> list = schoolSectionMapper.selectList(queryWrapper);
+        Long total = page.getTotal();
         if (PublicUtil.isNotEmpty(list)) {
             List<SchoolSectionVo> vos = new ArrayList<>();
             for (int i = 0; i < list.size(); i++) {
@@ -256,9 +265,9 @@ public class SchoolSectionServiceImpl extends ServiceImpl<SchoolSectionMapper, S
                 }
                 vos.add(vo);
             }
-            return WrapMapper.ok(vos);
+            return PageWrapMapper.wrap(vos, new PageUtil(total.intValue(), baseQueryDto.getPage(), baseQueryDto.getPage_size()));
         }
-        return WrapMapper.error("未查找到结果");
+        return PageWrapMapper.wrap(200, "未查找到结果");
     }
 
     @Override
@@ -267,11 +276,13 @@ public class SchoolSectionServiceImpl extends ServiceImpl<SchoolSectionMapper, S
         if (PublicUtil.isNotEmpty(charge)) {
             List<SectionTeachersVo> list = new ArrayList<>();
             charge.forEach(c -> {
-                SectionTeachersVo teachersVo = new SectionTeachersVo();
-                teachersVo.setTId(c.getId());
-                teachersVo.setTName(c.getTName());
-                teachersVo.setSectionName(schoolSectionMapper.selectById(c.getSectionId()).getSectionName());
-                list.add(teachersVo);
+                if (null != adminUserMapper.selectOne(new QueryWrapper<SysAdmin>().eq("t_id", c.getId()).eq("state", 0))) {
+                    SectionTeachersVo teachersVo = new SectionTeachersVo();
+                    teachersVo.setTId(c.getId());
+                    teachersVo.setTName(c.getTName());
+                    teachersVo.setSectionName(schoolSectionMapper.selectById(c.getSectionId()).getSectionName());
+                    list.add(teachersVo);
+                }
             });
             return WrapMapper.ok(list);
         }
@@ -287,6 +298,38 @@ public class SchoolSectionServiceImpl extends ServiceImpl<SchoolSectionMapper, S
             return WrapMapper.ok(masters.stream().collect(Collectors.toMap(SchoolMaster::getId, SchoolMaster::getAreaName)));
         }
         return WrapMapper.error("暂无数据");
+    }
+
+    @Override
+    public Wrapper<List<SectionVo>> getSuperior(Integer type, Long masterId, Long sectionId) {
+        if (1 == type) {
+            QueryWrapper<SchoolSection> sectionQueryWrapper = new QueryWrapper<>();
+            sectionQueryWrapper.eq("master_id", masterId).eq("level", 1).eq("p_id",0);
+            List<SchoolSection> schoolSections = schoolSectionMapper.selectList(sectionQueryWrapper);
+            if (PublicUtil.isNotEmpty(schoolSections)) {
+                List<SectionVo> vos = new ArrayList<>();
+                schoolSections.forEach(s -> {
+                    SectionVo sectionVo = new SectionVo();
+                    sectionVo.setSectionId(s.getId());
+                    sectionVo.setSectionName(s.getSectionName());
+                    vos.add(sectionVo);
+                });
+                return WrapMapper.ok(vos);
+            }
+        } else {
+            List<SchoolSection> schoolSections = schoolSectionMapper.selectList(new QueryWrapper<SchoolSection>().eq("p_id", sectionId).eq("master_id", masterId));
+            if (PublicUtil.isNotEmpty(schoolSections)) {
+                List<SectionVo> vos = new ArrayList<>();
+                schoolSections.forEach(s -> {
+                    SectionVo sectionVo = new SectionVo();
+                    sectionVo.setSectionId(s.getId());
+                    sectionVo.setSectionName(s.getSectionName());
+                    vos.add(sectionVo);
+                });
+                return WrapMapper.ok(vos);
+            }
+        }
+        return WrapMapper.error("暂无下级部门");
     }
 }
 

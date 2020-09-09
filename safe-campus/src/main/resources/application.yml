@@ -70,4 +70,5 @@ url:
     - bycdao-ui
     - swagger-resources
     - /admin/token
+    - /admin/exit
     - /campus/file/img/upload

@@ -10,6 +10,7 @@ import com.safe.campus.model.dto.SchoolSectionInfoDto;
 import com.safe.campus.about.utils.wrapper.Wrapper;
 import com.safe.campus.model.vo.SchoolSectionVo;
 import com.safe.campus.model.vo.SectionTeachersVo;
+import com.safe.campus.model.vo.SectionVo;
 
 import java.util.List;
 import java.util.Map;
@@ -32,10 +33,12 @@ public interface SchoolSectionService extends IService<SchoolSection> {
 
     PageWrapper<List<SchoolSectionVo>> listSchoolSection(Long masterId,Integer type, Long id, BaseQueryDto baseQueryDto);
 
-    Wrapper<List<SchoolSectionVo>> searchSchoolSection(Long masterId,String name);
+    PageWrapper<List<SchoolSectionVo>> searchSchoolSection(Long masterId,String name,BaseQueryDto baseQueryDto);
 
     Wrapper<List<SectionTeachersVo>> getCharge(Long masterId);
 
     Wrapper<Map<Long, String>> getSchools(Long masterId, LoginAuthDto loginAuthDto);
+
+    Wrapper<List<SectionVo>> getSuperior(Integer type, Long masterId,Long sectionId);
 
 }
