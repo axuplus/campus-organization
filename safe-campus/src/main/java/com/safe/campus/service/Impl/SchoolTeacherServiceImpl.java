@@ -438,7 +438,7 @@ public class SchoolTeacherServiceImpl extends ServiceImpl<SchoolTeacherMapper, S
     @Override
     public List<SchoolTeacher> getTeachersToClass(Long masterId) {
         QueryWrapper<SchoolTeacher> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("master_id", masterId);
+        queryWrapper.eq("master_id", masterId).eq("state",0);
         return teacherMapper.selectList(queryWrapper);
     }
 

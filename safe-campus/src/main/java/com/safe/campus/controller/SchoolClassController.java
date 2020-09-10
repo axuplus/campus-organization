@@ -8,8 +8,10 @@ import com.safe.campus.about.utils.wrapper.BaseQueryDto;
 import com.safe.campus.about.utils.wrapper.PageWrapper;
 import com.safe.campus.model.dto.SchoolClassDto;
 import com.safe.campus.model.dto.SchoolClassInfoDto;
+import com.safe.campus.model.vo.NodeTreeVo;
 import com.safe.campus.model.vo.SchoolClassEditVo;
 import com.safe.campus.model.vo.SchoolClassSearchVo;
+import com.safe.campus.model.vo.SchoolClassTeachersVo;
 import com.safe.campus.service.SchoolClassService;
 import com.safe.campus.about.utils.wrapper.Wrapper;
 import io.swagger.annotations.Api;
@@ -53,13 +55,13 @@ public class SchoolClassController extends BaseController {
     }
 
     @Permission(url = qxurl, type = PermissionType.EDIT)
-    @PutMapping("/editClass")
+    @PostMapping("/editClass")
     @ApiOperation("编辑年级")
     public Wrapper editClass(@RequestBody SchoolClassDto schoolClassDto) {
         return schoolClassService.editClass(schoolClassDto, getLoginAuthDto());
     }
 
-    @PutMapping("/editClassInfo")
+    @PostMapping("/editClassInfo")
     @ApiOperation("编辑年级")
     public Wrapper editClassInfo(@RequestBody SchoolClassInfoDto schoolClassInfoDto) {
         return schoolClassService.editClassInfo(schoolClassInfoDto, getLoginAuthDto());
@@ -73,26 +75,18 @@ public class SchoolClassController extends BaseController {
         return schoolClassService.deleteSchoolClass(type, id);
     }
 
-    @Permission(url = qxurl, type = PermissionType.ACTIVE)
-    @PutMapping("/operation")
-    @ApiOperation("年级->停用/启用")
-    public Wrapper operation(@ApiParam("1:年级2:班级") @RequestParam("type") Integer type,
-                             @ApiParam("1：停用 0：启用") @RequestParam("state") Integer state,
-                             @RequestParam("id") Long id) {
-        return schoolClassService.operation(type, state, id);
-    }
 
 
     @Permission(url = qxurl, type = PermissionType.QUERY)
     @GetMapping("/search")
     @ApiOperation("搜索")
-    public Wrapper searchSchoolClass(@RequestParam("masterId") Long masterId, @RequestParam("context") String name) {
+    public Wrapper<List<SchoolClassSearchVo>> searchSchoolClass(@RequestParam("masterId") Long masterId, @RequestParam("context") String name) {
         return schoolClassService.searchSchoolClass(masterId, name);
     }
 
     @GetMapping("/tree")
     @ApiOperation("左边节点树")
-    public Wrapper nodeTreeSchoolClass(@RequestParam("masterId")Long masterId) {
+    public Wrapper<List<NodeTreeVo>> nodeTreeSchoolClass(@RequestParam("masterId")Long masterId) {
         return schoolClassService.nodeTreeSchoolClass(masterId);
     }
 
@@ -108,8 +102,8 @@ public class SchoolClassController extends BaseController {
 
 
     @GetMapping("/list/teachers")
-    @ApiOperation(value = "年级主任/班主任", notes = "map")
-    public Wrapper<Map<Long, String>> listTeachers(@RequestParam("masterId")Long masterId) {
+    @ApiOperation(value = "管理人列表", notes = "管理人列表")
+    public Wrapper<List<SchoolClassTeachersVo>> listTeachers(@RequestParam("masterId")Long masterId) {
         return schoolClassService.listTeachers(masterId);
     }
 

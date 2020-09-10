@@ -8,9 +8,11 @@ import com.safe.campus.model.domain.SchoolClass;
 import com.safe.campus.model.domain.SchoolClassInfo;
 import com.safe.campus.model.dto.SchoolClassDto;
 import com.safe.campus.model.dto.SchoolClassInfoDto;
+import com.safe.campus.model.vo.NodeTreeVo;
 import com.safe.campus.model.vo.SchoolClassEditVo;
 import com.safe.campus.about.utils.wrapper.Wrapper;
 import com.safe.campus.model.vo.SchoolClassSearchVo;
+import com.safe.campus.model.vo.SchoolClassTeachersVo;
 
 import java.util.List;
 import java.util.Map;
@@ -27,9 +29,9 @@ public interface SchoolClassService extends IService<SchoolClass> {
 
     Wrapper deleteSchoolClass(Integer type, Long id);
 
-    Wrapper searchSchoolClass(Long masterId,String name);
+    Wrapper <List<SchoolClassSearchVo>> searchSchoolClass(Long masterId,String name);
 
-    Wrapper nodeTreeSchoolClass(Long masterId);
+    Wrapper <List<NodeTreeVo>> nodeTreeSchoolClass(Long masterId);
 
     List<SchoolClass> getAllClass(Long masterId);
 
@@ -37,7 +39,7 @@ public interface SchoolClassService extends IService<SchoolClass> {
 
     Wrapper<List<SchoolClassSearchVo>> listClass(Long masterId, Long id, Integer type);
 
-    Wrapper<Map<Long, String>> listTeachers(Long masterId);
+    Wrapper <List<SchoolClassTeachersVo>> listTeachers(Long masterId);
 
     Wrapper<SchoolClassEditVo> getInfo(Integer type, Long id);
 

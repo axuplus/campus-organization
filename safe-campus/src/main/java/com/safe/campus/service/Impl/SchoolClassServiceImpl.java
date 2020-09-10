@@ -8,6 +8,7 @@ import com.safe.campus.about.dto.LoginAuthDto;
 import com.safe.campus.about.utils.wrapper.*;
 import com.safe.campus.mapper.SchoolClassInfoMapper;
 import com.safe.campus.mapper.SchoolClassMapper;
+import com.safe.campus.mapper.SchoolSectionMapper;
 import com.safe.campus.model.domain.SchoolClass;
 import com.safe.campus.model.domain.SchoolClassInfo;
 import com.safe.campus.model.domain.SchoolTeacher;
@@ -52,6 +53,9 @@ public class SchoolClassServiceImpl extends ServiceImpl<SchoolClassMapper, Schoo
 
     @Autowired
     private SchoolTeacherService teacherService;
+
+    @Autowired
+    private SchoolSectionMapper sectionMapper;
 
 
     @Override
@@ -189,7 +193,7 @@ public class SchoolClassServiceImpl extends ServiceImpl<SchoolClassMapper, Schoo
     }
 
     @Override
-    public Wrapper searchSchoolClass(Long masterId, String name) {
+    public Wrapper<List<SchoolClassSearchVo>> searchSchoolClass(Long masterId, String name) {
         if (null == name) {
             return WrapMapper.error("请输入搜索条件");
         }
@@ -262,7 +266,7 @@ public class SchoolClassServiceImpl extends ServiceImpl<SchoolClassMapper, Schoo
 
 
     @Override
-    public Wrapper nodeTreeSchoolClass(Long masterId) {
+    public Wrapper<List<NodeTreeVo>> nodeTreeSchoolClass(Long masterId) {
         QueryWrapper<SchoolClass> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("is_delete", 0).eq("master_id", masterId);
         List<SchoolClass> classes = schoolClassMapper.selectList(queryWrapper);
@@ -412,10 +416,20 @@ public class SchoolClassServiceImpl extends ServiceImpl<SchoolClassMapper, Schoo
     }
 
     @Override
-    public Wrapper<Map<Long, String>> listTeachers(Long masterId) {
+    public Wrapper<List<SchoolClassTeachersVo>> listTeachers(Long masterId) {
         List<SchoolTeacher> teachers = teacherService.getTeachersToClass(masterId);
         if (PublicUtil.isNotEmpty(teachers)) {
-            return WrapMapper.ok(teachers.stream().collect(Collectors.toMap(SchoolTeacher::getId, SchoolTeacher::getTName)));
+            List<SchoolClassTeachersVo> list = new ArrayList<>();
+            teachers.forEach(t -> {
+                SchoolClassTeachersVo vo = new SchoolClassTeachersVo();
+                vo.setTId(t.getId());
+                vo.setTName(t.getTName());
+                if (null != t.getSectionId()) {
+                    vo.setSectionName(sectionMapper.selectById(t.getSectionId()).getSectionName());
+                }
+                list.add(vo);
+            });
+            return WrapMapper.ok(list);
         }
         return WrapMapper.error("暂无数据");
     }

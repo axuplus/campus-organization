@@ -65,8 +65,8 @@ public class SchoolSectionController extends BaseController {
 
     @GetMapping("/superior")
     @ApiOperation("上级列表")
-    public Wrapper<List<SectionVo>> getSuperior(@ApiParam("学校ID")@RequestParam(value = "masterId") Long masterId) {
-        return sectionService.getSuperior(masterId);
+    public Wrapper<List<SectionVo>> getSuperior(@ApiParam("学校ID")@RequestParam(value = "masterId") Long masterId,@RequestParam("sectionId")Long sectionId) {
+        return sectionService.getSuperior(masterId,sectionId);
     }
 
     @GetMapping("/charge")

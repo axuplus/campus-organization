@@ -39,6 +39,6 @@ public interface SchoolSectionService extends IService<SchoolSection> {
 
     Wrapper<Map<Long, String>> getSchools(Long masterId, LoginAuthDto loginAuthDto);
 
-    Wrapper<List<SectionVo>> getSuperior( Long masterId);
+    Wrapper<List<SectionVo>> getSuperior( Long masterId,Long sectionId);
 
 }
