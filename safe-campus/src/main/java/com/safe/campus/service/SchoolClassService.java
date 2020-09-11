@@ -7,7 +7,6 @@ import com.safe.campus.about.utils.wrapper.PageWrapper;
 import com.safe.campus.model.domain.SchoolClass;
 import com.safe.campus.model.domain.SchoolClassInfo;
 import com.safe.campus.model.dto.SchoolClassDto;
-import com.safe.campus.model.dto.SchoolClassInfoDto;
 import com.safe.campus.model.vo.NodeTreeVo;
 import com.safe.campus.model.vo.SchoolClassEditVo;
 import com.safe.campus.about.utils.wrapper.Wrapper;
@@ -25,8 +24,6 @@ public interface SchoolClassService extends IService<SchoolClass> {
 
     Wrapper saveSchoolClass(SchoolClassDto schoolClassDto, LoginAuthDto loginAuthDto);
 
-    Wrapper saveSchoolClassInfo(SchoolClassInfoDto schoolClassInfoDto,LoginAuthDto loginAuthDto);
-
     Wrapper deleteSchoolClass(Integer type, Long id);
 
     Wrapper <List<SchoolClassSearchVo>> searchSchoolClass(Long masterId,String name);
@@ -43,9 +40,7 @@ public interface SchoolClassService extends IService<SchoolClass> {
 
     Wrapper<SchoolClassEditVo> getInfo(Integer type, Long id);
 
-    Wrapper editClass(SchoolClassDto schoolClassDto, LoginAuthDto loginAuthDto);
-
-    Wrapper editClassInfo(SchoolClassInfoDto schoolClassInfoDto, LoginAuthDto loginAuthDto);
+    Wrapper editClass(Long id,Long tId,String name,Integer type, LoginAuthDto loginAuthDto);
 
     Wrapper operation(Integer type, Integer state, Long id);
 }

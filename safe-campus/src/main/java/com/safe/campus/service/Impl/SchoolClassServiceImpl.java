@@ -13,7 +13,6 @@ import com.safe.campus.model.domain.SchoolClass;
 import com.safe.campus.model.domain.SchoolClassInfo;
 import com.safe.campus.model.domain.SchoolTeacher;
 import com.safe.campus.model.dto.SchoolClassDto;
-import com.safe.campus.model.dto.SchoolClassInfoDto;
 import com.safe.campus.model.vo.*;
 import com.safe.campus.service.SchoolClassService;
 import com.safe.campus.service.SchoolTeacherService;
@@ -63,10 +62,10 @@ public class SchoolClassServiceImpl extends ServiceImpl<SchoolClassMapper, Schoo
         if (PublicUtil.isEmpty(schoolClassDto)) {
             return WrapMapper.error("参数不能为空");
         }
-        if (0 == schoolClassDto.getType()) {
+        if (1 == schoolClassDto.getType()) {
             SchoolClass schoolClass = new SchoolClass();
             schoolClass.setId(gobalInterface.generateId());
-            schoolClass.setClassName(schoolClassDto.getClassName());
+            schoolClass.setClassName(schoolClassDto.getName());
             schoolClass.setIsDelete(0);
             schoolClass.setMasterId(schoolClassDto.getMasterId());
             schoolClass.setState(0);
@@ -74,21 +73,11 @@ public class SchoolClassServiceImpl extends ServiceImpl<SchoolClassMapper, Schoo
             schoolClass.setCreatedTime(new Date());
             schoolClassMapper.insert(schoolClass);
             return WrapMapper.ok("添加成功");
-        }
-        return WrapMapper.error("添加失败");
-    }
-
-    @Override
-    public Wrapper saveSchoolClassInfo(SchoolClassInfoDto schoolClassInfoDto, LoginAuthDto loginAuthDto) {
-        if (PublicUtil.isEmpty(schoolClassInfoDto)) {
-            return WrapMapper.error("参数不能为空");
-        }
-        if (0 == schoolClassInfoDto.getType()) {
+        }else {
             SchoolClassInfo info = new SchoolClassInfo();
             info.setId(gobalInterface.generateId());
-            info.setClassId(schoolClassInfoDto.getClassId());
-            info.setClassInfoName(schoolClassInfoDto.getClassInfoName());
-            info.setClassId(schoolClassInfoDto.getClassId());
+            info.setClassId(schoolClassDto.getClassId());
+            info.setClassInfoName(schoolClassDto.getName());
             info.setIsDelete(0);
             info.setState(0);
             info.setCreateUser(loginAuthDto.getUserId());
@@ -96,43 +85,36 @@ public class SchoolClassServiceImpl extends ServiceImpl<SchoolClassMapper, Schoo
             schoolClassInfoMapper.insert(info);
             return WrapMapper.ok("添加成功");
         }
-        return WrapMapper.error("添加失败");
     }
 
-
     @Override
-    public Wrapper editClass(SchoolClassDto schoolClassDto, LoginAuthDto loginAuthDto) {
-        if (1 == schoolClassDto.getType()) {
-            if (null == schoolClassDto.getId() || null == schoolClassDto.getTId()) {
-                return WrapMapper.error("ID不能为空");
-            }
-            SchoolClass byId = schoolClassMapper.selectById(schoolClassDto.getId());
+    public Wrapper editClass(Long id, Long tId, String name,Integer type, LoginAuthDto loginAuthDto) {
+        if (1 == type && null != type) {
+            SchoolClass byId = schoolClassMapper.selectById(id);
             if (PublicUtil.isNotEmpty(byId)) {
-                byId.setClassName(schoolClassDto.getClassName());
-                byId.setTId(schoolClassDto.getTId());
+                if(null != name) {
+                    byId.setClassName(name);
+                }
+                if(null != tId) {
+                    byId.setTId(tId);
+                }
                 schoolClassMapper.updateById(byId);
                 return WrapMapper.ok("编辑成功");
             }
+        } else {
+            SchoolClassInfo classInfo = schoolClassInfoMapper.selectById(id);
+            if(PublicUtil.isNotEmpty(classInfo)) {
+                if(null != name) {
+                    classInfo.setClassInfoName(name);
+                }
+                if(null != tId) {
+                    classInfo.setTId(tId);
+                }
+                schoolClassInfoMapper.updateById(classInfo);
+            }
+            return WrapMapper.ok("编辑成功");
         }
         return WrapMapper.error("参数有误");
-    }
-
-    @Override
-    public Wrapper editClassInfo(SchoolClassInfoDto schoolClassInfoDto, LoginAuthDto loginAuthDto) {
-        if (1 == schoolClassInfoDto.getType()) {
-            if (null == schoolClassInfoDto.getId() || null == schoolClassInfoDto.getSuperiorId()) {
-                return WrapMapper.error("ID不能为空");
-            }
-            SchoolClassInfo info = schoolClassInfoMapper.selectById(schoolClassInfoDto.getId());
-            if (PublicUtil.isNotEmpty(info)) {
-                info.setClassInfoName(schoolClassInfoDto.getClassInfoName());
-                info.setTId(schoolClassInfoDto.getSuperiorId());
-                schoolClassInfoMapper.updateById(info);
-                return WrapMapper.ok("编辑成功");
-            }
-            return WrapMapper.error("编辑失败");
-        }
-        return WrapMapper.error("编辑失败");
     }
 
 

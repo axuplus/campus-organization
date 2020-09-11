@@ -7,7 +7,6 @@ import com.safe.campus.about.controller.BaseController;
 import com.safe.campus.about.utils.wrapper.BaseQueryDto;
 import com.safe.campus.about.utils.wrapper.PageWrapper;
 import com.safe.campus.model.dto.SchoolClassDto;
-import com.safe.campus.model.dto.SchoolClassInfoDto;
 import com.safe.campus.model.vo.NodeTreeVo;
 import com.safe.campus.model.vo.SchoolClassEditVo;
 import com.safe.campus.model.vo.SchoolClassSearchVo;
@@ -15,6 +14,7 @@ import com.safe.campus.model.vo.SchoolClassTeachersVo;
 import com.safe.campus.service.SchoolClassService;
 import com.safe.campus.about.utils.wrapper.Wrapper;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiModelProperty;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,29 +42,21 @@ public class SchoolClassController extends BaseController {
 
 
     @Permission(url = qxurl, type = PermissionType.ADD)
-    @PostMapping("/saveClass")
-    @ApiOperation("添加年级")
+    @PostMapping("/save")
+    @ApiOperation("添加年级/班级")
     public Wrapper saveSchoolClass(@RequestBody SchoolClassDto schoolClassDto) {
         return schoolClassService.saveSchoolClass(schoolClassDto, getLoginAuthDto());
     }
 
-    @PostMapping("/saveClassInfo")
-    @ApiOperation("添加班级")
-    public Wrapper saveSchoolClassInfo(@RequestBody SchoolClassInfoDto schoolClassInfoDto) {
-        return schoolClassService.saveSchoolClassInfo(schoolClassInfoDto, getLoginAuthDto());
-    }
 
     @Permission(url = qxurl, type = PermissionType.EDIT)
-    @PostMapping("/editClass")
-    @ApiOperation("编辑年级")
-    public Wrapper editClass(@RequestBody SchoolClassDto schoolClassDto) {
-        return schoolClassService.editClass(schoolClassDto, getLoginAuthDto());
-    }
-
-    @PostMapping("/editClassInfo")
-    @ApiOperation("编辑年级")
-    public Wrapper editClassInfo(@RequestBody SchoolClassInfoDto schoolClassInfoDto) {
-        return schoolClassService.editClassInfo(schoolClassInfoDto, getLoginAuthDto());
+    @GetMapping("/edit")
+    @ApiOperation("编辑年级/班级")
+    public Wrapper editClass(@RequestParam("id")Long id,
+                             @RequestParam(value = "tId",required = false)Long tId,
+                             @RequestParam(value = "name",required = false)String name,
+                             @ApiParam("1编辑年级2编辑班级")@RequestParam("type")Integer type) {
+        return schoolClassService.editClass(id,tId,name,type, getLoginAuthDto());
     }
 
 
@@ -94,7 +86,7 @@ public class SchoolClassController extends BaseController {
     @GetMapping("/list")
     @ApiOperation("右边年级列表列表(点击年级/班级)")
     public Wrapper<List<SchoolClassSearchVo>> listClass(@RequestParam("masterId") Long masterId,
-                                                            @RequestParam("id") Long id,
+                                                            @ApiParam(value = "type为1是年级id 2班级id 3学校id") @RequestParam("id") Long id,
                                                             @ApiParam("1年级 2班级 3全部") @RequestParam("type") Integer type
                                                         ) {
         return schoolClassService.listClass(masterId, id, type);
