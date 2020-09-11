@@ -9,6 +9,7 @@ import com.safe.campus.model.domain.BuildingNo;
 import com.safe.campus.model.dto.BuildingBedDto;
 import com.safe.campus.model.dto.BuildingNoMapperDto;
 import com.safe.campus.model.dto.BuildingStudentDto;
+import com.safe.campus.model.dto.SaveBuildingInfoDto;
 import com.safe.campus.model.vo.*;
 import com.safe.campus.about.utils.wrapper.Wrapper;
 
@@ -25,7 +26,7 @@ import java.util.Map;
  */
 public interface BuildingService extends IService<BuildingNo> {
 
-    Wrapper saveBuilding(String buildingName, Long masterId, LoginAuthDto loginAuthDto);
+    Wrapper saveBuilding(SaveBuildingInfoDto saveBuildingInfoDto, LoginAuthDto loginAuthDto);
 
     Wrapper<BuildingRoomVo> getBuilding(Long id);
 
@@ -45,10 +46,6 @@ public interface BuildingService extends IService<BuildingNo> {
 
     Wrapper searchList(Long masterId,Integer type,String context);
 
-    Wrapper saveBuildingLevel(Long buildingNoId, Integer level,LoginAuthDto loginAuthDto);
-
-    Wrapper saveBuildingRoom(Long buildingLevelId, Integer buildingRoom,LoginAuthDto loginAuthDto);
-
     Wrapper saveBuildingStudent(BuildingStudentDto buildingStudentDto);
 
     Wrapper<Map<Long, String>> getBuildingTeachers(Long masterId);
@@ -58,8 +55,6 @@ public interface BuildingService extends IService<BuildingNo> {
     Wrapper setBuildingTeacher(Long levelId, Long teacherId);
 
     Wrapper deleteBuildingManger( Long levelId);
-
-    Wrapper saveBuildingBed(Long buildingRoomId, Integer buildingBed,LoginAuthDto loginAuthDto);
 
     BuildingBedDto getLivingInfoByStudentId(Long id);
 

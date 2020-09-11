@@ -11,10 +11,7 @@ import com.safe.campus.about.utils.wrapper.*;
 import com.safe.campus.enums.ErrorCodeEnum;
 import com.safe.campus.mapper.*;
 import com.safe.campus.model.domain.*;
-import com.safe.campus.model.dto.BuildingBedDto;
-import com.safe.campus.model.dto.BuildingNoMapperDto;
-import com.safe.campus.model.dto.BuildingStudentDto;
-import com.safe.campus.model.dto.BuildingStudentListDto;
+import com.safe.campus.model.dto.*;
 import com.safe.campus.model.vo.*;
 import com.safe.campus.service.BuildingService;
 import com.safe.campus.service.SchoolClassService;
@@ -73,65 +70,46 @@ public class BuildingNoServiceImpl extends ServiceImpl<BuildingNoMapper, Buildin
 
 
     @Override
-    public Wrapper saveBuilding(String buildingName, Long masterId, LoginAuthDto loginAuthDto) {
-        if (null != buildingName) {
-            BuildingNo buildingNo = new BuildingNo();
-            buildingNo.setId(gobalInterface.generateId());
-            buildingNo.setMasterId(masterId);
-            buildingNo.setBuildingNo(buildingName);
-            buildingNo.setCreateTime(new Date());
-            buildingNo.setIsDelete(0);
-            buildingNo.setState(0);
-            buildingNo.setCreateUser(loginAuthDto.getUserId());
-            noMapper.insert(buildingNo);
-            return WrapMapper.ok("保存成功");
-        }
-        return null;
-    }
-
-    @Override
-    public Wrapper saveBuildingLevel(Long buildingNoId, Integer level, LoginAuthDto loginAuthDto) {
-        if (null == buildingNoId || null == level) {
-            return WrapMapper.error("参数不能为空");
-        }
-        BuildingLevel buildingLevel = new BuildingLevel();
-        buildingLevel.setId(gobalInterface.generateId());
-        buildingLevel.setBuildingLevel(level);
-        buildingLevel.setBuildingNoId(buildingNoId);
-        buildingLevel.setIsDelete(0);
-        buildingLevel.setState(0);
-        buildingLevel.setCreateUser(loginAuthDto.getUserId());
-        buildingLevel.setCreateTime(new Date());
-        levelMapper.insert(buildingLevel);
-        return WrapMapper.ok("添加成功");
-    }
-
-    @Override
-    public Wrapper saveBuildingRoom(Long buildingLevelId, Integer buildingRoom, LoginAuthDto loginAuthDto) {
-        if (null == buildingLevelId || null == buildingRoom) {
-            return WrapMapper.error("参数有误");
-        }
-        BuildingRoom room = new BuildingRoom();
-        room.setId(gobalInterface.generateId());
-        room.setBuildingLevelId(buildingLevelId);
-        room.setBuildingRoom(buildingRoom);
-        room.setIsDelete(0);
-        room.setState(0);
-        room.setCreateUser(loginAuthDto.getUserId());
-        room.setCreateTime(new Date());
-        roomMapper.insert(room);
-        return WrapMapper.ok("保存成功");
-    }
-
-    @Override
-    public Wrapper saveBuildingBed(Long buildingRoomId, Integer buildingBed, LoginAuthDto loginAuthDto) {
-        if (null != buildingRoomId && null != buildingBed) {
-            BuildingBed bed = new BuildingBed();
-            bed.setId(gobalInterface.generateId());
-            bed.setBedName(buildingBed);
-            bed.setRoomId(buildingRoomId);
-            bedMapper.insert(bed);
-            return WrapMapper.ok();
+    public Wrapper saveBuilding(SaveBuildingInfoDto saveBuildingInfoDto, LoginAuthDto loginAuthDto) {
+        if (PublicUtil.isNotEmpty(saveBuildingInfoDto)) {
+            if (1 == saveBuildingInfoDto.getType()) {
+                BuildingNo buildingNo = new BuildingNo();
+                buildingNo.setId(gobalInterface.generateId());
+                buildingNo.setMasterId(saveBuildingInfoDto.getMasterId());
+                buildingNo.setBuildingNo(saveBuildingInfoDto.getName());
+                buildingNo.setCreateTime(new Date());
+                buildingNo.setIsDelete(0);
+                buildingNo.setState(0);
+                buildingNo.setCreateUser(loginAuthDto.getUserId());
+                noMapper.insert(buildingNo);
+            }else if(2 == saveBuildingInfoDto.getType()){
+                BuildingLevel buildingLevel = new BuildingLevel();
+                buildingLevel.setId(gobalInterface.generateId());
+                buildingLevel.setBuildingLevel(Integer.valueOf(saveBuildingInfoDto.getName()));
+                buildingLevel.setBuildingNoId(saveBuildingInfoDto.getId());
+                buildingLevel.setIsDelete(0);
+                buildingLevel.setState(0);
+                buildingLevel.setCreateUser(loginAuthDto.getUserId());
+                buildingLevel.setCreateTime(new Date());
+                levelMapper.insert(buildingLevel);
+            }else if(3 == saveBuildingInfoDto.getType()){
+                BuildingRoom room = new BuildingRoom();
+                room.setId(gobalInterface.generateId());
+                room.setBuildingLevelId(saveBuildingInfoDto.getId());
+                room.setBuildingRoom(Integer.valueOf(saveBuildingInfoDto.getName()));
+                room.setIsDelete(0);
+                room.setState(0);
+                room.setCreateUser(loginAuthDto.getUserId());
+                room.setCreateTime(new Date());
+                roomMapper.insert(room);
+            }else if(4 == saveBuildingInfoDto.getType()){
+                BuildingBed bed = new BuildingBed();
+                bed.setId(gobalInterface.generateId());
+                bed.setBedName(Integer.valueOf(saveBuildingInfoDto.getName()));
+                bed.setRoomId(saveBuildingInfoDto.getId());
+                bedMapper.insert(bed);
+            }
+            return WrapMapper.ok("添加成功");
         }
         return null;
     }
@@ -546,8 +524,9 @@ public class BuildingNoServiceImpl extends ServiceImpl<BuildingNoMapper, Buildin
             nos.forEach(no -> {
                 BuildingTreeVo buildingNo = new BuildingTreeVo();
                 buildingNo.setBuildingNoId(no.getId());
+                buildingNo.setType(1);
                 buildingNo.setBuildingNoName(no.getBuildingNo());
-                buildingNo.setBuildingLevel(getLevels(no.getId()));
+                buildingNo.setBuildingLevels(getLevels(no.getId()));
                 list.add(buildingNo);
             });
             return WrapMapper.ok(list);
@@ -566,8 +545,9 @@ public class BuildingNoServiceImpl extends ServiceImpl<BuildingNoMapper, Buildin
             levels.forEach(level -> {
                 BuildingTreeVo.BuildingLevel buildingLevel = new BuildingTreeVo.BuildingLevel();
                 buildingLevel.setBuildingLevelId(level.getId());
+                buildingLevel.setType(2);
                 buildingLevel.setBuildingLevelName(level.getBuildingLevel());
-                buildingLevel.setBuildingRoom(getRooms(level.getId()));
+                buildingLevel.setBuildingRooms(getRooms(level.getId()));
                 list.add(buildingLevel);
             });
             return list;
@@ -585,8 +565,29 @@ public class BuildingNoServiceImpl extends ServiceImpl<BuildingNoMapper, Buildin
             rooms.forEach(room -> {
                 BuildingTreeVo.BuildingLevel.BuildingRoom buildingRoom = new BuildingTreeVo.BuildingLevel.BuildingRoom();
                 buildingRoom.setBuildingRoomId(room.getId());
+                buildingRoom.setType(3);
                 buildingRoom.setBuildingRoomName(room.getBuildingRoom());
+                buildingRoom.setBuildingBeds(getBeds(room.getId()));
                 list.add(buildingRoom);
+            });
+            return list;
+        }
+        return null;
+    }
+
+    // 4:第四层
+    private List<BuildingTreeVo.BuildingLevel.BuildingRoom.BuildingBed> getBeds(Long id) {
+        QueryWrapper<BuildingBed> bedQueryWrapper = new QueryWrapper<>();
+        bedQueryWrapper.eq("room_id", id);
+        List<BuildingBed> buildingBeds = bedMapper.selectList(bedQueryWrapper);
+        List<BuildingTreeVo.BuildingLevel.BuildingRoom.BuildingBed> list = new ArrayList<>();
+        if (PublicUtil.isNotEmpty(buildingBeds)) {
+            buildingBeds.forEach(bed -> {
+                BuildingTreeVo.BuildingLevel.BuildingRoom.BuildingBed buildingBed = new BuildingTreeVo.BuildingLevel.BuildingRoom.BuildingBed();
+                buildingBed.setBedId(bed.getId());
+                buildingBed.setType(4);
+                buildingBed.setBedName(bed.getBedName());
+                list.add(buildingBed);
             });
             return list;
         }

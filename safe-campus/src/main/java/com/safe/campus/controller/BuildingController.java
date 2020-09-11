@@ -8,6 +8,7 @@ import com.safe.campus.about.controller.BaseController;
 import com.safe.campus.about.utils.wrapper.BaseQueryDto;
 import com.safe.campus.about.utils.wrapper.PageWrapper;
 import com.safe.campus.model.dto.BuildingStudentDto;
+import com.safe.campus.model.dto.SaveBuildingInfoDto;
 import com.safe.campus.model.vo.*;
 import com.safe.campus.service.BuildingService;
 import com.safe.campus.about.utils.wrapper.Wrapper;
@@ -42,31 +43,14 @@ public class BuildingController extends BaseController {
 
 
     @Permission(url = qxurl, type = PermissionType.ADD)
-    @ApiOperation("1：添加楼幢")
-    @PostMapping("/save/buildingNo")
-    public Wrapper saveBuilding(@RequestParam("masterId") Long masterId, @RequestParam("buildingName") String buildingName) {
-        return buildingService.saveBuilding(buildingName, masterId, getLoginAuthDto());
+    @ApiOperation("1: 添加楼幢 /2: 楼层 3: /房间 4: /床位")
+    @PostMapping("/save")
+    public Wrapper saveBuilding(@RequestBody SaveBuildingInfoDto saveBuildingInfoDto) {
+        return buildingService.saveBuilding(saveBuildingInfoDto, getLoginAuthDto());
     }
 
-    @ApiOperation("2：添加楼层")
-    @PostMapping("/save/buildingLevel")
-    public Wrapper saveBuildingLevel(@RequestParam("buildingNoId") Long buildingNoId, @RequestParam("level") Integer level) {
-        return buildingService.saveBuildingLevel(buildingNoId, level, getLoginAuthDto());
-    }
 
-    @ApiOperation("3：添加房间")
-    @PostMapping("/save/buildingRoom")
-    public Wrapper saveBuildingRoom(@RequestParam("buildingLevelId") Long buildingLevelId, @RequestParam("buildingRoom") Integer buildingRoom) {
-        return buildingService.saveBuildingRoom(buildingLevelId, buildingRoom, getLoginAuthDto());
-    }
-
-    @ApiOperation("4：添加房间")
-    @PostMapping("/save/buildingBed")
-    public Wrapper saveBuildingBed(@RequestParam("buildingRoomId") Long buildingRoomId, @RequestParam("buildingBed") Integer buildingBed) {
-        return buildingService.saveBuildingBed(buildingRoomId, buildingBed, getLoginAuthDto());
-    }
-
-    @ApiOperation("5：添加学生")
+    @ApiOperation("2：添加学生")
     @PostMapping("/save/buildingStudent")
     public Wrapper saveBuildingStudent(@RequestBody BuildingStudentDto buildingStudentDto) {
         return buildingService.saveBuildingStudent(buildingStudentDto);
@@ -108,7 +92,7 @@ public class BuildingController extends BaseController {
 
 
     @ApiOperation("获取楼幢信息以及层级")
-    @GetMapping("/get/tree")
+    @GetMapping("/tree")
     public Wrapper<List<BuildingTreeVo>> getBuildingTree(@RequestParam("masterId") Long masterId) {
         return buildingService.getBuildingTree(masterId);
     }
