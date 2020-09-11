@@ -12,6 +12,6 @@ public class SchoolClassDto {
     private String name;
     @ApiModelProperty(value = "1：添加年级 2：添加班级", name = "type", required = true)
     private Integer type;
-    @ApiModelProperty(value = "年级ID", name = "classId", required = true)
+    @ApiModelProperty(value = "年级ID", name = "classId", required = false)
     private Long classId;
 }

@@ -72,7 +72,7 @@ public class SchoolClassServiceImpl extends ServiceImpl<SchoolClassMapper, Schoo
             schoolClass.setCreatedUser(loginAuthDto.getUserId());
             schoolClass.setCreatedTime(new Date());
             schoolClassMapper.insert(schoolClass);
-            return WrapMapper.ok("添加成功");
+            return WrapMapper.ok(schoolClass.getId());
         }else {
             SchoolClassInfo info = new SchoolClassInfo();
             info.setId(gobalInterface.generateId());
@@ -83,7 +83,7 @@ public class SchoolClassServiceImpl extends ServiceImpl<SchoolClassMapper, Schoo
             info.setCreateUser(loginAuthDto.getUserId());
             info.setCreateTime(new Date());
             schoolClassInfoMapper.insert(info);
-            return WrapMapper.ok("添加成功");
+            return WrapMapper.ok(info.getId());
         }
     }
 
