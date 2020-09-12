@@ -130,27 +130,26 @@ public class BuildingController extends BaseController {
     }
 
 
-    @ApiOperation("修改宿管老师下拉列表")
+    @ApiOperation("配置管理人下拉列表")
     @GetMapping("/get/buildingTeachers")
-    public Wrapper<Map<Long, String>> getBuildingTeachers(@RequestParam("masterId") Long masterId) {
+    public Wrapper<List<SchoolClassTeachersVo>> listTeachers(@RequestParam("masterId")Long masterId) {
         return buildingService.getBuildingTeachers(masterId);
     }
 
-    // 这里有问题
-    @ApiOperation("获取楼幢宿管老师")
-    @GetMapping("/get/buildingTeacher")
+
+    @ApiOperation("添加管理人（获取信息）")
+    @GetMapping("/get/buildingInfo")
     public Wrapper<BuildingTeacherVo> getBuildingTeacher(@ApiParam("楼层ID") @RequestParam("levelId") Long levelId) {
         return buildingService.getBuildingTeacher(levelId);
     }
 
     @Permission(url = qxurl, type = PermissionType.EDIT)
-    @ApiOperation("确认修改宿管老师")
-    @PutMapping("/set/buildingTeacher")
+    @ApiOperation("确认修改管理人")
+    @GetMapping("/set/buildingTeacher")
     public Wrapper setBuildingTeacher(@RequestParam("levelId") Long levelId, @RequestParam("teacherId") Long teacherId) {
         return buildingService.setBuildingTeacher(levelId, teacherId);
     }
 
-    // 楼幢列表删除
     @Permission(url = qxurl, type = PermissionType.DEL)
     @ApiOperation("删除楼幢管理员")
     @DeleteMapping("/delete/{levelId}")

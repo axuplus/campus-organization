@@ -68,6 +68,9 @@ public class BuildingNoServiceImpl extends ServiceImpl<BuildingNoMapper, Buildin
     @Autowired
     private BuildingBedMapper bedMapper;
 
+    @Autowired
+    private SchoolSectionMapper sectionMapper;
+
 
     @Override
     public Wrapper saveBuilding(SaveBuildingInfoDto saveBuildingInfoDto, LoginAuthDto loginAuthDto) {
@@ -329,10 +332,20 @@ public class BuildingNoServiceImpl extends ServiceImpl<BuildingNoMapper, Buildin
 
 
     @Override
-    public Wrapper<Map<Long, String>> getBuildingTeachers(Long masterId) {
-        List<SchoolTeacher> teachers = teacherService.getBuildingTeachers(masterId);
+    public Wrapper<List<SchoolClassTeachersVo>> getBuildingTeachers(Long masterId) {
+        List<SchoolTeacher> teachers = teacherService.getTeachersToClass(masterId);
         if (PublicUtil.isNotEmpty(teachers)) {
-            return WrapMapper.ok(teachers.stream().collect(Collectors.toMap(SchoolTeacher::getId, SchoolTeacher::getTName)));
+            List<SchoolClassTeachersVo> list = new ArrayList<>();
+            teachers.forEach(t -> {
+                SchoolClassTeachersVo vo = new SchoolClassTeachersVo();
+                vo.setTId(t.getId());
+                vo.setTName(t.getTName());
+                if (null != t.getSectionId()) {
+                    vo.setSectionName(sectionMapper.selectById(t.getSectionId()).getSectionName());
+                }
+                list.add(vo);
+            });
+            return WrapMapper.ok(list);
         }
         return WrapMapper.error("暂无数据");
     }
@@ -347,10 +360,10 @@ public class BuildingNoServiceImpl extends ServiceImpl<BuildingNoMapper, Buildin
             BuildingNo no = noMapper.selectById(level.getBuildingNoId());
             vo.setBuildingNo(no.getBuildingNo());
             vo.setBuildingId(no.getId());
-            SchoolTeacher teacher = teacherService.getTeacher(level.getTId());
-            if (PublicUtil.isNotEmpty(teacher)) {
-                vo.setTName(teacher.getTName());
-            }
+//            SchoolTeacher teacher = teacherService.getTeacher(level.getTId());
+//            if (PublicUtil.isNotEmpty(teacher)) {
+//                vo.setTName(teacher.getTName());
+//            }
             return WrapMapper.ok(vo);
         }
         return null;

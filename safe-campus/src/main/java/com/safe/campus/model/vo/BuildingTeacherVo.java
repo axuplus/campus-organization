@@ -13,6 +13,6 @@ public class BuildingTeacherVo {
     private Long levelId;
     @ApiModelProperty(value = "楼层")
     private String level;
-    @ApiModelProperty(value = "宿管老师")
-    private String tName;
+//    @ApiModelProperty(value = "宿管老师")
+//    private String tName;
 }

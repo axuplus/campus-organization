@@ -44,7 +44,7 @@ public interface BuildingService extends IService<BuildingNo> {
 
     Wrapper saveBuildingStudent(BuildingStudentDto buildingStudentDto);
 
-    Wrapper<Map<Long, String>> getBuildingTeachers(Long masterId);
+    Wrapper <List<SchoolClassTeachersVo>> getBuildingTeachers(Long masterId);
 
     Wrapper<BuildingTeacherVo> getBuildingTeacher(Long levelId);
 
