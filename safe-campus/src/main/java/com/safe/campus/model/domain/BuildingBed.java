@@ -6,5 +6,5 @@ import lombok.Data;
 public class BuildingBed {
     private Long id;
     private Long roomId;
-    private Integer bedName;
+    private String bedName;
 }

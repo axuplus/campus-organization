@@ -28,21 +28,17 @@ public interface BuildingService extends IService<BuildingNo> {
 
     Wrapper saveBuilding(SaveBuildingInfoDto saveBuildingInfoDto, LoginAuthDto loginAuthDto);
 
-    Wrapper<BuildingRoomVo> getBuilding(Long id);
-
     Wrapper<List<BuildingClassVo>> getAllClass(Long masterId);
 
     Wrapper<List<BuildingClassVo>> getAllClassInfo(Long classId);
 
     Wrapper<List<BuildingStudentVo>> getAllStudent(Long classInfoId);
 
-    Wrapper editBuilding(Long id, Long studentId);
-
     Wrapper<List<BuildingTreeVo>> getBuildingTree(Long masterId);
 
     Wrapper deleteBuilding(Integer type, Long id);
 
-    PageWrapper<List<BuildingManagerVo>> managerList(Long id, BaseQueryDto baseQueryDto);
+    PageWrapper<List<BuildingManagerVo>> managerList(Long id, Long masterId,BaseQueryDto baseQueryDto);
 
     Wrapper searchList(Long masterId,Integer type,String context);
 
@@ -62,4 +58,5 @@ public interface BuildingService extends IService<BuildingNo> {
 
     PageWrapper<List<BuildingStudentListVo>> studentList(Integer type, Long id,Long masterId, BaseQueryDto baseQueryDto);
 
+    Wrapper editBuildingTree(Integer type, Long id, String name);
 }

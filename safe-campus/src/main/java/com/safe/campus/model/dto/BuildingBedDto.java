@@ -10,7 +10,7 @@ public class BuildingBedDto {
     private String buildingRoomId;
     private String bedId;
     private String buildingNo;
-    private Integer buildingLevel;
-    private Integer buildingRoom;
-    private Integer bedName;
+    private String buildingLevel;
+    private String buildingRoom;
+    private String bedName;
 }

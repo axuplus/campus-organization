@@ -77,25 +77,20 @@ public class BuildingController extends BaseController {
     }
 
 
-//    @ApiOperation("获取修改学生信息")
-//    @GetMapping("/get/buildingStudent")
-//    public Wrapper<BuildingRoomVo> getBuilding(@RequestParam("id") Long id) {
-//        return buildingService.getBuilding(id);
-//    }
-//
-//
-//    @ApiOperation("确认修改学生信息")
-//    @PutMapping("/edit/buildingStudent")
-//    public Wrapper editBuilding(@ApiParam("buildingStudentId") @RequestParam("id") Long id, @RequestParam("studentId") Long studentId) {
-//        return buildingService.editBuilding(id, studentId);
-//    }
-
-
     @ApiOperation("获取楼幢信息以及层级")
     @GetMapping("/tree")
     public Wrapper<List<BuildingTreeVo>> getBuildingTree(@RequestParam("masterId") Long masterId) {
         return buildingService.getBuildingTree(masterId);
     }
+
+    @ApiOperation("修改树结构名称")
+    @GetMapping("/edit")
+    public Wrapper editBuildingTree(@ApiParam("1 楼幢 2 楼层 3 宿舍 4 床位") @RequestParam("type") Integer type,
+                                    @RequestParam("id") Long id,
+                                    @RequestParam("name") String name) {
+        return buildingService.editBuildingTree(type, id, name);
+    }
+
 
     @Permission(url = qxurl, type = PermissionType.DEL)
     @ApiOperation("删除")
@@ -108,18 +103,21 @@ public class BuildingController extends BaseController {
     @Permission(url = qxurl, type = PermissionType.QUERY)
     @ApiOperation("楼幢 管理员列表")
     @GetMapping("/managerList")
-    public PageWrapper<List<BuildingManagerVo>> managerList(@ApiParam("楼幢ID ") @RequestParam("id") Long id, BaseQueryDto baseQueryDto) {
-        return buildingService.managerList(id, baseQueryDto);
+    public PageWrapper<List<BuildingManagerVo>> managerList(
+            @ApiParam("楼幢ID ") @RequestParam(value = "id",required = false) Long id,
+            @RequestParam("masterId") Long materId,
+            BaseQueryDto baseQueryDto) {
+        return buildingService.managerList(id, materId, baseQueryDto);
     }
 
     @Permission(url = qxurl, type = PermissionType.QUERY)
     @ApiOperation("楼层/宿舍 学生列表")
     @GetMapping("/studentList")
-    public  PageWrapper<List<BuildingStudentListVo>> studentList(@ApiParam("1:全部2:楼层3:宿舍")@RequestParam("type") Integer type,
-                                                                 @ApiParam("楼层/宿舍ID ") @RequestParam("id") Long id,
-                                                                 @RequestParam("masterId")Long masterId,
-                                                                 BaseQueryDto baseQueryDto) {
-        return buildingService.studentList(type,id,masterId, baseQueryDto);
+    public PageWrapper<List<BuildingStudentListVo>> studentList(@ApiParam("1:全部2:楼层3:宿舍") @RequestParam("type") Integer type,
+                                                                @ApiParam("楼层/宿舍ID ") @RequestParam("id") Long id,
+                                                                @RequestParam("masterId") Long masterId,
+                                                                BaseQueryDto baseQueryDto) {
+        return buildingService.studentList(type, id, masterId, baseQueryDto);
     }
 
     @Permission(url = qxurl, type = PermissionType.QUERY)
@@ -134,17 +132,18 @@ public class BuildingController extends BaseController {
 
     @ApiOperation("修改宿管老师下拉列表")
     @GetMapping("/get/buildingTeachers")
-    public Wrapper<Map<Long, String>> getBuildingTeachers(@RequestParam("masterId")Long masterId) {
+    public Wrapper<Map<Long, String>> getBuildingTeachers(@RequestParam("masterId") Long masterId) {
         return buildingService.getBuildingTeachers(masterId);
     }
-// 这里有问题
+
+    // 这里有问题
     @ApiOperation("获取楼幢宿管老师")
     @GetMapping("/get/buildingTeacher")
     public Wrapper<BuildingTeacherVo> getBuildingTeacher(@ApiParam("楼层ID") @RequestParam("levelId") Long levelId) {
         return buildingService.getBuildingTeacher(levelId);
     }
 
-    @Permission(url = qxurl,type = PermissionType.EDIT)
+    @Permission(url = qxurl, type = PermissionType.EDIT)
     @ApiOperation("确认修改宿管老师")
     @PutMapping("/set/buildingTeacher")
     public Wrapper setBuildingTeacher(@RequestParam("levelId") Long levelId, @RequestParam("teacherId") Long teacherId) {
@@ -152,10 +151,10 @@ public class BuildingController extends BaseController {
     }
 
     // 楼幢列表删除
-    @Permission(url = qxurl,type = PermissionType.DEL)
+    @Permission(url = qxurl, type = PermissionType.DEL)
     @ApiOperation("删除楼幢管理员")
     @DeleteMapping("/delete/{levelId}")
-    public Wrapper deleteBuildingManger( @PathVariable("levelId") Long levelId) {
+    public Wrapper deleteBuildingManger(@PathVariable("levelId") Long levelId) {
         return buildingService.deleteBuildingManger(levelId);
     }
 }

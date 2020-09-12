@@ -2,12 +2,15 @@ package com.safe.campus.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.safe.campus.model.domain.BuildingNo;
+import com.safe.campus.model.dto.BuildingManagerDto;
 import com.safe.campus.model.dto.BuildingNoMapperDto;
 import com.safe.campus.model.dto.BuildingStudentListDto;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
 
 /**
  * <p>
@@ -56,6 +59,21 @@ public interface BuildingNoMapper extends BaseMapper<BuildingNo> {
             "\tAND b.id = #{bId}\n" +
             "\tAND c.id = #{cId}\n" +
             "\tAND d.id = #{dId}")
-    BuildingStudentListDto checkBuildingInfoByIds(@Param("aId") Long aId,@Param("bId")Long bId,@Param("cId")Long cId,@Param("dId")Long dId);
+    BuildingStudentListDto checkBuildingInfoByIds(@Param("aId") Long aId, @Param("bId") Long bId, @Param("cId") Long cId, @Param("dId") Long dId);
+
+
+    @Select("" +
+            "SELECT\n" +
+            "\ta.id as noId,\n" +
+            "\ta.building_no,\n" +
+            "\tb.id as levelId,\n" +
+            "\tb.t_id,\n" +
+            "\tb.building_level \n" +
+            "FROM\n" +
+            "\tbuilding_no a\n" +
+            "\tINNER JOIN building_level b ON a.id = b.building_no_id \n" +
+            "WHERE\n" +
+            "\ta.master_id = #{masterId}")
+    List<BuildingManagerDto> selectNoByMasterId(@Param("masterId") Long masterId);
 
 }

@@ -72,6 +72,7 @@ public class BuildingNoServiceImpl extends ServiceImpl<BuildingNoMapper, Buildin
     @Override
     public Wrapper saveBuilding(SaveBuildingInfoDto saveBuildingInfoDto, LoginAuthDto loginAuthDto) {
         if (PublicUtil.isNotEmpty(saveBuildingInfoDto)) {
+            Long id = null;
             if (1 == saveBuildingInfoDto.getType()) {
                 BuildingNo buildingNo = new BuildingNo();
                 buildingNo.setId(gobalInterface.generateId());
@@ -82,34 +83,38 @@ public class BuildingNoServiceImpl extends ServiceImpl<BuildingNoMapper, Buildin
                 buildingNo.setState(0);
                 buildingNo.setCreateUser(loginAuthDto.getUserId());
                 noMapper.insert(buildingNo);
-            }else if(2 == saveBuildingInfoDto.getType()){
+                id = buildingNo.getId();
+            } else if (2 == saveBuildingInfoDto.getType()) {
                 BuildingLevel buildingLevel = new BuildingLevel();
                 buildingLevel.setId(gobalInterface.generateId());
-                buildingLevel.setBuildingLevel(Integer.valueOf(saveBuildingInfoDto.getName()));
+                buildingLevel.setBuildingLevel(saveBuildingInfoDto.getName());
                 buildingLevel.setBuildingNoId(saveBuildingInfoDto.getId());
                 buildingLevel.setIsDelete(0);
                 buildingLevel.setState(0);
                 buildingLevel.setCreateUser(loginAuthDto.getUserId());
                 buildingLevel.setCreateTime(new Date());
                 levelMapper.insert(buildingLevel);
-            }else if(3 == saveBuildingInfoDto.getType()){
+                id = buildingLevel.getId();
+            } else if (3 == saveBuildingInfoDto.getType()) {
                 BuildingRoom room = new BuildingRoom();
                 room.setId(gobalInterface.generateId());
                 room.setBuildingLevelId(saveBuildingInfoDto.getId());
-                room.setBuildingRoom(Integer.valueOf(saveBuildingInfoDto.getName()));
+                room.setBuildingRoom(saveBuildingInfoDto.getName());
                 room.setIsDelete(0);
                 room.setState(0);
                 room.setCreateUser(loginAuthDto.getUserId());
                 room.setCreateTime(new Date());
                 roomMapper.insert(room);
-            }else if(4 == saveBuildingInfoDto.getType()){
+                id = room.getId();
+            } else if (4 == saveBuildingInfoDto.getType()) {
                 BuildingBed bed = new BuildingBed();
                 bed.setId(gobalInterface.generateId());
-                bed.setBedName(Integer.valueOf(saveBuildingInfoDto.getName()));
+                bed.setBedName(saveBuildingInfoDto.getName());
                 bed.setRoomId(saveBuildingInfoDto.getId());
                 bedMapper.insert(bed);
+                id = bed.getId();
             }
-            return WrapMapper.ok("添加成功");
+            return WrapMapper.ok(id);
         }
         return null;
     }
@@ -130,42 +135,6 @@ public class BuildingNoServiceImpl extends ServiceImpl<BuildingNoMapper, Buildin
         student.setCreateTime(new Date());
         buildingStudentMapper.insert(student);
         return WrapMapper.ok("保存成功");
-    }
-
-    @Override
-    public Wrapper<BuildingRoomVo> getBuilding(Long id) {
-        if (null != id) {
-            BuildingStudent student = buildingStudentMapper.selectById(id);
-            if (PublicUtil.isNotEmpty(student)) {
-                BuildingRoomVo vo = new BuildingRoomVo();
-                vo.setId(student.getId());
-                vo.setBuildingNo(noMapper.selectById(student.getNoId()).getBuildingNo());
-                vo.setBuildingRoom(roomMapper.selectById(student.getRoomId()).getBuildingRoom());
-                vo.setBedNo(bedMapper.selectById(student.getBedId()).getBedName());
-                vo.setBuildingLevel(levelMapper.selectById(student.getLevelId()).getBuildingLevel());
-                vo.setStudentId(student.getStudentId());
-                SchoolStudent schoolStudent = studentService.selectById(student.getStudentId());
-                if (PublicUtil.isNotEmpty(schoolStudent)) {
-                    vo.setSNumber(schoolStudent.getSNumber());
-                    vo.setSName(schoolStudent.getSName());
-                    if (1 == schoolStudent.getSex()) {
-                        vo.setSex("男");
-                    } else {
-                        vo.setSex("女");
-                    }
-                }
-                BuildingLevel buildingInfo = levelMapper.selectById(roomMapper.selectById(student.getRoomId()));
-                if (null != buildingInfo) {
-                    BuildingNo buildingNo = noMapper.selectById(buildingInfo.getBuildingNoId());
-                    vo.setBuildingLevel(buildingInfo.getBuildingLevel());
-                    if (null != buildingNo) {
-                        vo.setBuildingNo(buildingNo.getBuildingNo());
-                    }
-                }
-                return WrapMapper.ok(vo);
-            }
-        }
-        return null;
     }
 
     @Override
@@ -214,23 +183,6 @@ public class BuildingNoServiceImpl extends ServiceImpl<BuildingNoMapper, Buildin
     }
 
     @Override
-    public Wrapper editBuilding(Long id, Long studentId) {
-        if (null != studentId) {
-            QueryWrapper<BuildingStudent> queryWrapper = new QueryWrapper<>();
-            queryWrapper.eq("id", id);
-            BuildingStudent buildingStudent = buildingStudentMapper.selectById(queryWrapper);
-            if (PublicUtil.isNotEmpty(buildingStudent)) {
-                buildingStudent.setStudentId(studentId);
-                buildingStudentMapper.updateById(buildingStudent);
-                return WrapMapper.ok("修改成功");
-            }
-            return WrapMapper.error("修改失败");
-        }
-        return null;
-    }
-
-
-    @Override
     public Wrapper deleteBuilding(Integer type, Long id) {
         if (null != type && null != id) {
             if (1 == type) {
@@ -265,7 +217,7 @@ public class BuildingNoServiceImpl extends ServiceImpl<BuildingNoMapper, Buildin
     }
 
     @Override
-    public PageWrapper<List<BuildingManagerVo>> managerList(Long id, BaseQueryDto baseQueryDto) {
+    public PageWrapper<List<BuildingManagerVo>> managerList(Long id, Long masterId, BaseQueryDto baseQueryDto) {
         if (null != id) {
             List<BuildingManagerVo> list = new ArrayList<>();
             BuildingNo buildingNo = noMapper.selectById(id);
@@ -291,8 +243,30 @@ public class BuildingNoServiceImpl extends ServiceImpl<BuildingNoMapper, Buildin
                 });
             }
             return PageWrapMapper.wrap(list, new PageUtil(total.intValue(), baseQueryDto.getPage(), baseQueryDto.getPage_size()));
+        } else {
+            Page page = PageHelper.startPage(baseQueryDto.getPage(), baseQueryDto.getPage_size());
+            List<BuildingManagerDto> buildingManagerDtos = noMapper.selectNoByMasterId(masterId);
+            Long total = page.getTotal();
+            if (PublicUtil.isNotEmpty(buildingManagerDtos)) {
+                List<BuildingManagerVo> list = new ArrayList<>();
+                buildingManagerDtos.forEach(dto -> {
+                    BuildingManagerVo buildingManagerVo = new BuildingManagerVo();
+                    buildingManagerVo.setBuildingLevelId(dto.getLevelId());
+                    buildingManagerVo.setBuildingNo(dto.getBuildingNo());
+                    buildingManagerVo.setBuildingLevel(dto.getBuildingLevel());
+                    SchoolTeacher teacher = teacherService.getTeacher(dto.getTId());
+                    if (PublicUtil.isNotEmpty(teacher)) {
+                        buildingManagerVo.setManagerId(teacher.getId());
+                        buildingManagerVo.setManagerName(teacher.getTName());
+                        buildingManagerVo.setManagerNo(teacher.getTNumber());
+                        buildingManagerVo.setManagerPhone(teacher.getPhone());
+                    }
+                    list.add(buildingManagerVo);
+                });
+                return PageWrapMapper.wrap(list, new PageUtil(total.intValue(), baseQueryDto.getPage(), baseQueryDto.getPage_size()));
+            }
         }
-        return null;
+        return PageWrapMapper.wrap(200, "暂无数据");
     }
 
 
@@ -511,6 +485,28 @@ public class BuildingNoServiceImpl extends ServiceImpl<BuildingNoMapper, Buildin
             }
         }
         return PageWrapMapper.wrap(200, "暂无数据");
+    }
+
+    @Override
+    public Wrapper editBuildingTree(Integer type, Long id, String name) {
+        if (1 == type) {
+            BuildingNo buildingNo = noMapper.selectById(id);
+            buildingNo.setBuildingNo(name);
+            noMapper.updateById(buildingNo);
+        } else if (2 == type) {
+            BuildingLevel buildingLevel = levelMapper.selectById(id);
+            buildingLevel.setBuildingLevel(name);
+            levelMapper.updateById(buildingLevel);
+        } else if (3 == type) {
+            BuildingRoom buildingRoom = roomMapper.selectById(id);
+            buildingRoom.setBuildingRoom(name);
+            roomMapper.updateById(buildingRoom);
+        } else if (4 == type) {
+            BuildingBed buildingBed = bedMapper.selectById(id);
+            buildingBed.setBedName(name);
+            bedMapper.updateById(buildingBed);
+        }
+        return WrapMapper.ok("修改成功");
     }
 
     @Override

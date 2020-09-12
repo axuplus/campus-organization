@@ -34,7 +34,7 @@ public class BuildingRoom implements Serializable {
     private Long buildingLevelId;
 
     @ApiModelProperty(value = "房间号码")
-    private Integer buildingRoom;
+    private String buildingRoom;
 
     @ApiModelProperty(value = "状态")
     private Integer state;

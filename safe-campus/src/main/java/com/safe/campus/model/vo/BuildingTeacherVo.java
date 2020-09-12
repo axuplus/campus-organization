@@ -12,7 +12,7 @@ public class BuildingTeacherVo {
     @ApiModelProperty(value = "楼层Id")
     private Long levelId;
     @ApiModelProperty(value = "楼层")
-    private Integer level;
+    private String level;
     @ApiModelProperty(value = "宿管老师")
     private String tName;
 }

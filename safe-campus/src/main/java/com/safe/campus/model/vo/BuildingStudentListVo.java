@@ -12,11 +12,11 @@ public class BuildingStudentListVo {
     @ApiModelProperty(value = "楼幢")
     private String buildingNo;
     @ApiModelProperty(value = "楼幢层")
-    private Integer buildingLevel;
+    private String buildingLevel;
     @ApiModelProperty(value = "宿舍")
-    private Integer buildingRoom;
+    private String buildingRoom;
     @ApiModelProperty(value = "床号")
-    private Integer bedNo;
+    private String bedNo;
     @ApiModelProperty(value = "学生姓名")
     private String sName;
     @ApiModelProperty(value = "年级+班级")

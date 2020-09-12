@@ -25,7 +25,7 @@ public class BuildingTreeVo {
         @ApiModelProperty(value = "2 类型")
         private Integer type;
         @ApiModelProperty("楼层名称")
-        private Integer buildingLevelName;
+        private String buildingLevelName;
         private List<BuildingRoom> buildingRooms;
 
         @Data
@@ -35,7 +35,7 @@ public class BuildingTreeVo {
             @ApiModelProperty(value = "3 类型")
             private Integer type;
             @ApiModelProperty("宿舍编号")
-            private Integer buildingRoomName;
+            private String buildingRoomName;
             private List<BuildingBed> buildingBeds;
 
             @Data
@@ -45,7 +45,7 @@ public class BuildingTreeVo {
                 @ApiModelProperty(value = "4 类型")
                 private Integer type;
                 @ApiModelProperty(value = "床位")
-                private Integer bedName;
+                private String bedName;
             }
         }
     }
