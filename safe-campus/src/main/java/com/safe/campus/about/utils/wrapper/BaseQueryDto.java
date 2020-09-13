@@ -20,7 +20,7 @@ public class BaseQueryDto {
      * 每页条数 别问我为什么下划线 前端让改的
      */
     @ApiModelProperty(value = "条数", name = "page_size")
-    private Integer page_size = 3;
+    private Integer page_size = 5;
 
 
 }

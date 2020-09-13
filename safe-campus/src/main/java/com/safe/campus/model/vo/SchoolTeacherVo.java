@@ -31,7 +31,17 @@ public class SchoolTeacherVo {
     @ApiModelProperty("职务")
     private String position;
     @ApiModelProperty("关联班级")
-    private String classInformation;
+    private List<String> classInformation;
     @ApiModelProperty("角色信息 map")
-    private Map<Long, String> roleInfo;
+    private List<RoleInfos> roleInfos;
+
+    @Data
+    public static class RoleInfos {
+        @ApiModelProperty(value = "角色id")
+        private Long roleId;
+        @ApiModelProperty(value = "角色名称")
+        private String roleName;
+    }
+
+
 }
