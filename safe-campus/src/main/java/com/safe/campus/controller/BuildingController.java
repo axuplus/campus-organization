@@ -93,9 +93,9 @@ public class BuildingController extends BaseController {
 
 
     @Permission(url = qxurl, type = PermissionType.DEL)
-    @ApiOperation("删除")
+    @ApiOperation("删除->树")
     @DeleteMapping("/delete/{type}/{id}")
-    public Wrapper deleteBuilding(@ApiParam("1：楼幢ID 2：楼层ID 3：宿舍ID 4：删除宿舍学生 ") @PathVariable("type") Integer type, @PathVariable("id") Long id) {
+    public Wrapper deleteBuilding(@ApiParam("1：楼幢ID 2：楼层ID 3：宿舍ID 4：床位id ") @PathVariable("type") Integer type, @PathVariable("id") Long id) {
         return buildingService.deleteBuilding(type, id);
     }
 
@@ -151,9 +151,16 @@ public class BuildingController extends BaseController {
     }
 
     @Permission(url = qxurl, type = PermissionType.DEL)
-    @ApiOperation("删除楼幢管理员")
+    @ApiOperation("删除->楼幢列表")
     @DeleteMapping("/delete/{levelId}")
     public Wrapper deleteBuildingManger(@PathVariable("levelId") Long levelId) {
         return buildingService.deleteBuildingManger(levelId);
+    }
+
+    @Permission(url = qxurl, type = PermissionType.DEL)
+    @ApiOperation("删除->学生列表")
+    @DeleteMapping("/delete/{sId}")
+    public Wrapper deleteBuildingStudent(@PathVariable("sId") Long sId) {
+        return buildingService.deleteBuildingStudent(sId);
     }
 }

@@ -219,7 +219,7 @@ public class BuildingNoServiceImpl extends ServiceImpl<BuildingNoMapper, Buildin
                     return WrapMapper.error("删除失败,宿舍下面还有其他房间信息");
                 }
             } else if (4 == type) {
-                buildingStudentMapper.deleteById(id);
+                bedMapper.deleteById(id);
                 return WrapMapper.ok("删除成功");
             }
         }
@@ -527,6 +527,15 @@ public class BuildingNoServiceImpl extends ServiceImpl<BuildingNoMapper, Buildin
             bedMapper.updateById(buildingBed);
         }
         return WrapMapper.ok("修改成功");
+    }
+
+    @Override
+    public Wrapper deleteBuildingStudent(Long sId) {
+        if(null != sId){
+            buildingStudentMapper.deleteById(sId);
+            return WrapMapper.ok("删除成功");
+        }
+        return null;
     }
 
     @Override

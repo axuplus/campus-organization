@@ -59,4 +59,7 @@ public interface BuildingService extends IService<BuildingNo> {
     PageWrapper<List<BuildingStudentListVo>> studentList(Integer type, Long id,Long masterId, BaseQueryDto baseQueryDto);
 
     Wrapper editBuildingTree(Integer type, Long id, String name);
+
+    Wrapper deleteBuildingStudent(Long sId);
+
 }
