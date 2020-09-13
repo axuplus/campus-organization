@@ -418,10 +418,10 @@ public class BuildingNoServiceImpl extends ServiceImpl<BuildingNoMapper, Buildin
                     BuildingStudent s = buildingStudentMapper.selectOne(new QueryWrapper<BuildingStudent>().eq("bed_id", bed.getId()));
                     BuildingStudentListVo listVo = new BuildingStudentListVo();
                     if (PublicUtil.isNotEmpty(s)) {
-                        System.err.println("s.getId() = " + s.getId());
                         listVo.setId(s.getId());
                         BuildingStudentListDto buildingStudentListDto = noMapper.checkBuildingInfoByIds(s.getNoId(), s.getLevelId(), s.getRoomId(), s.getBedId());
                         listVo.setBedNo(buildingStudentListDto.getBedName());
+                        listVo.setBedId(s.getBedId());
                         listVo.setBuildingRoom(buildingStudentListDto.getBuildingRoom());
                         listVo.setBuildingLevel(buildingStudentListDto.getBuildingLevel());
                         listVo.setBuildingNo(buildingStudentListDto.getBuildingNo());
