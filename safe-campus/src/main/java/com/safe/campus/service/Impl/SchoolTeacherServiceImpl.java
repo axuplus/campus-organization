@@ -152,7 +152,7 @@ public class SchoolTeacherServiceImpl extends ServiceImpl<SchoolTeacherMapper, S
                         List<SysRole> roles = roleMapper.selectBatchIds(ids);
                         // 此账号下面关联的多个角色
                         List<SchoolTeacherVo.RoleInfos> roleInfos = new ArrayList<>();
-                        roles.forEach(r ->{
+                        roles.forEach(r -> {
                             SchoolTeacherVo.RoleInfos roleInfo = new SchoolTeacherVo.RoleInfos();
                             roleInfo.setRoleId(r.getId());
                             roleInfo.setRoleName(r.getRoleName());
@@ -216,7 +216,7 @@ public class SchoolTeacherServiceImpl extends ServiceImpl<SchoolTeacherMapper, S
                     // vo.setRoleId(roles.stream().map(SysRole::getId).collect(Collectors.toList()));
                     // vo.setRoleName(roles.stream().map(SysRole::getRoleName).collect(Collectors.toList()));
                     List<SchoolTeacherVo.RoleInfos> roleInfos = new ArrayList<>();
-                    roles.forEach(r ->{
+                    roles.forEach(r -> {
                         SchoolTeacherVo.RoleInfos roleInfo = new SchoolTeacherVo.RoleInfos();
                         roleInfo.setRoleId(r.getId());
                         roleInfo.setRoleName(r.getRoleName());
@@ -295,7 +295,7 @@ public class SchoolTeacherServiceImpl extends ServiceImpl<SchoolTeacherMapper, S
                         List<SysRole> roles = roleMapper.selectBatchIds(ids);
                         // 此账号下面关联的多个角色
                         List<SchoolTeacherVo.RoleInfos> roleInfos = new ArrayList<>();
-                        roles.forEach(r ->{
+                        roles.forEach(r -> {
                             SchoolTeacherVo.RoleInfos roleInfo = new SchoolTeacherVo.RoleInfos();
                             roleInfo.setRoleId(r.getId());
                             roleInfo.setRoleName(r.getRoleName());
@@ -495,7 +495,7 @@ public class SchoolTeacherServiceImpl extends ServiceImpl<SchoolTeacherMapper, S
             });
             return WrapMapper.ok(vos);
         }
-        return null;
+        return WrapMapper.error("暂无角色");
     }
 
     @Override
