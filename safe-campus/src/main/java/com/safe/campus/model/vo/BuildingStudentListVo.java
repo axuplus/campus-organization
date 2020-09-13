@@ -7,7 +7,7 @@ import lombok.Data;
 public class BuildingStudentListVo {
     @ApiModelProperty(value = "building student id")
     private Long id;
-    @ApiModelProperty(value = "building student id")
+    @ApiModelProperty(value = "bedId")
     private Long bedId;
     @ApiModelProperty(value = "楼幢")
     private String buildingNo;
