@@ -87,6 +87,7 @@ public class TokenServiceImpl extends ServiceImpl<SysAdminUserMapper, SysAdmin> 
         userTokenDto.setType(sysAdminUser.getType());
         userTokenDto.setExpireTime(jwtInfo.getExpireIn());
         userTokenDto.setCreateTime(DateUtil.currentTime(nowDate));
+        redisTemplate.opsForHash().delete(GlobalConstant.LOGIN_TOKEN, userTokenDto.getUserId());
         redisTemplate.opsForHash().put(GlobalConstant.LOGIN_TOKEN, String.valueOf(sysAdminUser.getId()), userTokenDto);
         LoginTokenVo loginTokenVo = new LoginTokenVo();
         loginTokenVo.setUserId(sysAdminUser.getId());
