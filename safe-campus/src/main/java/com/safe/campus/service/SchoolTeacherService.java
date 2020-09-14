@@ -8,6 +8,7 @@ import com.safe.campus.model.domain.SchoolTeacher;
 import com.safe.campus.model.dto.SetRoleDto;
 import com.safe.campus.model.dto.TeacherInfoDto;
 import com.safe.campus.about.utils.wrapper.Wrapper;
+import com.safe.campus.model.vo.SchoolTeacherSectionVo;
 import com.safe.campus.model.vo.SchoolTeacherVo;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -29,7 +30,7 @@ public interface SchoolTeacherService extends IService<SchoolTeacher> {
 
     Wrapper deleteTeacherInfo(Long id);
 
-    Wrapper getTeacherInfo(Long id);
+    Wrapper<SchoolTeacherVo> getTeacherInfo(Long id);
 
     Wrapper editTeacherInfo(TeacherInfoDto teacherInfoDto);
 
@@ -56,5 +57,7 @@ public interface SchoolTeacherService extends IService<SchoolTeacher> {
     Wrapper active(LoginAuthDto loginAuthDto, Long id, Long masterId,Integer state);
 
     List<SchoolTeacher> searchTeachersByName(String context,Long masterId);
+
+    Wrapper<List<SchoolTeacherSectionVo>> getSection(Long masterId, Long sectionId);
 
 }

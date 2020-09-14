@@ -32,6 +32,8 @@ public class SchoolTeacherVo {
     private String position;
     @ApiModelProperty("关联班级")
     private List<String> classInformation;
+    @ApiModelProperty(value = "入职年月")
+    private String joinTime;
     @ApiModelProperty("角色信息 map")
     private List<RoleInfos> roleInfos;
 

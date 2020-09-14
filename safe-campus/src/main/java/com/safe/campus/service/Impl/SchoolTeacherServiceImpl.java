@@ -16,6 +16,7 @@ import com.safe.campus.model.domain.*;
 import com.safe.campus.model.dto.SetRoleDto;
 import com.safe.campus.model.dto.TeacherExcelDto;
 import com.safe.campus.model.dto.TeacherInfoDto;
+import com.safe.campus.model.vo.SchoolTeacherSectionVo;
 import com.safe.campus.model.vo.SchoolTeacherVo;
 import com.safe.campus.model.vo.SysFileVo;
 import com.safe.campus.model.vo.SysRoleVo;
@@ -182,7 +183,7 @@ public class SchoolTeacherServiceImpl extends ServiceImpl<SchoolTeacherMapper, S
     }
 
     @Override
-    public Wrapper getTeacherInfo(Long id) {
+    public Wrapper<SchoolTeacherVo> getTeacherInfo(Long id) {
         if (null == id) {
             return WrapMapper.error("参数不能为空");
         }
@@ -630,6 +631,28 @@ public class SchoolTeacherServiceImpl extends ServiceImpl<SchoolTeacherMapper, S
         QueryWrapper<SchoolTeacher> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("master_id", masterId).like("t_name", context);
         return teacherMapper.selectList(queryWrapper);
+    }
+
+    @Override
+    public Wrapper<List<SchoolTeacherSectionVo>> getSection(Long masterId, Long sectionId) {
+        QueryWrapper<SchoolSection> schoolSectionQueryWrapper = new QueryWrapper<>();
+        if (null == sectionId) {
+            schoolSectionQueryWrapper.eq("master_id", masterId).eq("p_id", 0);
+        } else {
+            schoolSectionQueryWrapper.eq("p_id", sectionId);
+        }
+        List<SchoolSection> sections = sectionMapper.selectList(schoolSectionQueryWrapper);
+        if (PublicUtil.isNotEmpty(sections)) {
+            List<SchoolTeacherSectionVo> list = new ArrayList<>();
+            sections.forEach(s -> {
+                SchoolTeacherSectionVo vo = new SchoolTeacherSectionVo();
+                vo.setSectionId(s.getId());
+                vo.setSectionName(s.getSectionName());
+                list.add(vo);
+            });
+            return WrapMapper.ok(list);
+        }
+        return WrapMapper.error("暂无数据");
     }
 }
 

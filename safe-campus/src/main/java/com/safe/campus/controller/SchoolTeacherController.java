@@ -8,6 +8,7 @@ import com.safe.campus.about.utils.wrapper.BaseQueryDto;
 import com.safe.campus.about.utils.wrapper.PageWrapper;
 import com.safe.campus.model.dto.SetRoleDto;
 import com.safe.campus.model.dto.TeacherInfoDto;
+import com.safe.campus.model.vo.SchoolTeacherSectionVo;
 import com.safe.campus.model.vo.SchoolTeacherVo;
 import com.safe.campus.service.SchoolTeacherService;
 import com.safe.campus.about.utils.wrapper.Wrapper;
@@ -53,11 +54,11 @@ public class SchoolTeacherController extends BaseController {
     @Permission(url = qxurl, type = PermissionType.QUERY)
     @GetMapping("/list")
     @ApiOperation("获取某个部门下面的教师列表")
-    public PageWrapper<List<SchoolTeacherVo>> listTeacherInfo(@ApiParam("1全部2部门")@RequestParam(value = "type",required = true)Integer type,
+    public PageWrapper<List<SchoolTeacherVo>> listTeacherInfo(@ApiParam("1全部2部门") @RequestParam(value = "type", required = true) Integer type,
                                                               @RequestParam("masterId") Long masterId,
                                                               @RequestParam("sectionId") Long id,
                                                               BaseQueryDto baseQueryDto) {
-        return teacherService.listTeacherInfo(type,masterId, id, baseQueryDto);
+        return teacherService.listTeacherInfo(type, masterId, id, baseQueryDto);
     }
 
 
@@ -71,7 +72,7 @@ public class SchoolTeacherController extends BaseController {
 
     @GetMapping("/get")
     @ApiOperation("查看教职工信息")
-    public Wrapper getTeacherInfo(@RequestParam("id") Long id) {
+    public Wrapper<SchoolTeacherVo> getTeacherInfo(@RequestParam("id") Long id) {
         return teacherService.getTeacherInfo(id);
     }
 
@@ -91,18 +92,18 @@ public class SchoolTeacherController extends BaseController {
     }
 
 
-    @Permission(url = qxurl,type = PermissionType.ADD)
+    @Permission(url = qxurl, type = PermissionType.ADD)
     @PostMapping("/import/teacher")
     @ApiOperation("导入")
-    public Wrapper importTeacherConcentrator(@ApiParam(value = "file", required = true) MultipartFile file,@RequestParam("masterId")Long masterId, HttpServletRequest request) throws Exception {
-        return teacherService.importTeacherConcentrator(file, masterId,getLoginAuthDto());
+    public Wrapper importTeacherConcentrator(@ApiParam(value = "file", required = true) MultipartFile file, @RequestParam("masterId") Long masterId, HttpServletRequest request) throws Exception {
+        return teacherService.importTeacherConcentrator(file, masterId, getLoginAuthDto());
     }
 
-    @Permission(url = qxurl,type = PermissionType.ADD)
+    @Permission(url = qxurl, type = PermissionType.ADD)
     @PostMapping("/import/teacher/pictures")
     @ApiOperation("导入照片")
-    public Wrapper importTeacherPictureConcentrator(@ApiParam(value = "file", required = true) MultipartFile file,@RequestParam("masterId")Long masterId, HttpServletRequest request) throws Exception {
-        return teacherService.importTeacherPictureConcentrator(file,masterId, getLoginAuthDto());
+    public Wrapper importTeacherPictureConcentrator(@ApiParam(value = "file", required = true) MultipartFile file, @RequestParam("masterId") Long masterId, HttpServletRequest request) throws Exception {
+        return teacherService.importTeacherPictureConcentrator(file, masterId, getLoginAuthDto());
     }
 
 
@@ -125,8 +126,16 @@ public class SchoolTeacherController extends BaseController {
     @ApiOperation("停用/启用")
     public Wrapper<Map<Long, String>> active(@ApiParam("此教师的ID") @RequestParam("id") Long id,
                                              @RequestParam("masterId") Long masterId,
-                                             @ApiParam("1:停用 0:启用")@RequestParam("state") Integer state) {
+                                             @ApiParam("1:停用 0:启用") @RequestParam("state") Integer state) {
         return teacherService.active(getLoginAuthDto(), id, masterId, state);
+    }
+
+
+    @GetMapping("/section")
+    @ApiOperation("获取部门列表")
+    public Wrapper<List<SchoolTeacherSectionVo>> getSection(@RequestParam("masterId") Long masterId,
+                                                      @ApiParam("第一层不用传这个id")@RequestParam(value = "sectionId",required = false) Long sectionId) {
+        return teacherService.getSection(masterId, sectionId);
     }
 
 }
