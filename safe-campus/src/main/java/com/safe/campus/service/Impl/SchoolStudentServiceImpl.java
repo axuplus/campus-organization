@@ -18,10 +18,7 @@ import com.safe.campus.model.domain.*;
 import com.safe.campus.model.dto.BuildingNoMapperDto;
 import com.safe.campus.model.dto.SchoolStudentDto;
 import com.safe.campus.model.dto.StudentExcelDto;
-import com.safe.campus.model.vo.SchoolStudentBuildingVo;
-import com.safe.campus.model.vo.SchoolStudentListVo;
-import com.safe.campus.model.vo.SchoolStudentVo;
-import com.safe.campus.model.vo.SysFileVo;
+import com.safe.campus.model.vo.*;
 import com.safe.campus.service.BuildingService;
 import com.safe.campus.service.SchoolStudentService;
 import com.safe.campus.about.utils.PublicUtil;
@@ -422,6 +419,36 @@ public class SchoolStudentServiceImpl extends ServiceImpl<SchoolStudentMapper, S
             return WrapMapper.ok(vos);
         }
         return WrapMapper.error("暂无数据");
+    }
+
+    @Override
+    public Wrapper<List<SchoolClassStudentVo>> getSchoolClassStudent(Long masterId, Long id) {
+        List<SchoolClassStudentVo> vos = new ArrayList<>();
+        if (null == id) {
+            // 年级
+            List<SchoolClass> classes = classMapper.selectList(new QueryWrapper<SchoolClass>().eq("master_id", masterId));
+            if (PublicUtil.isNotEmpty(classes)) {
+                classes.forEach(c -> {
+                    SchoolClassStudentVo schoolClassStudentVo = new SchoolClassStudentVo();
+                    schoolClassStudentVo.setId(c.getId());
+                    schoolClassStudentVo.setType(1);
+                    schoolClassStudentVo.setName(c.getClassName());
+                    vos.add(schoolClassStudentVo);
+                });
+            }
+        } else {
+            List<SchoolClassInfo> infos = infoMapper.selectList(new QueryWrapper<SchoolClassInfo>().eq("class_id", id));
+            if (PublicUtil.isNotEmpty(infos)) {
+                infos.forEach(i -> {
+                    SchoolClassStudentVo schoolClassStudentVo = new SchoolClassStudentVo();
+                    schoolClassStudentVo.setId(i.getId());
+                    schoolClassStudentVo.setType(2);
+                    schoolClassStudentVo.setName(i.getClassInfoName());
+                    vos.add(schoolClassStudentVo);
+                });
+            }
+        }
+        return WrapMapper.ok(vos);
     }
 
 

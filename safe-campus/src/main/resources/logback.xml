@@ -2,7 +2,7 @@
 
 <configuration scan="true" scanPeriod="60 seconds" debug="false">
     <include resource="org/springframework/boot/logging/logback/base.xml"/>
-    <property name="log_dir" value="safe-campus/logs"/>
+    <property name="log_dir" value="logs"/>
     <property name="maxHistory" value="7"/>
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>

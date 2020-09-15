@@ -8,6 +8,7 @@ import com.safe.campus.about.dto.LoginAuthDto;
 import com.safe.campus.about.utils.wrapper.BaseQueryDto;
 import com.safe.campus.about.utils.wrapper.PageWrapper;
 import com.safe.campus.model.dto.SchoolStudentDto;
+import com.safe.campus.model.vo.SchoolClassStudentVo;
 import com.safe.campus.model.vo.SchoolStudentBuildingVo;
 import com.safe.campus.model.vo.SchoolStudentListVo;
 import com.safe.campus.model.vo.SchoolStudentVo;
@@ -108,5 +109,11 @@ public class SchoolStudentController extends BaseController {
                                                                          @ApiParam("第一层楼幢不用传") @RequestParam(value = "type", required = false) Integer type,
                                                                          @RequestParam(value = "id", required = false) Long id) {
         return schoolStudentService.getStudentBuildingInfo(masterId, type, id);
+    }
+
+    @ApiOperation("班级年级")
+    @GetMapping("/classInfo")
+    public Wrapper<List<SchoolClassStudentVo>> getSchoolClassStudent(@RequestParam("masterId") Long masterId, @RequestParam(value = "id", required = false) Long id) {
+        return schoolStudentService.getSchoolClassStudent(masterId, id);
     }
 }

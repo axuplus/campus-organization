@@ -551,6 +551,7 @@ public class BuildingNoServiceImpl extends ServiceImpl<BuildingNoMapper, Buildin
                     vo.setName(no.getBuildingNo());
                     list.add(vo);
                 });
+                return list;
             }
         } else if (2 == type) {
             List<BuildingLevel> levels = levelMapper.selectList(new QueryWrapper<BuildingLevel>().eq("building_no_id", id));

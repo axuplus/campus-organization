@@ -7,6 +7,7 @@ import com.safe.campus.about.utils.wrapper.PageWrapper;
 import com.safe.campus.model.domain.SchoolStudent;
 import com.safe.campus.model.dto.SchoolStudentDto;
 import com.safe.campus.about.utils.wrapper.Wrapper;
+import com.safe.campus.model.vo.SchoolClassStudentVo;
 import com.safe.campus.model.vo.SchoolStudentBuildingVo;
 import com.safe.campus.model.vo.SchoolStudentListVo;
 import com.safe.campus.model.vo.SchoolStudentVo;
@@ -47,4 +48,6 @@ public interface SchoolStudentService extends IService<SchoolStudent> {
     PageWrapper<List<SchoolStudentListVo>> listStudent(Integer type,Long masterId, Long classId, BaseQueryDto baseQueryDto);
 
     Wrapper<List<SchoolStudentBuildingVo>> getStudentBuildingInfo(Long masterId, Integer type, Long id);
+
+    Wrapper<List<SchoolClassStudentVo>> getSchoolClassStudent(Long masterId, Long id);
 }
