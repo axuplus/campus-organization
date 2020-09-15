@@ -531,12 +531,72 @@ public class BuildingNoServiceImpl extends ServiceImpl<BuildingNoMapper, Buildin
 
     @Override
     public Wrapper deleteBuildingStudent(Long sId) {
-        if(null != sId){
+        if (null != sId) {
             buildingStudentMapper.deleteById(sId);
             return WrapMapper.ok("删除成功");
         }
         return null;
     }
+
+    @Override
+    public List<SchoolStudentBuildingVo> getStudentBuildingInfo(Long masterId, Integer type, Long id) {
+        List<SchoolStudentBuildingVo> list = new ArrayList<>();
+        if (null == type && null == id) {
+            List<BuildingNo> nos = noMapper.selectList(new QueryWrapper<BuildingNo>().eq("master_id", masterId));
+            if (PublicUtil.isNotEmpty(nos)) {
+                nos.forEach(no -> {
+                    SchoolStudentBuildingVo vo = new SchoolStudentBuildingVo();
+                    vo.setId(no.getId());
+                    vo.setType(1);
+                    vo.setName(no.getBuildingNo());
+                    list.add(vo);
+                });
+            }
+        } else if (2 == type) {
+            List<BuildingLevel> levels = levelMapper.selectList(new QueryWrapper<BuildingLevel>().eq("building_no_id", id));
+            if (PublicUtil.isNotEmpty(levels)) {
+                levels.forEach(level -> {
+                    SchoolStudentBuildingVo vo = new SchoolStudentBuildingVo();
+                    vo.setId(level.getId());
+                    vo.setType(2);
+                    vo.setName(level.getBuildingLevel());
+                    list.add(vo);
+                });
+                return list;
+            }
+        } else if (3 == type) {
+            List<BuildingRoom> rooms = roomMapper.selectList(new QueryWrapper<BuildingRoom>().eq("building_level_id", id));
+            if (PublicUtil.isNotEmpty(rooms)) {
+                rooms.forEach(room -> {
+                    SchoolStudentBuildingVo vo = new SchoolStudentBuildingVo();
+                    vo.setId(room.getId());
+                    vo.setType(3);
+                    vo.setName(room.getBuildingRoom());
+                    list.add(vo);
+                });
+                return list;
+            }
+        }else {
+                List<BuildingBed> beds = bedMapper.selectList(new QueryWrapper<BuildingBed>().eq("room_id", id));
+                if (PublicUtil.isNotEmpty(beds)) {
+                    beds.forEach(bed -> {
+                        SchoolStudentBuildingVo vo = new SchoolStudentBuildingVo();
+                        if (null == buildingStudentMapper.selectOne(new QueryWrapper<BuildingStudent>().eq("bed_id", bed.getId()))) {
+                            vo.setState(0);
+                        } else {
+                            vo.setState(1);
+                        }
+                        vo.setId(bed.getId());
+                        vo.setType(4);
+                        vo.setName(bed.getBedName());
+                        list.add(vo);
+                    });
+                    return list;
+                }
+            }
+        return null;
+    }
+
 
     @Override
     public Wrapper<List<BuildingTreeVo>> getBuildingTree(Long masterId) {

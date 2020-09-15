@@ -7,7 +7,9 @@ import com.safe.campus.about.utils.wrapper.PageWrapper;
 import com.safe.campus.model.domain.SchoolStudent;
 import com.safe.campus.model.dto.SchoolStudentDto;
 import com.safe.campus.about.utils.wrapper.Wrapper;
+import com.safe.campus.model.vo.SchoolStudentBuildingVo;
 import com.safe.campus.model.vo.SchoolStudentListVo;
+import com.safe.campus.model.vo.SchoolStudentVo;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
@@ -24,7 +26,7 @@ public interface SchoolStudentService extends IService<SchoolStudent> {
 
     Wrapper saveStudent(SchoolStudentDto dto,LoginAuthDto loginAuthDto);
 
-    Wrapper getStudent(Long id);
+    Wrapper<SchoolStudentVo> getStudent(Long id);
 
     Wrapper editStudent(SchoolStudentDto dto);
 
@@ -44,4 +46,5 @@ public interface SchoolStudentService extends IService<SchoolStudent> {
 
     PageWrapper<List<SchoolStudentListVo>> listStudent(Integer type,Long masterId, Long classId, BaseQueryDto baseQueryDto);
 
+    Wrapper<List<SchoolStudentBuildingVo>> getStudentBuildingInfo(Long masterId, Integer type, Long id);
 }

@@ -238,7 +238,9 @@ public class SchoolTeacherServiceImpl extends ServiceImpl<SchoolTeacherMapper, S
         }
         SchoolTeacher teacher = teacherMapper.selectById(teacherInfoDto.getId());
         teacher.setTName(teacherInfoDto.getTName());
-        teacher.setImgId(teacherInfoDto.getImgId());
+        if(teacherInfoDto.getImgId() != null) {
+            teacher.setImgId(teacherInfoDto.getImgId());
+        }
         teacher.setIdNumber(teacherInfoDto.getIdNumber());
         teacher.setPhone(teacherInfoDto.getPhone());
         teacher.setJoinTime(teacherInfoDto.getJoinTime());

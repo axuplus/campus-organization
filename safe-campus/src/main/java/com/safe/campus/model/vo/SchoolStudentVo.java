@@ -20,7 +20,7 @@ public class SchoolStudentVo {
     @ApiModelProperty(value = "1：住校生 2：同校生")
     private String type;
     @ApiModelProperty(value = "图片ID")
-    private String imgId;
+    private String photo;
     @ApiModelProperty(value = "年级ID")
     private Long classId;
     @ApiModelProperty(value = "年级")
@@ -29,6 +29,10 @@ public class SchoolStudentVo {
     private Long classInfoId;
     @ApiModelProperty(value = "班级")
     private String classInfoName;
+    @ApiModelProperty(value = "入学年份")
+    private String joinTime;
+    @ApiModelProperty(value = "毕业年份")
+    private String endTime;
     @ApiModelProperty(value = "住宿信息")
     private BuildingBedDto livingInfo;
 }
