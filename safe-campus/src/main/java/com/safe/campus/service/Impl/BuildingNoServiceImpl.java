@@ -293,7 +293,9 @@ public class BuildingNoServiceImpl extends ServiceImpl<BuildingNoMapper, Buildin
                     BuildingStudentListVo vo = new BuildingStudentListVo();
                     vo.setSName(student.getSName());
                     vo.setSNumber(student.getSNumber());
-                    vo.setClassInfo(student.getClassName() + student.getClassInfoName());
+                    if(null != student.getClassId() && null != student.getClassInfoId()) {
+                        vo.setClassInfo(classService.getClassAndInfo(student.getClassId(),student.getClassInfoId()));
+                    }
                     QueryWrapper<BuildingStudent> queryWrapper = new QueryWrapper<>();
                     queryWrapper.eq("student_id", student.getId());
                     BuildingStudent selectOne = buildingStudentMapper.selectOne(queryWrapper);
@@ -431,8 +433,8 @@ public class BuildingNoServiceImpl extends ServiceImpl<BuildingNoMapper, Buildin
                         if (null != student.getSNumber()) {
                             listVo.setSNumber(student.getSNumber());
                         }
-                        if (null != student.getClassName() && null != student.getClassInfoName()) {
-                            listVo.setClassInfo(student.getClassName() + student.getClassInfoName());
+                        if(null != student.getClassId() && null != student.getClassInfoId()) {
+                            listVo.setClassInfo(classService.getClassAndInfo(student.getClassId(),student.getClassInfoId()));
                         }
                     } else {
                         BuildingBedDto livingInfo = bedMapper.getLivingInfo(bed.getId());
@@ -469,8 +471,8 @@ public class BuildingNoServiceImpl extends ServiceImpl<BuildingNoMapper, Buildin
                     if (null != student.getSNumber()) {
                         listVo.setSNumber(student.getSNumber());
                     }
-                    if (null != student.getClassName() && null != student.getClassInfoName()) {
-                        listVo.setClassInfo(student.getClassName() + student.getClassInfoName());
+                    if(null != student.getClassId() && null != student.getClassInfoId()) {
+                        listVo.setClassInfo(classService.getClassAndInfo(student.getClassId(),student.getClassInfoId()));
                     }
                     list.add(listVo);
                 });
@@ -496,8 +498,8 @@ public class BuildingNoServiceImpl extends ServiceImpl<BuildingNoMapper, Buildin
                     if (null != student.getSNumber()) {
                         listVo.setSNumber(student.getSNumber());
                     }
-                    if (null != student.getClassName() && null != student.getClassInfoName()) {
-                        listVo.setClassInfo(student.getClassName() + student.getClassInfoName());
+                    if(null != student.getClassId() && null != student.getClassInfoId()) {
+                        listVo.setClassInfo(classService.getClassAndInfo(student.getClassId(),student.getClassInfoId()));
                     }
                     list.add(listVo);
                 });

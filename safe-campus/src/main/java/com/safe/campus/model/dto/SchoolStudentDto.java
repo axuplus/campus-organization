@@ -5,9 +5,9 @@ import lombok.Data;
 
 @Data
 public class SchoolStudentDto {
-    @ApiModelProperty(value = "id",required = false)
+    @ApiModelProperty(value = "id", required = false)
     private Long id;
-    @ApiModelProperty(value = "学校ID",required = true)
+    @ApiModelProperty(value = "学校ID", required = true)
     private Long masterId;
     @ApiModelProperty(value = "学生姓名", required = true)
     private String sName;
@@ -19,14 +19,6 @@ public class SchoolStudentDto {
     private String idNumber;
     @ApiModelProperty(value = "1：住校生 2：同校生", required = true)
     private Integer type;
-    @ApiModelProperty(value = "楼幢ID")
-    private Long buildingNoId;
-    @ApiModelProperty(value = "楼层ID")
-    private Long buildingLevelId;
-    @ApiModelProperty(value = "房间ID")
-    private Long buildingRoomId;
-    @ApiModelProperty(value = "床位ID")
-    private Long buildingBedNoId;
     @ApiModelProperty(value = "图片ID")
     private Long imgId;
     @ApiModelProperty(value = "年级ID", required = true)
@@ -41,4 +33,18 @@ public class SchoolStudentDto {
     private String joinTime;
     @ApiModelProperty(value = "毕业年份")
     private String endTime;
+
+    private LivingInfo livingInfo;
+
+    @Data
+    public static class LivingInfo {
+        @ApiModelProperty(value = "楼幢ID")
+        private Long buildingNoId;
+        @ApiModelProperty(value = "楼层ID")
+        private Long buildingLevelId;
+        @ApiModelProperty(value = "房间ID")
+        private Long buildingRoomId;
+        @ApiModelProperty(value = "床位ID")
+        private Long bedId;
+    }
 }

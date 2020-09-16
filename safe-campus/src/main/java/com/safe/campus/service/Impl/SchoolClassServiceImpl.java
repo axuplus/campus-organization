@@ -73,7 +73,7 @@ public class SchoolClassServiceImpl extends ServiceImpl<SchoolClassMapper, Schoo
             schoolClass.setCreatedTime(new Date());
             schoolClassMapper.insert(schoolClass);
             return WrapMapper.ok(schoolClass.getId());
-        }else {
+        } else {
             SchoolClassInfo info = new SchoolClassInfo();
             info.setId(gobalInterface.generateId());
             info.setClassId(schoolClassDto.getClassId());
@@ -88,14 +88,14 @@ public class SchoolClassServiceImpl extends ServiceImpl<SchoolClassMapper, Schoo
     }
 
     @Override
-    public Wrapper editClass(Long id, Long tId, String name,Integer type, LoginAuthDto loginAuthDto) {
+    public Wrapper editClass(Long id, Long tId, String name, Integer type, LoginAuthDto loginAuthDto) {
         if (1 == type && null != type) {
             SchoolClass byId = schoolClassMapper.selectById(id);
             if (PublicUtil.isNotEmpty(byId)) {
-                if(null != name) {
+                if (null != name) {
                     byId.setClassName(name);
                 }
-                if(null != tId) {
+                if (null != tId) {
                     byId.setTId(tId);
                 }
                 schoolClassMapper.updateById(byId);
@@ -103,11 +103,11 @@ public class SchoolClassServiceImpl extends ServiceImpl<SchoolClassMapper, Schoo
             }
         } else {
             SchoolClassInfo classInfo = schoolClassInfoMapper.selectById(id);
-            if(PublicUtil.isNotEmpty(classInfo)) {
-                if(null != name) {
+            if (PublicUtil.isNotEmpty(classInfo)) {
+                if (null != name) {
                     classInfo.setClassInfoName(name);
                 }
-                if(null != tId) {
+                if (null != tId) {
                     classInfo.setTId(tId);
                 }
                 schoolClassInfoMapper.updateById(classInfo);
@@ -172,6 +172,11 @@ public class SchoolClassServiceImpl extends ServiceImpl<SchoolClassMapper, Schoo
             }
         }
         return null;
+    }
+
+    @Override
+    public String getClassAndInfo(Long classId, Long classInfoId) {
+        return schoolClassMapper.selectById(classId).getClassName() + " " + schoolClassInfoMapper.selectById(classInfoId).getClassInfoName();
     }
 
     @Override

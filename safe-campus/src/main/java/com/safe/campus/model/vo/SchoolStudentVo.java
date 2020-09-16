@@ -18,7 +18,7 @@ public class SchoolStudentVo {
     @ApiModelProperty(value = "身份证号码")
     private String idNumber;
     @ApiModelProperty(value = "1：住校生 2：同校生")
-    private String type;
+    private Integer type;
     @ApiModelProperty(value = "图片ID")
     private String photo;
     @ApiModelProperty(value = "年级ID")

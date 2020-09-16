@@ -42,14 +42,8 @@ public class SchoolStudent implements Serializable {
     @ApiModelProperty(value = "年级ID")
     private Long classId;
 
-    @ApiModelProperty(value = "年级")
-    private String className;
-
     @ApiModelProperty(value = "班级ID")
     private Long classInfoId;
-
-    @ApiModelProperty(value = "班级")
-    private String classInfoName;
 
     @ApiModelProperty(value = "性别1：男 0：女")
     private Integer sex;

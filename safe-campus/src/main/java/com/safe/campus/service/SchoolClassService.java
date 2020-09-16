@@ -43,4 +43,6 @@ public interface SchoolClassService extends IService<SchoolClass> {
     Wrapper editClass(Long id,Long tId,String name,Integer type, LoginAuthDto loginAuthDto);
 
     Wrapper operation(Integer type, Integer state, Long id);
+
+    String getClassAndInfo(Long classId, Long classInfoId);
 }

@@ -11,7 +11,7 @@ public class SchoolStudentListVo {
     @ApiModelProperty(value = "id")
     private  Long id;
     @ApiModelProperty(value = "性别")
-    private String sex;
+    private Integer sex;
     @ApiModelProperty(value = "年级名称")
     private String className;
     @ApiModelProperty(value = "班级名称")
@@ -21,5 +21,5 @@ public class SchoolStudentListVo {
     @ApiModelProperty(value = "身份证")
     private String idNumber;
     @ApiModelProperty("类型")
-    private String type;
+    private Integer type;
 }
