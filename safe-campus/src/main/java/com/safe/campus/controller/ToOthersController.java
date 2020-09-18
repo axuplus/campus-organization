@@ -2,9 +2,9 @@ package com.safe.campus.controller;
 
 
 import com.safe.campus.about.utils.wrapper.Wrapper;
+import com.safe.campus.model.dto.OthersDto;
 import com.safe.campus.service.ToOthersService;
 import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiModelProperty;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -34,4 +34,11 @@ public class ToOthersController {
     public Wrapper<Map<Long, String>> getAllClassesByMasterId(@RequestParam("masterId") Long masterId) {
         return toOthersService.getAllClassesByMasterId(masterId);
     }
+
+    @GetMapping("/getIdNumberByUserId")
+    @ApiOperation(value = "获取教职工身份证或学生身份证")
+    public OthersDto getIdNumberByUserId(@RequestParam("type") String type, @RequestParam("userId") Long userId) {
+        return toOthersService.getIdNumberByUserId(type, userId);
+    }
+
 }
