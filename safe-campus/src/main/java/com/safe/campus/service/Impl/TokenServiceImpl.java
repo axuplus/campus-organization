@@ -95,10 +95,8 @@ public class TokenServiceImpl extends ServiceImpl<SysAdminUserMapper, SysAdmin> 
         loginTokenVo.setToken(jwtInfo.getToken());
         loginTokenVo.setExpireIn(jwtInfo.getExpireIn());
         loginTokenVo.setType(sysAdminUser.getType());
-        if (3 == sysAdminUser.getType()) {
+        if (3 == sysAdminUser.getType() || 2 == sysAdminUser.getType()) {
             loginTokenVo.setMasterId(sysAdminUser.getMasterId());
-        }else if(2 == sysAdminUser.getType()){
-            loginTokenVo.setMasterId(sysAdminUser.getId());
         }
         return loginTokenVo;
     }
