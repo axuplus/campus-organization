@@ -3,15 +3,15 @@ package com.safe.campus.controller;
 
 import com.safe.campus.about.utils.wrapper.Wrapper;
 import com.safe.campus.model.dto.OthersDto;
+import com.safe.campus.model.dto.SelectStudentListDto;
 import com.safe.campus.service.ToOthersService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -39,6 +39,12 @@ public class ToOthersController {
     @ApiOperation(value = "获取教职工身份证或学生身份证")
     public OthersDto getIdNumberByUserId(@RequestParam("type") String type, @RequestParam("userId") Long userId) {
         return toOthersService.getIdNumberByUserId(type, userId);
+    }
+
+    @PostMapping("/selectStudentList")
+    @ApiOperation(value = "查询学生")
+    public List<SelectStudentListDto> selectStudentList(@RequestBody Map map) {
+        return toOthersService.selectStudentList(map);
     }
 
 }

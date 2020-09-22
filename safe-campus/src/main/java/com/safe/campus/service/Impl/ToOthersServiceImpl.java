@@ -4,19 +4,18 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.safe.campus.about.utils.PublicUtil;
 import com.safe.campus.about.utils.wrapper.WrapMapper;
 import com.safe.campus.about.utils.wrapper.Wrapper;
-import com.safe.campus.mapper.SchoolClassMapper;
-import com.safe.campus.mapper.SchoolMasterMapper;
-import com.safe.campus.mapper.SchoolStudentMapper;
-import com.safe.campus.mapper.SchoolTeacherMapper;
+import com.safe.campus.mapper.*;
 import com.safe.campus.model.domain.SchoolClass;
 import com.safe.campus.model.domain.SchoolMaster;
 import com.safe.campus.model.domain.SchoolStudent;
 import com.safe.campus.model.domain.SchoolTeacher;
 import com.safe.campus.model.dto.OthersDto;
+import com.safe.campus.model.dto.SelectStudentListDto;
 import com.safe.campus.service.ToOthersService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -29,6 +28,9 @@ public class ToOthersServiceImpl implements ToOthersService {
 
     @Autowired
     private SchoolClassMapper classMapper;
+
+    @Autowired
+    private SchoolClassInfoMapper infoMapper;
 
     @Autowired
     private SchoolStudentMapper studentMapper;
@@ -78,6 +80,31 @@ public class ToOthersServiceImpl implements ToOthersService {
                     map.setTNumber(teacher.getTNumber());
                     return map;
                 }
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public List<SelectStudentListDto> selectStudentList(Map map) {
+        if (PublicUtil.isNotEmpty(map)) {
+            List<Long> ids = (List<Long>) map.keySet().stream().collect(Collectors.toList());
+            List<SchoolStudent> students = studentMapper.selectBatchIds(ids);
+            if (PublicUtil.isNotEmpty(students)) {
+                List<SelectStudentListDto> list = new ArrayList<>();
+                students.forEach(s -> {
+                    SelectStudentListDto dto = new SelectStudentListDto();
+                    dto.setStudentId(s.getId());
+                    if (s.getType() != null) {
+                        dto.setType(s.getType());
+                    }
+                    if (s.getClassId() != null) {
+                        dto.setClassId(s.getClassId());
+                        dto.setClassName(classMapper.selectById(s.getClassId()).getClassName());
+                    }
+                    list.add(dto);
+                });
+                return list;
             }
         }
         return null;
