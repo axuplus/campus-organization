@@ -12,6 +12,7 @@ import com.safe.campus.about.utils.wrapper.WrapMapper;
 import com.safe.campus.about.utils.wrapper.Wrapper;
 import com.safe.campus.mapper.*;
 import com.safe.campus.model.domain.*;
+import com.safe.campus.model.dto.SaveOrEditNodeDto;
 import com.safe.campus.model.dto.SchoolMasterDto;
 import com.safe.campus.model.dto.SchoolMaterConfDto;
 import com.safe.campus.model.vo.MasterRouteVo;
@@ -175,19 +176,6 @@ public class SchoolMasterServiceImpl extends ServiceImpl<SchoolMasterMapper, Sch
     }
 
     @Override
-    public Wrapper saveNode(LoginAuthDto loginAuthDto, Long rootId, String rootName) {
-        if (null != rootId && null != rootName) {
-            SchoolRoot root = new SchoolRoot();
-            root.setId(gobalInterface.generateId());
-            root.setPId(rootId);
-            root.setRootName(rootName);
-            rootMapper.insert(root);
-            return WrapMapper.ok("保存成功");
-        }
-        return WrapMapper.error("参数不能为空");
-    }
-
-    @Override
     public Wrapper deleteNode(LoginAuthDto loginAuthDto, Long rootId) {
         if (null != rootId) {
             if (null == rootMapper.checkSub(rootId)) {
@@ -291,6 +279,26 @@ public class SchoolMasterServiceImpl extends ServiceImpl<SchoolMasterMapper, Sch
             return WrapMapper.ok(list);
         }
         return WrapMapper.error("暂无数据");
+    }
+
+    @Override
+    public Wrapper saveOrEditNode(SaveOrEditNodeDto saveOrEditNodeDto) {
+        if (PublicUtil.isNotEmpty(saveOrEditNodeDto)) {
+            if (1 == saveOrEditNodeDto.getType()) {
+                SchoolRoot root = new SchoolRoot();
+                root.setId(gobalInterface.generateId());
+                root.setPId(saveOrEditNodeDto.getId());
+                root.setRootName(saveOrEditNodeDto.getNodeName());
+                rootMapper.insert(root);
+                return WrapMapper.ok("保存成功");
+            } else {
+                SchoolRoot schoolRoot = rootMapper.selectById(saveOrEditNodeDto.getId());
+                schoolRoot.setRootName(saveOrEditNodeDto.getNodeName());
+                rootMapper.updateById(schoolRoot);
+                return WrapMapper.ok("修改成功");
+            }
+        }
+        return null;
     }
 
     private void findChildren(List<SchoolRootTreeVo> sysDepts, List<SchoolRootTreeVo> depts) {

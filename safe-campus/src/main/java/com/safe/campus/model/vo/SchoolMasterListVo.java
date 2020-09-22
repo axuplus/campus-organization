@@ -18,8 +18,7 @@ public class SchoolMasterListVo {
     @ApiModelProperty("账号")
     private String appKey;
     @ApiModelProperty("到期时间")
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
-    private Date endTime;
+    private String endTime;
     @ApiModelProperty("状态 1: 已禁用 0：未禁用")
     private Integer state;
 

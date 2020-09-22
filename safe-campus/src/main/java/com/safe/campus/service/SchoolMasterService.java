@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.safe.campus.about.dto.LoginAuthDto;
 import com.safe.campus.about.utils.wrapper.Wrapper;
 import com.safe.campus.model.domain.SchoolMaster;
+import com.safe.campus.model.dto.SaveOrEditNodeDto;
 import com.safe.campus.model.dto.SchoolClassDto;
 import com.safe.campus.model.dto.SchoolMasterDto;
 import com.safe.campus.model.dto.SchoolMaterConfDto;
@@ -29,8 +30,6 @@ public interface SchoolMasterService extends IService<SchoolMaster> {
 
     Wrapper listSchool(LoginAuthDto loginAuthDto);
 
-    Wrapper saveNode(LoginAuthDto loginAuthDto, Long rootId, String rootName);
-
     Wrapper deleteNode(LoginAuthDto loginAuthDto, Long rootId);
 
     Wrapper listNode(LoginAuthDto loginAuthDto);
@@ -48,5 +47,8 @@ public interface SchoolMasterService extends IService<SchoolMaster> {
     Wrapper resetPassword(LoginAuthDto loginAuthDto, String account);
 
     Wrapper listSchoolConf(LoginAuthDto loginAuthDto, Long masterId);
+
+    Wrapper saveOrEditNode(SaveOrEditNodeDto saveOrEditNodeDto);
+
 
 }

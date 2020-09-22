@@ -33,9 +33,9 @@ public class SchoolMasterDto {
     @Data
     public static class ServiceTime {
         @ApiModelProperty(value = "起始时间", required = true)
-        private Date startTime;
+        private String startTime;
         @ApiModelProperty(value = "结束时间", required = true)
-        private Date endTime;
+        private String endTime;
     }
 
     @Data

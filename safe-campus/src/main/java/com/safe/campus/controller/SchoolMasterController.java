@@ -4,6 +4,7 @@ package com.safe.campus.controller;
 import com.safe.campus.about.controller.BaseController;
 import com.safe.campus.about.dto.LoginAuthDto;
 import com.safe.campus.about.utils.wrapper.Wrapper;
+import com.safe.campus.model.dto.SaveOrEditNodeDto;
 import com.safe.campus.model.dto.SchoolClassDto;
 import com.safe.campus.model.dto.SchoolMasterDto;
 import com.safe.campus.model.dto.SchoolMaterConfDto;
@@ -63,11 +64,11 @@ public class SchoolMasterController extends BaseController {
         return masterService.listSchool(loginAuthDto);
     }
 
-    @PostMapping("/saveNode")
+    @PostMapping("/saveOrEditNode")
     @ApiOperation("添加节点")
-    public Wrapper saveNode(@ApiParam("中国的ID") @RequestParam("id") Long rootId, @RequestParam("rootName") String rootName) {
+    public Wrapper saveOrEditNode(@RequestBody  SaveOrEditNodeDto saveOrEditNodeDto) {
         LoginAuthDto loginAuthDto = getLoginAuthDto();
-        return masterService.saveNode(loginAuthDto, rootId, rootName);
+        return masterService.saveOrEditNode(saveOrEditNodeDto);
     }
 
     @DeleteMapping("/deleteNode/{id}")
