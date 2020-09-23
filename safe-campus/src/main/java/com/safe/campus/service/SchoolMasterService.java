@@ -4,10 +4,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.safe.campus.about.dto.LoginAuthDto;
 import com.safe.campus.about.utils.wrapper.Wrapper;
 import com.safe.campus.model.domain.SchoolMaster;
-import com.safe.campus.model.dto.SaveOrEditNodeDto;
-import com.safe.campus.model.dto.SchoolClassDto;
-import com.safe.campus.model.dto.SchoolMasterDto;
-import com.safe.campus.model.dto.SchoolMaterConfDto;
+import com.safe.campus.model.dto.*;
 
 import java.util.List;
 
@@ -51,4 +48,8 @@ public interface SchoolMasterService extends IService<SchoolMaster> {
     Wrapper saveOrEditNode(SaveOrEditNodeDto saveOrEditNodeDto);
 
 
+    Wrapper saveOrEditIntroduction(SchoolIntroductionDto schoolIntroductionDto);
+
+
+    Wrapper<SchoolIntroductionDto> getIntroduction(Long masterId);
 }

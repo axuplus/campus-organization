@@ -4,10 +4,7 @@ package com.safe.campus.controller;
 import com.safe.campus.about.controller.BaseController;
 import com.safe.campus.about.dto.LoginAuthDto;
 import com.safe.campus.about.utils.wrapper.Wrapper;
-import com.safe.campus.model.dto.SaveOrEditNodeDto;
-import com.safe.campus.model.dto.SchoolClassDto;
-import com.safe.campus.model.dto.SchoolMasterDto;
-import com.safe.campus.model.dto.SchoolMaterConfDto;
+import com.safe.campus.model.dto.*;
 import com.safe.campus.service.SchoolMasterService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -127,12 +124,24 @@ public class SchoolMasterController extends BaseController {
         return masterService.listArea(loginAuthDto, cityId);
     }
 
-    @PutMapping("/reset")
+    @GetMapping("/reset")
     @ApiOperation("重置密码")
     public Wrapper resetPassword(@RequestParam("account") String account) {
         LoginAuthDto loginAuthDto = getLoginAuthDto();
         return masterService.resetPassword(loginAuthDto, account);
     }
 
+
+    @PostMapping("/saveOrEditIntroduction")
+    @ApiOperation("校园简介")
+    public Wrapper saveOrEditIntroduction(@RequestBody SchoolIntroductionDto schoolIntroductionDto) {
+        return masterService.saveOrEditIntroduction(schoolIntroductionDto);
+    }
+
+    @GetMapping("/getIntroduction")
+    @ApiOperation("获取校园简介")
+    public Wrapper<SchoolIntroductionDto> getIntroduction(@RequestParam("masterId")Long masterId) {
+        return masterService.getIntroduction(masterId);
+    }
 
 }

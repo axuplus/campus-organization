@@ -13,6 +13,7 @@ import com.safe.campus.about.utils.wrapper.Wrapper;
 import com.safe.campus.mapper.*;
 import com.safe.campus.model.domain.*;
 import com.safe.campus.model.dto.SaveOrEditNodeDto;
+import com.safe.campus.model.dto.SchoolIntroductionDto;
 import com.safe.campus.model.dto.SchoolMasterDto;
 import com.safe.campus.model.dto.SchoolMaterConfDto;
 import com.safe.campus.model.vo.MasterRouteVo;
@@ -25,6 +26,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -297,6 +299,31 @@ public class SchoolMasterServiceImpl extends ServiceImpl<SchoolMasterMapper, Sch
                 rootMapper.updateById(schoolRoot);
                 return WrapMapper.ok("修改成功");
             }
+        }
+        return null;
+    }
+
+    @Override
+    public Wrapper saveOrEditIntroduction(SchoolIntroductionDto schoolIntroductionDto) {
+        if (PublicUtil.isNotEmpty(schoolIntroductionDto)) {
+            SchoolMaster schoolMaster = masterMapper.selectById(schoolIntroductionDto.getMasterId());
+            schoolMaster.setDescription(schoolIntroductionDto.getIntroduction());
+            schoolMaster.setImgs(schoolIntroductionDto.getImgs().toString());
+            masterMapper.updateById(schoolMaster);
+            return WrapMapper.ok("操作成功");
+        }
+        return null;
+    }
+
+    @Override
+    public Wrapper<SchoolIntroductionDto> getIntroduction(Long masterId) {
+        SchoolMaster schoolMaster = masterMapper.selectById(masterId);
+        if (null != schoolMaster.getDescription() && null != schoolMaster.getImgs()) {
+            SchoolIntroductionDto dto = new SchoolIntroductionDto();
+            dto.setMasterId(masterId);
+            dto.setIntroduction(schoolMaster.getDescription());
+            dto.setImgs(Arrays.asList(schoolMaster.getImgs()));
+            return WrapMapper.ok(dto);
         }
         return null;
     }

@@ -69,5 +69,5 @@ public class SchoolMaster implements Serializable {
     private String description;
 
     @ApiModelProperty(value = "轮播图")
-    private List<Long> imgs;
+    private String imgs;
 }
