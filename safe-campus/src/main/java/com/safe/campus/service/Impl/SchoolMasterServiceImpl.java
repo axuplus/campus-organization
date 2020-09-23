@@ -116,7 +116,7 @@ public class SchoolMasterServiceImpl extends ServiceImpl<SchoolMasterMapper, Sch
     public Wrapper getSchool(LoginAuthDto loginAuthDto, Long id) {
         SchoolMaster master = masterMapper.selectById(id);
         QueryWrapper<SysAdmin> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("create_user", loginAuthDto.getUserId()).eq("master_id", id);
+        queryWrapper.eq("master_id", id).eq("type", 2);
         SysAdmin admin = userMapper.selectOne(queryWrapper);
         SchoolMasterVo vo = new SchoolMasterVo();
         vo.setId(master.getId());
@@ -131,8 +131,16 @@ public class SchoolMasterServiceImpl extends ServiceImpl<SchoolMasterMapper, Sch
         serviceTime.setStartTime(time.getStartTime());
         serviceTime.setEndTime(time.getEndTime());
         vo.setServiceTime(serviceTime);
+        SchoolMasterVo.CityInfo cityInfo = new Gson().fromJson(master.getAreaAddress(), SchoolMasterVo.CityInfo.class);
+        SchoolMasterVo.CityInfo info = new SchoolMasterVo.CityInfo();
+        info.setProvince(provincesMapper.selectOne(new QueryWrapper<LocationProvinces>().eq("provinceid", cityInfo.getProvince())).getProvince());
+        info.setCity(citiesMapper.selectOne(new QueryWrapper<LocationCities>().eq("cityid", cityInfo.getCity())).getCity());
+        info.setAreas(areasMapper.selectOne(new QueryWrapper<LocationAreas>().eq("areaid", cityInfo.getAreas())).getArea());
+        vo.setCityInfo(info);
         vo.setAdminId(admin.getId());
         vo.setAccount(admin.getUserName());
+        vo.setAppKey(admin.getAppKey());
+        vo.setAppSecret(admin.getAppSecret());
         return WrapMapper.ok(vo);
     }
 

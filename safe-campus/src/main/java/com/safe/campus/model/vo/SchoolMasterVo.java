@@ -28,11 +28,25 @@ public class SchoolMasterVo {
     private String realPicture;
     @ApiModelProperty("状态 1：禁用 0：启用")
     private Integer state;
+    private CityInfo cityInfo;
+    private String appKey;
+    private String appSecret;
+
     @Data
     public static class ServiceTime {
         @ApiModelProperty("起始时间")
         private Date startTime;
         @ApiModelProperty("结束时间")
         private Date endTime;
+    }
+
+    @Data
+    public static class CityInfo {
+        @ApiModelProperty(value = "省份", required = true)
+        private String province;
+        @ApiModelProperty(value = "城市", required = true)
+        private String city;
+        @ApiModelProperty(value = "区", required = true)
+        private String areas;
     }
 }
