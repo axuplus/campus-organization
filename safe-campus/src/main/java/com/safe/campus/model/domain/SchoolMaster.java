@@ -10,6 +10,7 @@ import javax.persistence.Id;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.Date;
+import java.util.List;
 
 /**
  * <p>
@@ -60,13 +61,13 @@ public class SchoolMaster implements Serializable {
     private Long createdUser;
 
     @ApiModelProperty(value = "创建时间")
-    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone="GMT+8")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date createdTime;
 
-    @ApiModelProperty(value = "更新用户")
-    private Long updatedUser;
 
-    @ApiModelProperty(value = "更新时间")
-    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone="GMT+8")
-    private Date updatedTime;
+    @ApiModelProperty(value = "描述")
+    private String description;
+
+    @ApiModelProperty(value = "轮播图")
+    private List<Long> imgs;
 }
