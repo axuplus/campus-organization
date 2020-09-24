@@ -4,11 +4,13 @@ package com.safe.campus.controller;
 import com.safe.campus.about.utils.wrapper.Wrapper;
 import com.safe.campus.model.dto.OthersDto;
 import com.safe.campus.model.dto.SelectStudentListDto;
+import com.safe.campus.model.vo.FaceImgInfoVo;
 import com.safe.campus.model.vo.OthersStudentVo;
 import com.safe.campus.service.ToOthersService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiModelProperty;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -66,5 +68,12 @@ public class ToOthersController {
     @ApiOperation(value = "获取学生信息")
     public OthersStudentVo getStudentByIdNumber(@RequestParam("idNumber") String idNumber) {
         return toOthersService.getStudentByIdNumber(idNumber);
+    }
+
+
+    @GetMapping("/getFaceImgInfo")
+    @ApiOperation(value = "人脸库人员信息")
+    public FaceImgInfoVo getFaceImgInfo(@ApiParam("S T") @RequestParam("type") String type, @RequestParam("id") Long id) {
+        return toOthersService.getFaceImgInfo(type, id);
     }
 }

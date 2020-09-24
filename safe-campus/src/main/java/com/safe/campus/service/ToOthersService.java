@@ -3,6 +3,7 @@ package com.safe.campus.service;
 import com.safe.campus.about.utils.wrapper.Wrapper;
 import com.safe.campus.model.dto.OthersDto;
 import com.safe.campus.model.dto.SelectStudentListDto;
+import com.safe.campus.model.vo.FaceImgInfoVo;
 import com.safe.campus.model.vo.OthersStudentVo;
 
 import java.util.List;
@@ -25,4 +26,5 @@ public interface ToOthersService {
 
     Map getStudentTeacherByIdNumber(String idNumber);
 
+    FaceImgInfoVo getFaceImgInfo(String type, Long id);
 }

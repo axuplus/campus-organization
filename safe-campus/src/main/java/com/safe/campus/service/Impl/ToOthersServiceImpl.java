@@ -8,7 +8,9 @@ import com.safe.campus.mapper.*;
 import com.safe.campus.model.domain.*;
 import com.safe.campus.model.dto.OthersDto;
 import com.safe.campus.model.dto.SelectStudentListDto;
+import com.safe.campus.model.vo.FaceImgInfoVo;
 import com.safe.campus.model.vo.OthersStudentVo;
+import com.safe.campus.service.SysFileService;
 import com.safe.campus.service.ToOthersService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -42,6 +44,12 @@ public class ToOthersServiceImpl implements ToOthersService {
 
     @Autowired
     private SysUserRoleMapper userRoleMapper;
+
+    @Autowired
+    private SysFileService sysFileService;
+
+    @Autowired
+    private SchoolSectionMapper sectionMapper;
 
     @Override
     public Wrapper<Map<Long, String>> getAllMasters() {
@@ -106,6 +114,10 @@ public class ToOthersServiceImpl implements ToOthersService {
                     if (s.getClassId() != null) {
                         dto.setClassId(s.getClassId());
                         dto.setClassName(classMapper.selectById(s.getClassId()).getClassName());
+                    }
+                    if (s.getClassInfoId() != null) {
+                        dto.setClassInfoId(s.getClassInfoId());
+                        dto.setClassInfoName(classInfoMapper.selectById(s.getClassInfoId()).getClassInfoName());
                     }
                     list.add(dto);
                 });
@@ -180,6 +192,45 @@ public class ToOthersServiceImpl implements ToOthersService {
                     }
                 }
             }
+        }
+        return null;
+    }
+
+    @Override
+    public FaceImgInfoVo getFaceImgInfo(String type, Long id) {
+        FaceImgInfoVo infoVo = new FaceImgInfoVo();
+        if ("S".equals(type)) {
+            infoVo.setState(1);
+            FaceImgInfoVo.StudentInfo studentInfo = new FaceImgInfoVo.StudentInfo();
+            SchoolStudent student = studentMapper.selectById(id);
+            studentInfo.setId(student.getId());
+            studentInfo.setStudentName(student.getSName());
+            if (null != student.getType()) {
+                studentInfo.setType(student.getType());
+            }
+            if (null != student.getClassId()) {
+                studentInfo.setClassName(classMapper.selectById(student.getClassId()).getClassName());
+            }
+            if (null != student.getClassInfoId()) {
+                studentInfo.setClassInfoName(classInfoMapper.selectById(student.getClassInfoId()).getClassInfoName());
+            }
+            if (null != student.getImgId()) {
+                studentInfo.setImg(sysFileService.getFileById(student.getImgId()).getFileUrl());
+            }
+            infoVo.setStudentInfo(studentInfo);
+            return infoVo;
+        } else if ("T".equals(type)) {
+            infoVo.setState(2);
+            FaceImgInfoVo.TeacherInfo teacherInfo = new FaceImgInfoVo.TeacherInfo();
+            SchoolTeacher teacher = teacherMapper.selectById(id);
+            teacherInfo.setId(teacher.getId());
+            if (null != teacher.getTNumber()) {
+                teacherInfo.setTNumber(teacher.getTNumber());
+            }
+            teacherInfo.setTeacherName(teacher.getTName());
+            teacherInfo.setSectionName(sectionMapper.selectById(teacher.getSectionId()).getSectionName());
+            infoVo.setTeacherInfo(teacherInfo);
+            return infoVo;
         }
         return null;
     }
