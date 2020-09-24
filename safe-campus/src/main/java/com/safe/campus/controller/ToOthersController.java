@@ -57,7 +57,7 @@ public class ToOthersController {
 
 
     @GetMapping("/getStudentTeacherByIdNumber")
-    @ApiOperation(value = "获取学生信息")
+    @ApiOperation(value = "获取学生班主任")
     public Map getStudentTeacherByIdNumber(@RequestParam("idNumber") String idNumber) {
         return toOthersService.getStudentTeacherByIdNumber(idNumber);
     }
