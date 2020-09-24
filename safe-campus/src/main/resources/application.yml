@@ -76,3 +76,4 @@ url:
     - /others/getTeacherRoles
     - /others/getStudentByIdNumber
     - /others/getStudentTeacherByIdNumber
+    - /others/getFaceImgInfo
