@@ -5,6 +5,7 @@ import com.safe.campus.about.controller.BaseController;
 import com.safe.campus.about.dto.LoginAuthDto;
 import com.safe.campus.about.utils.wrapper.Wrapper;
 import com.safe.campus.model.dto.*;
+import com.safe.campus.model.vo.ListConfigVo;
 import com.safe.campus.service.SchoolMasterService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -89,12 +90,12 @@ public class SchoolMasterController extends BaseController {
         return masterService.listSchoolConf(loginAuthDto, masterId);
     }
 
-    @GetMapping("/listConf")
-    @ApiOperation("获取模块配置")
-    public Wrapper listConf() {
-        LoginAuthDto loginAuthDto = getLoginAuthDto();
-        return masterService.listConf(loginAuthDto);
-    }
+//    @GetMapping("/listConf")
+//    @ApiOperation("获取模块配置")
+//    public Wrapper<ListConfigVo> listConf() {
+//        LoginAuthDto loginAuthDto = getLoginAuthDto();
+//        return masterService.listConf(loginAuthDto);
+//    }
 
     @PostMapping("/saveConf")
     @ApiOperation("保存模块配置")

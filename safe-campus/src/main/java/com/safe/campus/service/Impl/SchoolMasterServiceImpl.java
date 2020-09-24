@@ -16,19 +16,13 @@ import com.safe.campus.model.dto.SaveOrEditNodeDto;
 import com.safe.campus.model.dto.SchoolIntroductionDto;
 import com.safe.campus.model.dto.SchoolMasterDto;
 import com.safe.campus.model.dto.SchoolMaterConfDto;
-import com.safe.campus.model.vo.MasterRouteVo;
-import com.safe.campus.model.vo.SchoolMasterListVo;
-import com.safe.campus.model.vo.SchoolMasterVo;
-import com.safe.campus.model.vo.SchoolRootTreeVo;
+import com.safe.campus.model.vo.*;
 import com.safe.campus.service.SchoolMasterService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toList;
@@ -136,6 +130,9 @@ public class SchoolMasterServiceImpl extends ServiceImpl<SchoolMasterMapper, Sch
         info.setProvince(provincesMapper.selectOne(new QueryWrapper<LocationProvinces>().eq("provinceid", cityInfo.getProvince())).getProvince());
         info.setCity(citiesMapper.selectOne(new QueryWrapper<LocationCities>().eq("cityid", cityInfo.getCity())).getCity());
         info.setAreas(areasMapper.selectOne(new QueryWrapper<LocationAreas>().eq("areaid", cityInfo.getAreas())).getArea());
+        info.setProvinceId(cityInfo.getProvince());
+        info.setCityId(cityInfo.getCity());
+        info.setAreasId(cityInfo.getAreas());
         vo.setCityInfo(info);
         vo.setAdminId(admin.getId());
         vo.setAccount(admin.getUserName());
@@ -213,8 +210,29 @@ public class SchoolMasterServiceImpl extends ServiceImpl<SchoolMasterMapper, Sch
     }
 
     @Override
-    public Wrapper listConf(LoginAuthDto loginAuthDto) {
-        return WrapMapper.ok(confMapper.getAllRoutes());
+    public Wrapper<ListConfigVo> listConf(LoginAuthDto loginAuthDto) {
+        ListConfigVo vo = new ListConfigVo();
+        List<ListConfigVo.Modules> list = new ArrayList<>();
+        List<RouteConf> routes = confMapper.getAllRoutes();
+        Map<String, List<RouteConf>> map = routes.stream().collect(Collectors.groupingBy(RouteConf::getName));
+        List<String> names = map.keySet().stream().collect(toList());
+        names.forEach(name -> {
+            ListConfigVo.Modules configVo = new ListConfigVo.Modules();
+            List<ListConfigVo.Modules.SubInfo> subInfos = new ArrayList<>();
+            configVo.setModuleName(name);
+            routes.forEach(r -> {
+                if (r.getName().equals(name)) {
+                    ListConfigVo.Modules.SubInfo subInfo = new ListConfigVo.Modules.SubInfo();
+                    subInfo.setId(r.getId());
+                    subInfo.setSubName(r.getSubName());
+                    subInfos.add(subInfo);
+                }
+            });
+            configVo.setSubInfo(subInfos);
+            list.add(configVo);
+        });
+        vo.setModules(list);
+        return WrapMapper.ok(vo);
     }
 
 
@@ -267,7 +285,7 @@ public class SchoolMasterServiceImpl extends ServiceImpl<SchoolMasterMapper, Sch
             String randomString = StringUtils.getRandomString(7);
             admin.setPassword(Md5Utils.md5Str(randomString));
             userMapper.updateById(admin);
-            return WrapMapper.ok("您的新密码是: " + randomString);
+            return WrapMapper.ok(randomString);
         }
         return WrapMapper.error("参数不能为空");
     }
@@ -277,16 +295,36 @@ public class SchoolMasterServiceImpl extends ServiceImpl<SchoolMasterMapper, Sch
         QueryWrapper<MasterRoute> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("master_id", masterId);
         List<MasterRoute> routes = routeMapper.selectList(queryWrapper);
+        ListConfigVo listConfigVo = new ListConfigVo();
+        listConfigVo.setSchoolName(masterMapper.selectById(masterId).getAreaName());
+        List<ListConfigVo.Modules> list = new ArrayList<>();
         if (PublicUtil.isNotEmpty(routes)) {
-            List<MasterRouteVo> list = new ArrayList<>();
-            for (MasterRoute route : routes) {
-                RouteConf conf = confMapper.selectById(route.getRouteId());
-                MasterRouteVo routeVo = new MasterRouteVo();
-                routeVo.setId(route.getId());
-                routeVo.setModuleName(conf.getName());
-                list.add(routeVo);
-            }
-            return WrapMapper.ok(list);
+            List<Long> ids = routes.stream().map(MasterRoute::getRouteId).collect(toList());
+            List<RouteConf> allRoutes = confMapper.getAllRoutes();
+            Map<String, List<RouteConf>> map = allRoutes.stream().collect(Collectors.groupingBy(RouteConf::getName));
+            List<String> names = map.keySet().stream().collect(toList());
+            names.forEach(name -> {
+                ListConfigVo.Modules configVo = new ListConfigVo.Modules();
+                List<ListConfigVo.Modules.SubInfo> subInfos = new ArrayList<>();
+                configVo.setModuleName(name);
+                allRoutes.forEach(r -> {
+                    if (r.getName().equals(name)) {
+                        ListConfigVo.Modules.SubInfo subInfo = new ListConfigVo.Modules.SubInfo();
+                        subInfo.setId(r.getId());
+                        subInfo.setSubName(r.getSubName());
+                        if (ids.contains(r.getId())) {
+                            subInfo.setState(1);
+                        } else {
+                            subInfo.setState(0);
+                        }
+                        subInfos.add(subInfo);
+                    }
+                });
+                configVo.setSubInfo(subInfos);
+                list.add(configVo);
+            });
+            listConfigVo.setModules(list);
+            return WrapMapper.ok(listConfigVo);
         }
         return WrapMapper.error("暂无数据");
     }

@@ -44,9 +44,15 @@ public class SchoolMasterVo {
     public static class CityInfo {
         @ApiModelProperty(value = "省份", required = true)
         private String province;
+        @ApiModelProperty(value = "省份ID", required = true)
+        private String provinceId;
         @ApiModelProperty(value = "城市", required = true)
         private String city;
+        @ApiModelProperty(value = "城市", required = true)
+        private String cityId;
         @ApiModelProperty(value = "区", required = true)
         private String areas;
+        @ApiModelProperty(value = "区", required = true)
+        private String areasId;
     }
 }
