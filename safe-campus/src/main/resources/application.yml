@@ -73,3 +73,6 @@ url:
     - /admin/exit
     - /campus/file/img/upload
     - /others/selectStudentList
+    - /others/getTeacherRoles
+    - /others/getStudentByIdNumber
+    - /others/getStudentTeacherByIdNumber
