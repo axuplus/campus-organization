@@ -5,17 +5,16 @@ import com.safe.campus.about.utils.PublicUtil;
 import com.safe.campus.about.utils.wrapper.WrapMapper;
 import com.safe.campus.about.utils.wrapper.Wrapper;
 import com.safe.campus.mapper.*;
-import com.safe.campus.model.domain.SchoolClass;
-import com.safe.campus.model.domain.SchoolMaster;
-import com.safe.campus.model.domain.SchoolStudent;
-import com.safe.campus.model.domain.SchoolTeacher;
+import com.safe.campus.model.domain.*;
 import com.safe.campus.model.dto.OthersDto;
 import com.safe.campus.model.dto.SelectStudentListDto;
+import com.safe.campus.model.vo.OthersStudentVo;
 import com.safe.campus.service.ToOthersService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -30,13 +29,19 @@ public class ToOthersServiceImpl implements ToOthersService {
     private SchoolClassMapper classMapper;
 
     @Autowired
-    private SchoolClassInfoMapper infoMapper;
+    private SchoolClassInfoMapper classInfoMapper;
 
     @Autowired
     private SchoolStudentMapper studentMapper;
 
     @Autowired
     private SchoolTeacherMapper teacherMapper;
+
+    @Autowired
+    private SysAdminUserMapper adminUserMapper;
+
+    @Autowired
+    private SysUserRoleMapper userRoleMapper;
 
     @Override
     public Wrapper<Map<Long, String>> getAllMasters() {
@@ -105,6 +110,75 @@ public class ToOthersServiceImpl implements ToOthersService {
                     list.add(dto);
                 });
                 return list;
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public List<String> getTeacherRoles(Long teacherId) {
+        List<String> list = new ArrayList<>();
+        SysAdmin admin = adminUserMapper.selectOne(new QueryWrapper<SysAdmin>().eq("t_id", teacherId));
+        if (PublicUtil.isEmpty(admin)) {
+            return list;
+        }
+        List<String> roleNames = userRoleMapper.getRoleNamesByUserId(admin.getId());
+        if (PublicUtil.isEmpty(roleNames)) {
+            return list;
+        }
+        roleNames.forEach(n -> {
+            // "G:访客,T:老师,P:家长,H:班主任,S:保安,D:宿管"
+            if ("班主任".equals(n)) {
+                list.add("H");
+            } else if ("宿管".equals(n)) {
+                list.add("D");
+            } else if ("保安".equals(n)) {
+                list.add("D");
+            }
+        });
+        return list;
+    }
+
+    @Override
+    public OthersStudentVo getStudentByIdNumber(String idNumber) {
+        SchoolStudent student = studentMapper.selectOne(new QueryWrapper<SchoolStudent>().eq("id_number", idNumber));
+        if (PublicUtil.isNotEmpty(student)) {
+            OthersStudentVo studentVo = new OthersStudentVo();
+            studentVo.setStudentId(student.getId());
+            studentVo.setStudentName(student.getSName());
+            if (null != student.getSNumber()) {
+                studentVo.setSNumber(student.getSNumber());
+            }
+            studentVo.setSIdNumber(student.getIdNumber());
+            if (null != student.getType()) {
+                studentVo.setType(student.getType());
+            }
+            if (null != student.getClassId()) {
+                studentVo.setClassName(classMapper.selectById(student.getClassId()).getClassName());
+            }
+            if (null != student.getClassInfoId()) {
+                studentVo.setClassInfoName(classInfoMapper.selectById(student.getClassInfoId()).getClassInfoName());
+            }
+            studentVo.setSchoolName(schoolMaster.selectById(student.getMasterId()).getAreaName());
+            return studentVo;
+        }
+        return null;
+    }
+
+    @Override
+    public Map getStudentTeacherByIdNumber(String idNumber) {
+        SchoolStudent student = studentMapper.selectOne(new QueryWrapper<SchoolStudent>().eq("id_number", idNumber));
+        if (PublicUtil.isNotEmpty(student)) {
+            if (null != student.getClassInfoId()) {
+                SchoolClassInfo schoolClassInfo = classInfoMapper.selectById(student.getClassInfoId());
+                if (PublicUtil.isNotEmpty(schoolClassInfo)) {
+                    if (null != schoolClassInfo.getTId()) {
+                        SchoolTeacher teacher = teacherMapper.selectById(schoolClassInfo.getTId());
+                        Map<Long, String> map = new HashMap<>();
+                        map.put(teacher.getId(), teacher.getTName());
+                        return map;
+                    }
+                }
             }
         }
         return null;

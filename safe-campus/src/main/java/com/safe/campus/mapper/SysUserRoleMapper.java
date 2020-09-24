@@ -5,8 +5,11 @@ import com.safe.campus.model.domain.SysUserRole;
 import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Select;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.DeleteMapping;
+
+import java.util.List;
 
 /**
  * <p>
@@ -22,4 +25,13 @@ public interface SysUserRoleMapper extends BaseMapper<SysUserRole> {
 
     @Delete("delete from sys_user_role where user_id = #{userId}")
     void deleteByAdminId(@Param("userId") Long adminId);
+
+    @Select("SELECT\n" +
+            "\ta.role_name \n" +
+            "FROM\n" +
+            "\tsys_role a\n" +
+            "\tLEFT JOIN sys_user_role b ON a.id = b.role_id \n" +
+            "WHERE\n" +
+            "\tb.user_id = #{userId}")
+    List<String> getRoleNamesByUserId(@Param("userId") Long userId);
 }

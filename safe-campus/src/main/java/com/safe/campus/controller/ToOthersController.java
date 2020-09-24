@@ -4,8 +4,10 @@ package com.safe.campus.controller;
 import com.safe.campus.about.utils.wrapper.Wrapper;
 import com.safe.campus.model.dto.OthersDto;
 import com.safe.campus.model.dto.SelectStudentListDto;
+import com.safe.campus.model.vo.OthersStudentVo;
 import com.safe.campus.service.ToOthersService;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiModelProperty;
 import io.swagger.annotations.ApiOperation;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,4 +49,22 @@ public class ToOthersController {
         return toOthersService.selectStudentList(map);
     }
 
+    @GetMapping("/getTeacherRoles")
+    @ApiOperation(value = "获取教师角色")
+    public List<String> getTeacherRoles(@RequestParam("teacherId") Long teacherId) {
+        return toOthersService.getTeacherRoles(teacherId);
+    }
+
+
+    @GetMapping("/getStudentTeacherByIdNumber")
+    @ApiOperation(value = "获取学生信息")
+    public Map getStudentTeacherByIdNumber(@RequestParam("idNumber") String idNumber) {
+        return toOthersService.getStudentTeacherByIdNumber(idNumber);
+    }
+
+    @GetMapping("/getStudentByIdNumber")
+    @ApiOperation(value = "获取学生信息")
+    public OthersStudentVo getStudentByIdNumber(@RequestParam("idNumber") String idNumber) {
+        return toOthersService.getStudentByIdNumber(idNumber);
+    }
 }
