@@ -31,8 +31,6 @@ public interface SchoolMasterService extends IService<SchoolMaster> {
 
     Wrapper listNode(LoginAuthDto loginAuthDto);
 
-    Wrapper listConf(LoginAuthDto loginAuthDto);
-
     Wrapper saveConf(LoginAuthDto loginAuthDto, SchoolMaterConfDto schoolMaterConfDto);
 
     Wrapper listProvince(LoginAuthDto loginAuthDto);

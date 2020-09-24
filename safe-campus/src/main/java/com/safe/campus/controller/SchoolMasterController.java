@@ -90,12 +90,6 @@ public class SchoolMasterController extends BaseController {
         return masterService.listSchoolConf(loginAuthDto, masterId);
     }
 
-//    @GetMapping("/listConf")
-//    @ApiOperation("获取模块配置")
-//    public Wrapper<ListConfigVo> listConf() {
-//        LoginAuthDto loginAuthDto = getLoginAuthDto();
-//        return masterService.listConf(loginAuthDto);
-//    }
 
     @PostMapping("/saveConf")
     @ApiOperation("保存模块配置")

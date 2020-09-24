@@ -210,33 +210,6 @@ public class SchoolMasterServiceImpl extends ServiceImpl<SchoolMasterMapper, Sch
     }
 
     @Override
-    public Wrapper<ListConfigVo> listConf(LoginAuthDto loginAuthDto) {
-        ListConfigVo vo = new ListConfigVo();
-        List<ListConfigVo.Modules> list = new ArrayList<>();
-        List<RouteConf> routes = confMapper.getAllRoutes();
-        Map<String, List<RouteConf>> map = routes.stream().collect(Collectors.groupingBy(RouteConf::getName));
-        List<String> names = map.keySet().stream().collect(toList());
-        names.forEach(name -> {
-            ListConfigVo.Modules configVo = new ListConfigVo.Modules();
-            List<ListConfigVo.Modules.SubInfo> subInfos = new ArrayList<>();
-            configVo.setModuleName(name);
-            routes.forEach(r -> {
-                if (r.getName().equals(name)) {
-                    ListConfigVo.Modules.SubInfo subInfo = new ListConfigVo.Modules.SubInfo();
-                    subInfo.setId(r.getId());
-                    subInfo.setSubName(r.getSubName());
-                    subInfos.add(subInfo);
-                }
-            });
-            configVo.setSubInfo(subInfos);
-            list.add(configVo);
-        });
-        vo.setModules(list);
-        return WrapMapper.ok(vo);
-    }
-
-
-    @Override
     public Wrapper saveConf(LoginAuthDto loginAuthDto, SchoolMaterConfDto schoolMaterConfDto) {
         if (1 != userMapper.selectById(loginAuthDto.getUserId()).getType()) {
             return WrapMapper.error("请联系安校管理添加");
