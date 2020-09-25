@@ -51,7 +51,7 @@ public class ToOthersController {
 
     @GetMapping("/getTeacherRoles")
     @ApiOperation(value = "获取教师角色")
-    public List<String> getTeacherRoles(@RequestParam("teacherId") Long teacherId) {
+    public String getTeacherRoles(@RequestParam("teacherId") Long teacherId) {
         return toOthersService.getTeacherRoles(teacherId);
     }
 

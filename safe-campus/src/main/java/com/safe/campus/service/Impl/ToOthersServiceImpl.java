@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 @Service
@@ -128,27 +129,28 @@ public class ToOthersServiceImpl implements ToOthersService {
     }
 
     @Override
-    public List<String> getTeacherRoles(Long teacherId) {
+    public String getTeacherRoles(Long teacherId) {
         List<String> list = new ArrayList<>();
         SysAdmin admin = adminUserMapper.selectOne(new QueryWrapper<SysAdmin>().eq("t_id", teacherId));
         if (PublicUtil.isEmpty(admin)) {
-            return list;
+            return null;
         }
         List<String> roleNames = userRoleMapper.getRoleNamesByUserId(admin.getId());
         if (PublicUtil.isEmpty(roleNames)) {
-            return list;
+            return null;
         }
-        roleNames.forEach(n -> {
+        String str = null;
+        for (String roleName : roleNames) {
             // "G:访客,T:老师,P:家长,H:班主任,S:保安,D:宿管"
-            if ("班主任".equals(n)) {
-                list.add("H");
-            } else if ("宿管".equals(n)) {
-                list.add("D");
-            } else if ("保安".equals(n)) {
-                list.add("S");
+            if ("班主任".equals(roleName)) {
+                str = "H";
+            } else if ("宿管".equals(roleName)) {
+                str = "D";
+            } else if ("保安".equals(roleName)) {
+                str = "S";
             }
-        });
-        return list;
+        }
+        return str;
     }
 
     @Override

@@ -19,7 +19,7 @@ public interface ToOthersService {
 
     List<SelectStudentListDto> selectStudentList(Map map);
 
-    List<String> getTeacherRoles(Long teacherId);
+    String getTeacherRoles(Long teacherId);
 
     OthersStudentVo getStudentByIdNumber(String idNumber);
 
