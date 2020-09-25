@@ -145,7 +145,7 @@ public class ToOthersServiceImpl implements ToOthersService {
             } else if ("宿管".equals(n)) {
                 list.add("D");
             } else if ("保安".equals(n)) {
-                list.add("D");
+                list.add("S");
             }
         });
         return list;
