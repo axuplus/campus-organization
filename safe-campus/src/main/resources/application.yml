@@ -77,3 +77,4 @@ url:
     - /others/getStudentByIdNumber
     - /others/getStudentTeacherByIdNumber
     - /others/getFaceImgInfo
+    - /others/getTeacherForMiniApp

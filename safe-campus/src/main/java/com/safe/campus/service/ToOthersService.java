@@ -5,8 +5,6 @@ import com.safe.campus.model.dto.OthersDto;
 import com.safe.campus.model.dto.SelectStudentListDto;
 import com.safe.campus.model.vo.FaceImgInfoVo;
 import com.safe.campus.model.vo.OthersStudentVo;
-import com.safe.campus.model.vo.TeacherForMiniAppVo;
-
 import java.util.List;
 import java.util.Map;
 
