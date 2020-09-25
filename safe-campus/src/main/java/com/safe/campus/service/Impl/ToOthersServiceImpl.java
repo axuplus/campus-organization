@@ -234,4 +234,15 @@ public class ToOthersServiceImpl implements ToOthersService {
         }
         return null;
     }
+
+    @Override
+    public Map getTeacherForMiniApp(String idNumber) {
+        SchoolTeacher teacher = teacherMapper.selectOne(new QueryWrapper<SchoolTeacher>().eq("id_number", idNumber));
+        if (PublicUtil.isNotEmpty(teacher)) {
+            Map<Long, Long> map = new HashMap<>();
+            map.put(teacher.getId(), teacher.getMasterId());
+            return map;
+        }
+        return null;
+    }
 }

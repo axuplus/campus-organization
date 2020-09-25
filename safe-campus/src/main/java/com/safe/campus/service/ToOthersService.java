@@ -5,6 +5,7 @@ import com.safe.campus.model.dto.OthersDto;
 import com.safe.campus.model.dto.SelectStudentListDto;
 import com.safe.campus.model.vo.FaceImgInfoVo;
 import com.safe.campus.model.vo.OthersStudentVo;
+import com.safe.campus.model.vo.TeacherForMiniAppVo;
 
 import java.util.List;
 import java.util.Map;
@@ -27,4 +28,7 @@ public interface ToOthersService {
     Map getStudentTeacherByIdNumber(String idNumber);
 
     FaceImgInfoVo getFaceImgInfo(String type, Long id);
+
+    Map getTeacherForMiniApp(String idNumber);
+
 }

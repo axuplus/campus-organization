@@ -8,10 +8,8 @@ import com.safe.campus.model.vo.FaceImgInfoVo;
 import com.safe.campus.model.vo.OthersStudentVo;
 import com.safe.campus.service.ToOthersService;
 import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiModelProperty;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
-import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -62,6 +60,12 @@ public class ToOthersController {
     @ApiOperation(value = "获取学生班主任")
     public Map getStudentTeacherByIdNumber(@RequestParam("idNumber") String idNumber) {
         return toOthersService.getStudentTeacherByIdNumber(idNumber);
+    }
+
+    @GetMapping("/getTeacherForMiniApp")
+    @ApiOperation(value = "获取老师信息")
+    public Map getTeacherForMiniApp(@RequestParam("idNumber") String idNumber) {
+        return toOthersService.getTeacherForMiniApp(idNumber);
     }
 
     @GetMapping("/getStudentByIdNumber")
