@@ -163,7 +163,9 @@ public class ToOthersServiceImpl implements ToOthersService {
             if (null != student.getSNumber()) {
                 studentVo.setSNumber(student.getSNumber());
             }
-            studentVo.setSIdNumber(student.getIdNumber());
+            if(null != student.getImgId()) {
+                studentVo.setImg(sysFileService.getFileById(student.getImgId()).getFileUrl());
+            }
             if (null != student.getType()) {
                 studentVo.setType(student.getType());
             }
