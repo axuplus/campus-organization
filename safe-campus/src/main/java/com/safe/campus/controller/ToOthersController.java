@@ -6,6 +6,7 @@ import com.safe.campus.model.dto.OthersDto;
 import com.safe.campus.model.dto.SelectStudentListDto;
 import com.safe.campus.model.vo.FaceImgInfoVo;
 import com.safe.campus.model.vo.OthersStudentVo;
+import com.safe.campus.model.vo.OthersTeacherVo;
 import com.safe.campus.service.ToOthersService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -64,7 +65,7 @@ public class ToOthersController {
 
     @GetMapping("/getTeacherForMiniApp")
     @ApiOperation(value = "获取老师信息")
-    public Map getTeacherForMiniApp(@RequestParam("idNumber") String idNumber) {
+    public OthersTeacherVo getTeacherForMiniApp(@RequestParam("idNumber") String idNumber) {
         return toOthersService.getTeacherForMiniApp(idNumber);
     }
 

@@ -10,6 +10,7 @@ import com.safe.campus.model.dto.OthersDto;
 import com.safe.campus.model.dto.SelectStudentListDto;
 import com.safe.campus.model.vo.FaceImgInfoVo;
 import com.safe.campus.model.vo.OthersStudentVo;
+import com.safe.campus.model.vo.OthersTeacherVo;
 import com.safe.campus.service.SysFileService;
 import com.safe.campus.service.ToOthersService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -163,7 +164,7 @@ public class ToOthersServiceImpl implements ToOthersService {
             if (null != student.getSNumber()) {
                 studentVo.setSNumber(student.getSNumber());
             }
-            if(null != student.getImgId()) {
+            if (null != student.getImgId()) {
                 studentVo.setImg(sysFileService.getFileById(student.getImgId()).getFileUrl());
             }
             if (null != student.getType()) {
@@ -240,12 +241,15 @@ public class ToOthersServiceImpl implements ToOthersService {
     }
 
     @Override
-    public Map getTeacherForMiniApp(String idNumber) {
+    public OthersTeacherVo getTeacherForMiniApp(String idNumber) {
         SchoolTeacher teacher = teacherMapper.selectOne(new QueryWrapper<SchoolTeacher>().eq("id_number", idNumber));
         if (PublicUtil.isNotEmpty(teacher)) {
-            Map<Long, Long> map = new HashMap<>();
-            map.put(teacher.getId(), teacher.getMasterId());
-            return map;
+            OthersTeacherVo teacherVo = new OthersTeacherVo();
+            teacherVo.setMasterId(teacher.getMasterId());
+            teacherVo.setTeacherId(teacher.getId());
+            if (null != teacher.getImgId()) {
+                teacherVo.setImg(sysFileService.getFileById(teacher.getImgId()).getFileUrl());
+            }
         }
         return null;
     }
