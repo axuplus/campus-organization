@@ -39,9 +39,6 @@ public class SchoolMaster implements Serializable {
     @ApiModelProperty(value = "省市区")
     private String address;
 
-    @ApiModelProperty(value = "校区地址")
-    private String areaAddress;
-
     @ApiModelProperty(value = "服务时间")
     private String serviceTime;
 

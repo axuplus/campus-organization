@@ -19,7 +19,6 @@ public class SchoolMasterDto {
     @ApiModelProperty(value = "密码", required = true)
     private String password;
     private ServiceTime serviceTime;
-    private CityInfo cityInfo;
     @ApiModelProperty(value = "具体地址", required = true)
     private String address;
     @ApiModelProperty(value = "logo图片", required = true)
@@ -36,15 +35,5 @@ public class SchoolMasterDto {
         private String startTime;
         @ApiModelProperty(value = "结束时间", required = true)
         private String endTime;
-    }
-
-    @Data
-    public static class CityInfo {
-        @ApiModelProperty(value = "省份", required = true)
-        private String province;
-        @ApiModelProperty(value = "城市", required = true)
-        private String city;
-        @ApiModelProperty(value = "区", required = true)
-        private String areas;
     }
 }

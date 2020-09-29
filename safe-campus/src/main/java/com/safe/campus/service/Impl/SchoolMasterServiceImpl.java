@@ -75,7 +75,6 @@ public class SchoolMasterServiceImpl extends ServiceImpl<SchoolMasterMapper, Sch
             SchoolMaster master = new SchoolMaster();
             master.setId(gobalInterface.generateId());
             master.setAddress(schoolMasterDto.getAddress());
-            master.setAreaAddress(new Gson().toJson(schoolMasterDto.getCityInfo()));
             master.setAreaName(schoolMasterDto.getSchoolName());
             master.setCreatedTime(new Date());
             master.setCreatedUser(loginAuthDto.getUserId());
@@ -125,15 +124,6 @@ public class SchoolMasterServiceImpl extends ServiceImpl<SchoolMasterMapper, Sch
         serviceTime.setStartTime(time.getStartTime());
         serviceTime.setEndTime(time.getEndTime());
         vo.setServiceTime(serviceTime);
-        SchoolMasterVo.CityInfo cityInfo = new Gson().fromJson(master.getAreaAddress(), SchoolMasterVo.CityInfo.class);
-        SchoolMasterVo.CityInfo info = new SchoolMasterVo.CityInfo();
-        info.setProvince(provincesMapper.selectOne(new QueryWrapper<LocationProvinces>().eq("provinceid", cityInfo.getProvince())).getProvince());
-        info.setCity(citiesMapper.selectOne(new QueryWrapper<LocationCities>().eq("cityid", cityInfo.getCity())).getCity());
-        info.setAreas(areasMapper.selectOne(new QueryWrapper<LocationAreas>().eq("areaid", cityInfo.getAreas())).getArea());
-        info.setProvinceId(cityInfo.getProvince());
-        info.setCityId(cityInfo.getCity());
-        info.setAreasId(cityInfo.getAreas());
-        vo.setCityInfo(info);
         vo.setAdminId(admin.getId());
         vo.setAccount(admin.getUserName());
         vo.setAppKey(admin.getAppKey());
@@ -147,7 +137,6 @@ public class SchoolMasterServiceImpl extends ServiceImpl<SchoolMasterMapper, Sch
             SchoolMaster master = new SchoolMaster();
             master.setId(schoolMasterDto.getId());
             master.setAddress(schoolMasterDto.getAddress());
-            master.setAreaAddress(new Gson().toJson(schoolMasterDto.getCityInfo()));
             master.setAreaName(schoolMasterDto.getSchoolName());
             master.setLogo(schoolMasterDto.getLogo());
             master.setRealPicture(schoolMasterDto.getRealPicture());

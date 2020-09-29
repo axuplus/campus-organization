@@ -98,26 +98,26 @@ public class SchoolMasterController extends BaseController {
         return masterService.saveConf(loginAuthDto, schoolMaterConfDto);
     }
 
-    @GetMapping("/listProvince")
-    @ApiOperation("省")
-    public Wrapper listProvince() {
-        LoginAuthDto loginAuthDto = getLoginAuthDto();
-        return masterService.listProvince(loginAuthDto);
-    }
-
-    @GetMapping("/listCity")
-    @ApiOperation("市")
-    public Wrapper listCity(@RequestParam("provinceId") Long provinceId) {
-        LoginAuthDto loginAuthDto = getLoginAuthDto();
-        return masterService.listCity(loginAuthDto, provinceId);
-    }
-
-    @GetMapping("/listArea")
-    @ApiOperation("区")
-    public Wrapper listArea(@RequestParam("cityId") Long cityId) {
-        LoginAuthDto loginAuthDto = getLoginAuthDto();
-        return masterService.listArea(loginAuthDto, cityId);
-    }
+//    @GetMapping("/listProvince")
+//    @ApiOperation("省")
+//    public Wrapper listProvince() {
+//        LoginAuthDto loginAuthDto = getLoginAuthDto();
+//        return masterService.listProvince(loginAuthDto);
+//    }
+//
+//    @GetMapping("/listCity")
+//    @ApiOperation("市")
+//    public Wrapper listCity(@RequestParam("provinceId") Long provinceId) {
+//        LoginAuthDto loginAuthDto = getLoginAuthDto();
+//        return masterService.listCity(loginAuthDto, provinceId);
+//    }
+//
+//    @GetMapping("/listArea")
+//    @ApiOperation("区")
+//    public Wrapper listArea(@RequestParam("cityId") Long cityId) {
+//        LoginAuthDto loginAuthDto = getLoginAuthDto();
+//        return masterService.listArea(loginAuthDto, cityId);
+//    }
 
     @GetMapping("/reset")
     @ApiOperation("重置密码")
