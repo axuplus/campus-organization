@@ -311,7 +311,7 @@ public class SchoolMasterServiceImpl extends ServiceImpl<SchoolMasterMapper, Sch
                 root.setPId(saveOrEditNodeDto.getId());
                 root.setRootName(saveOrEditNodeDto.getNodeName());
                 rootMapper.insert(root);
-                return WrapMapper.ok("保存成功");
+                return WrapMapper.ok(root.getId());
             } else {
                 SchoolRoot schoolRoot = rootMapper.selectById(saveOrEditNodeDto.getId());
                 schoolRoot.setRootName(saveOrEditNodeDto.getNodeName());

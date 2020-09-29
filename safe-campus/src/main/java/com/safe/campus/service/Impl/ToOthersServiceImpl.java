@@ -250,6 +250,7 @@ public class ToOthersServiceImpl implements ToOthersService {
             if (null != teacher.getImgId()) {
                 teacherVo.setImg(sysFileService.getFileById(teacher.getImgId()).getFileUrl());
             }
+            return teacherVo;
         }
         return null;
     }
