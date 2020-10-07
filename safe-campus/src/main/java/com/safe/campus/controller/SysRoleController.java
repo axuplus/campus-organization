@@ -38,7 +38,7 @@ public class SysRoleController extends BaseController {
     private SysRoleService roleService;
 
 
-    @PostMapping("/saveRole")
+    @GetMapping("/saveRole")
     @Permission(url = qxurl, type = PermissionType.ADD)
     @ApiOperation("添加角色")
     public Wrapper saveRole(@RequestParam("masterId")Long masterId,@RequestParam("roleName") String roleName, @RequestParam("description") String description) {
@@ -53,7 +53,7 @@ public class SysRoleController extends BaseController {
     }
 
 
-    @PutMapping("/editRole")
+    @GetMapping("/editRole")
     @Permission(url = qxurl, type = PermissionType.EDIT)
     @ApiOperation("修改角色")
     public Wrapper editRole(@RequestParam("id") Long id, @RequestParam("roleName") String roleName, @RequestParam("description") String description) {

@@ -20,7 +20,7 @@ public class SchoolTeacherVo {
     private String idNumber;
     @ApiModelProperty("电话")
     private Long phone;
-    @ApiModelProperty("1停用 0启用")
+    @ApiModelProperty("1停用 0启用 -1无账号")
     private Integer state;
     @ApiModelProperty("照片")
     private String photo;

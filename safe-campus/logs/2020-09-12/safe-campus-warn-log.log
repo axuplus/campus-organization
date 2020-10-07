@@ -1,0 +1,2 @@
+2020-09-12 22:16:51.663 [http-nio-8070-exec-10] WARN  org.springframework.web.servlet.PageNotFound - No mapping for GET /campus/school/building/get/buildingTeacher
+2020-09-12 22:17:01.086 [http-nio-8070-exec-9] WARN  org.springframework.web.servlet.PageNotFound - No mapping for GET /campus/school/building/get/buildingTeacher

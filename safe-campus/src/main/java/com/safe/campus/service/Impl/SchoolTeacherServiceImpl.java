@@ -144,6 +144,7 @@ public class SchoolTeacherServiceImpl extends ServiceImpl<SchoolTeacherMapper, S
                 }
                 SysAdmin adminUserByTId = adminUserMapper.getAdminUserByTId(teacher.getId());
                 if (PublicUtil.isNotEmpty(adminUserByTId)) {
+                    vo.setState(adminUserByTId.getState());
                     // 此教职工下面关联的账号
                     QueryWrapper<SysUserRole> userRoleQueryWrapper = new QueryWrapper<>();
                     userRoleQueryWrapper.eq("user_id", adminUserByTId.getId());
@@ -161,6 +162,8 @@ public class SchoolTeacherServiceImpl extends ServiceImpl<SchoolTeacherMapper, S
                         });
                         vo.setRoleInfos(roleInfos);
                     }
+                } else {
+                    vo.setState(-1);
                 }
                 list.add(vo);
             });
@@ -238,7 +241,7 @@ public class SchoolTeacherServiceImpl extends ServiceImpl<SchoolTeacherMapper, S
         }
         SchoolTeacher teacher = teacherMapper.selectById(teacherInfoDto.getId());
         teacher.setTName(teacherInfoDto.getTName());
-        if(teacherInfoDto.getImgId() != null) {
+        if (teacherInfoDto.getImgId() != null) {
             teacher.setImgId(teacherInfoDto.getImgId());
         }
         teacher.setIdNumber(teacherInfoDto.getIdNumber());
