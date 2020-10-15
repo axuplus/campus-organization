@@ -69,6 +69,7 @@ url:
     - /doc.html
     - bycdao-ui
     - swagger-resources
+    - /school/master/getIntroduction
     - /admin/token
     - /admin/exit
     - /campus/file/img/upload
@@ -78,3 +79,8 @@ url:
     - /others/getStudentTeacherByIdNumber
     - /others/getFaceImgInfo
     - /others/getTeacherForMiniApp
+    - /others/getTeacherByPhone
+    - /others/getStudentAndTeacherInfo
+    - /others/selectBuildingList
+    - /others/getBuildingInfoListByIds
+    - /others/getStudentsByRoom

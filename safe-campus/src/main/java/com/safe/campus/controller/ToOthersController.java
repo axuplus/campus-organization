@@ -1,12 +1,14 @@
 package com.safe.campus.controller;
 
 
+import com.safe.campus.about.utils.wrapper.BaseQueryDto;
+import com.safe.campus.about.utils.wrapper.PageWrapper;
 import com.safe.campus.about.utils.wrapper.Wrapper;
 import com.safe.campus.model.dto.OthersDto;
+import com.safe.campus.model.dto.STDto;
 import com.safe.campus.model.dto.SelectStudentListDto;
-import com.safe.campus.model.vo.FaceImgInfoVo;
-import com.safe.campus.model.vo.OthersStudentVo;
-import com.safe.campus.model.vo.OthersTeacherVo;
+import com.safe.campus.model.dto.TeacherByPhoneDto;
+import com.safe.campus.model.vo.*;
 import com.safe.campus.service.ToOthersService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -81,4 +83,39 @@ public class ToOthersController {
     public FaceImgInfoVo getFaceImgInfo(@ApiParam("S T") @RequestParam("type") String type, @RequestParam("id") Long id) {
         return toOthersService.getFaceImgInfo(type, id);
     }
+
+    @GetMapping("/getTeacherByPhone")
+    @ApiOperation(value = "获取学校id跟老师id")
+    public TeacherByPhoneDto getTeacherByPhone(@RequestParam("teacherName") String teacherName, @RequestParam("phone") String phone) {
+        return toOthersService.getTeacherByPhone(teacherName, phone);
+    }
+
+    @GetMapping("/getStudentAndTeacherInfo")
+    @ApiOperation(value = "查询老师学生by id")
+    public STDto getStudentAndTeacherInfo(@ApiParam("1老师 0学生") @RequestParam("type") Integer type, @RequestParam("id") Long id) {
+        return toOthersService.getStudentAndTeacherInfo(type, id);
+    }
+
+
+    @GetMapping("/selectBuildingList")
+    @ApiOperation(value = "获取楼幢或楼层或宿舍下拉列表")
+    public Map getBuildingInfoList(@ApiParam("学校id(必传)") @RequestParam(value = "masterId") Long masterId, @ApiParam("1 选择楼幢 2 楼层 3 宿舍") @RequestParam("type") Integer type, @RequestParam(value = "id", required = false) Long id) {
+        return toOthersService.getBuildingInfoList(masterId, type, id);
+    }
+
+    @GetMapping("/getBuildingInfoListByIds")
+    @ApiOperation(value = "获取具体统计列表")
+    public PageWrapper<List<BuildingInfoListRoomVo>> getBuildingInfoListByIds(@RequestParam("masterId") Long masterId,
+                                                                              @ApiParam("0是全部 1整幢楼 2整层楼 3宿舍(必传)") @RequestParam("type") Integer type,
+                                                                              @RequestParam(value = "id", required = false) Long id,
+                                                                              BaseQueryDto baseQueryDto) {
+        return toOthersService.getBuildingInfoListByIds(masterId, type, id, baseQueryDto);
+    }
+
+    @GetMapping("/getStudentsByRoom")
+    @ApiOperation(value = "获取宿舍人员")
+    public BuildingInfoListBedVo getStudentsByRoom(@RequestParam("roomId") Long roomId) {
+        return toOthersService.getStudentsByRoom(roomId);
+    }
+
 }

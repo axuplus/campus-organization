@@ -1,26 +1,25 @@
 package com.safe.campus.service.Impl;
 
+import com.alibaba.druid.sql.visitor.functions.If;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.github.pagehelper.Page;
+import com.github.pagehelper.PageHelper;
 import com.safe.campus.about.utils.PublicUtil;
-import com.safe.campus.about.utils.wrapper.WrapMapper;
-import com.safe.campus.about.utils.wrapper.Wrapper;
+import com.safe.campus.about.utils.wrapper.*;
 import com.safe.campus.mapper.*;
 import com.safe.campus.model.domain.*;
-import com.safe.campus.model.dto.OthersDto;
-import com.safe.campus.model.dto.SelectStudentListDto;
-import com.safe.campus.model.vo.FaceImgInfoVo;
-import com.safe.campus.model.vo.OthersStudentVo;
-import com.safe.campus.model.vo.OthersTeacherVo;
+import com.safe.campus.model.dto.*;
+import com.safe.campus.model.vo.*;
 import com.safe.campus.service.SysFileService;
 import com.safe.campus.service.ToOthersService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.persistence.Id;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 @Service
@@ -52,6 +51,21 @@ public class ToOthersServiceImpl implements ToOthersService {
 
     @Autowired
     private SchoolSectionMapper sectionMapper;
+
+    @Autowired
+    private BuildingStudentMapper buildingStudentMapper;
+
+    @Autowired
+    private BuildingNoMapper noMapper;
+
+    @Autowired
+    private BuildingLevelMapper levelMapper;
+
+    @Autowired
+    private BuildingRoomMapper roomMapper;
+
+    @Autowired
+    private BuildingBedMapper bedMapper;
 
     @Override
     public Wrapper<Map<Long, String>> getAllMasters() {
@@ -251,6 +265,172 @@ public class ToOthersServiceImpl implements ToOthersService {
                 teacherVo.setImg(sysFileService.getFileById(teacher.getImgId()).getFileUrl());
             }
             return teacherVo;
+        }
+        return null;
+    }
+
+    @Override
+    public TeacherByPhoneDto getTeacherByPhone(String teacherName, String phone) {
+        if (null != teacherName && null != phone) {
+            SchoolTeacher teacher = teacherMapper.selectOne(new QueryWrapper<SchoolTeacher>().eq("t_name", teacherName).eq("phone", phone));
+            if (PublicUtil.isNotEmpty(teacher)) {
+                TeacherByPhoneDto dto = new TeacherByPhoneDto();
+                dto.setMasterId(teacher.getMasterId());
+                dto.setMasterName(schoolMaster.selectById(teacher.getMasterId()).getAreaName());
+                dto.setTeacherId(teacher.getId());
+                if (null != teacher.getSectionId()) {
+                    dto.setSectionId(teacher.getSectionId());
+                    dto.setSectionName(sectionMapper.selectById(teacher.getSectionId()).getSectionName());
+                }
+                if (null != teacher.getImgId()) {
+                    dto.setImg(sysFileService.getFileById(teacher.getImgId()).getFileUrl());
+                }
+                return dto;
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public STDto getStudentAndTeacherInfo(Integer type, Long id) {
+        if (null != type && null != id) {
+            STDto dto = new STDto();
+            if (0 == type) {
+                STDto.SInfo sInfo = new STDto.SInfo();
+                SchoolStudent student = studentMapper.selectById(id);
+                if (PublicUtil.isNotEmpty(student)) {
+                    sInfo.setSId(student.getId());
+                    sInfo.setType(student.getType());
+                    if (null != student.getSNumber()) {
+                        sInfo.setSNumber(student.getSNumber());
+                    }
+                    if (null != student.getClassId()) {
+                        sInfo.setClassName(classMapper.selectById(student.getClassId()).getClassName());
+                    }
+                    if (null != student.getClassInfoId()) {
+                        sInfo.setClassName(classInfoMapper.selectById(student.getClassInfoId()).getClassInfoName());
+                    }
+                    BuildingStudent buildingInfo = buildingStudentMapper.selectOne(new QueryWrapper<BuildingStudent>().eq("student_id", id));
+                    if (PublicUtil.isNotEmpty(buildingInfo)) {
+                        BuildingStudentListDto byIds = noMapper.checkBuildingInfoByIds(buildingInfo.getNoId(), buildingInfo.getLevelId(), buildingInfo.getRoomId(), buildingInfo.getBedId());
+                        if (PublicUtil.isNotEmpty(byIds)) {
+                            sInfo.setBuildingNo(byIds.getBuildingNo());
+                            sInfo.setBuildingLevel(byIds.getBuildingLevel());
+                            sInfo.setBuildingRoom(byIds.getBuildingRoom());
+                            sInfo.setBuildingBed(byIds.getBedName());
+                        }
+                    }
+                    dto.setSInfo(sInfo);
+                    return dto;
+                }
+            } else {
+                STDto.TInfo tInfo = new STDto.TInfo();
+                SchoolTeacher teacher = teacherMapper.selectById(id);
+                if (PublicUtil.isNotEmpty(teacher)) {
+                    tInfo.setTId(teacher.getId());
+                    tInfo.setTNumber(teacher.getTNumber());
+                    if (null != teacher.getSectionId()) {
+                        tInfo.setSectionName(sectionMapper.selectById(teacher.getSectionId()).getSectionName());
+                    }
+                }
+                dto.setTInfo(tInfo);
+                return dto;
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public Map getBuildingInfoList(Long masterId, Integer type, Long id) {
+        if (null != masterId) {
+            if (null == type || 1 == type) {
+                List<BuildingNo> list = noMapper.selectList(new QueryWrapper<BuildingNo>().eq("master_id", masterId));
+                if (PublicUtil.isNotEmpty(list)) {
+                    return list.stream().collect(Collectors.toMap(BuildingNo::getId, BuildingNo::getBuildingNo));
+                }
+            } else if (2 == type && null != id) {
+                List<BuildingLevel> list = levelMapper.selectList(new QueryWrapper<BuildingLevel>().eq("building_no_id", id));
+                if (PublicUtil.isNotEmpty(list)) {
+                    return list.stream().collect(Collectors.toMap(BuildingLevel::getId, BuildingLevel::getBuildingLevel));
+                }
+            } else if (3 == type && null != id) {
+                List<BuildingRoom> list = roomMapper.selectList(new QueryWrapper<BuildingRoom>().eq("building_level_id", id));
+                if (PublicUtil.isNotEmpty(list)) {
+                    return list.stream().collect(Collectors.toMap(BuildingRoom::getId, BuildingRoom::getBuildingRoom));
+                }
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public PageWrapper<List<BuildingInfoListRoomVo>> getBuildingInfoListByIds(Long masterId, Integer type, Long id, BaseQueryDto baseQueryDto) {
+        if (null != masterId) {
+            List<BuildingRoomDto> rooms = null;
+            Page page = PageHelper.startPage(baseQueryDto.getPage(), baseQueryDto.getPage_size());
+            if (0 == type) {
+                rooms = roomMapper.selectByNothing(masterId);
+            } else if (1 == type) {
+                rooms = roomMapper.selectByNoId(id);
+            } else if (2 == type) {
+                rooms = roomMapper.selectByLevelId(id);
+            } else if (3 == type) {
+                rooms = roomMapper.selectByRoomId(id);
+            }
+            Long total = page.getTotal();
+            if (PublicUtil.isNotEmpty(rooms)) {
+                List<BuildingInfoListRoomVo> list = new ArrayList<>();
+                rooms.forEach(room -> {
+                    BuildingInfoListRoomVo vo = new BuildingInfoListRoomVo();
+                    vo.setRoomId(room.getRoomId());
+                    vo.setRoomName(room.getRoomName());
+                    vo.setBuildingNo(room.getNoName());
+                    vo.setBuildingLevel(room.getLevelName());
+                    vo.setBedCount(bedMapper.selectCount(new QueryWrapper<BuildingBed>().eq("room_id", room.getRoomId())));
+                    vo.setStudentCount(buildingStudentMapper.selectCount(new QueryWrapper<BuildingStudent>().eq("room_id", room.getRoomId())));
+                    list.add(vo);
+                });
+                return PageWrapMapper.wrap(list, new PageUtil(total.intValue(), baseQueryDto.getPage(), baseQueryDto.getPage_size()));
+            }
+        }
+        return PageWrapMapper.wrap(200, "暂无数据");
+    }
+
+    @Override
+    public BuildingInfoListBedVo getStudentsByRoom(Long roomId) {
+        if (null != roomId) {
+            BuildingInfoListBedVo vo = new BuildingInfoListBedVo();
+            List<BuildingRoomDto> dtos = roomMapper.selectByRoomId(roomId);
+            BuildingRoomDto dto = dtos.get(0);
+            vo.setRoomId(roomId);
+            vo.setCurrentBuildingInfo(dto.getNoName() + dto.getLevelName() + dto.getRoomName());
+            List<BuildingBed> beds = bedMapper.selectList(new QueryWrapper<BuildingBed>().eq("room_id", roomId));
+            if (PublicUtil.isNotEmpty(beds)) {
+                List<BuildingInfoListBedVo.Bed> vos = new ArrayList<>();
+                beds.forEach(b -> {
+                    BuildingInfoListBedVo.Bed bed = new BuildingInfoListBedVo.Bed();
+                    bed.setBedName(b.getBedName());
+                    BuildingStudent studentBed = buildingStudentMapper.selectOne(new QueryWrapper<BuildingStudent>().eq("bed_id", b.getId()));
+                    if (PublicUtil.isNotEmpty(studentBed)) {
+                        SchoolStudent student = studentMapper.selectById(studentBed.getStudentId());
+                        bed.setSName(student.getSName());
+                        bed.setSNumber(student.getSNumber());
+                        if (null != student.getClassId() && null != student.getClassInfoId()) {
+                            bed.setClassInfo(classMapper.selectById(student.getClassId()).getClassName() + "/" + classInfoMapper.selectById(student.getClassInfoId()).getClassInfoName());
+                        }
+                        if (null != student.getClassInfoId()) {
+                            SchoolClassInfo classInfo = classInfoMapper.selectById(student.getClassInfoId());
+                            if (null != classInfo.getTId()) {
+                                SchoolTeacher teacher = teacherMapper.selectById(classInfo.getTId());
+                                bed.setTeacherInfo(teacher.getTName() + "/" + teacher.getPhone());
+                            }
+                        }
+                    }
+                    vos.add(bed);
+                });
+                vo.setBeds(vos);
+                return vo;
+            }
         }
         return null;
     }

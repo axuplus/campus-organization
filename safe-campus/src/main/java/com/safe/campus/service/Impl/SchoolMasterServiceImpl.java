@@ -1,5 +1,6 @@
 package com.safe.campus.service.Impl;
 
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.google.gson.Gson;
@@ -316,7 +317,7 @@ public class SchoolMasterServiceImpl extends ServiceImpl<SchoolMasterMapper, Sch
         if (PublicUtil.isNotEmpty(schoolIntroductionDto)) {
             SchoolMaster schoolMaster = masterMapper.selectById(schoolIntroductionDto.getMasterId());
             schoolMaster.setDescription(schoolIntroductionDto.getIntroduction());
-            schoolMaster.setImgs(schoolIntroductionDto.getImgs().toString());
+            schoolMaster.setImgs(JSON.toJSONString(schoolIntroductionDto.getImgs()));
             masterMapper.updateById(schoolMaster);
             return WrapMapper.ok("操作成功");
         }
@@ -326,12 +327,14 @@ public class SchoolMasterServiceImpl extends ServiceImpl<SchoolMasterMapper, Sch
     @Override
     public Wrapper<SchoolIntroductionDto> getIntroduction(Long masterId) {
         SchoolMaster schoolMaster = masterMapper.selectById(masterId);
-        if (null != schoolMaster.getDescription() && null != schoolMaster.getImgs()) {
-            SchoolIntroductionDto dto = new SchoolIntroductionDto();
-            dto.setMasterId(masterId);
-            dto.setIntroduction(schoolMaster.getDescription());
-            dto.setImgs(Arrays.asList(schoolMaster.getImgs()));
-            return WrapMapper.ok(dto);
+        if (null != schoolMaster) {
+            if (null != schoolMaster.getDescription() && null != schoolMaster.getImgs()) {
+                SchoolIntroductionDto dto = new SchoolIntroductionDto();
+                dto.setMasterId(masterId);
+                dto.setIntroduction(schoolMaster.getDescription());
+                dto.setImgs(JSON.parseArray(schoolMaster.getImgs(), String.class));
+                return WrapMapper.ok(dto);
+            }
         }
         return null;
     }

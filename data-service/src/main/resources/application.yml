@@ -1,0 +1,22 @@
+server:
+  port: 8060
+spring:
+  profiles:
+    active: '@profileActive@'
+  application:
+    name: '@pom.artifactId@'
+  main:
+    allow-bean-definition-overriding: true
+  datasource:
+    driver-class-name: com.mysql.jdbc.Driver
+    url: jdbc:mysql://47.111.229.199:3306/campus?autoReconnect=true&useUnicode=true&characterEncoding=UTF-8&allowMultiQueries=true&useSSL=false&&serverTimezone=GMT%2B8
+    username: root
+    password: eR7uG5v6XEwjaqwd[]C9
+    filters: stat,wall
+    druid:
+      initial-size: 10
+      min-idle: 10
+      max-active: 30
+      test-on-borrow: true
+      time-between-eviction-runs-millis: 60000
+      min-evictable-idle-time-millis: 300000

@@ -1,11 +1,13 @@
 package com.safe.campus.service;
 
+import com.safe.campus.about.utils.wrapper.BaseQueryDto;
+import com.safe.campus.about.utils.wrapper.PageWrapper;
 import com.safe.campus.about.utils.wrapper.Wrapper;
 import com.safe.campus.model.dto.OthersDto;
+import com.safe.campus.model.dto.STDto;
 import com.safe.campus.model.dto.SelectStudentListDto;
-import com.safe.campus.model.vo.FaceImgInfoVo;
-import com.safe.campus.model.vo.OthersStudentVo;
-import com.safe.campus.model.vo.OthersTeacherVo;
+import com.safe.campus.model.dto.TeacherByPhoneDto;
+import com.safe.campus.model.vo.*;
 
 import java.util.List;
 import java.util.Map;
@@ -31,4 +33,13 @@ public interface ToOthersService {
 
     OthersTeacherVo getTeacherForMiniApp(String idNumber);
 
+    TeacherByPhoneDto getTeacherByPhone(String teacherName, String phone);
+
+    STDto getStudentAndTeacherInfo(Integer type, Long id);
+
+    Map getBuildingInfoList( Long masterId,Integer type, Long id);
+
+    PageWrapper<List<BuildingInfoListRoomVo>> getBuildingInfoListByIds(Long masterId, Integer type, Long id, BaseQueryDto baseQueryDto);
+
+    BuildingInfoListBedVo getStudentsByRoom(Long roomId);
 }

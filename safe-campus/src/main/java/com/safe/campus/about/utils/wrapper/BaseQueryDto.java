@@ -9,12 +9,7 @@ public class BaseQueryDto {
      * 当前页
      */
     @ApiModelProperty(value = "页码", name = "page")
-    private Integer page = 1
-
-
-
-
-            ;
+    private Integer page = 1;
 
     /**
      * 每页条数 别问我为什么下划线 前端让改的
