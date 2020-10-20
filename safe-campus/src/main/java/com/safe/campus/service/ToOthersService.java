@@ -42,4 +42,9 @@ public interface ToOthersService {
     PageWrapper<List<BuildingInfoListRoomVo>> getBuildingInfoListByIds(Long masterId, Integer type, Long id, BaseQueryDto baseQueryDto);
 
     BuildingInfoListBedVo getStudentsByRoom(Long roomId);
+
+    List<Object> getStudentsOrTeachersByType(Long masterId, Integer type);
+
+    List<ListStudentByTeacherVo> getStudentByTeacherId(Long teacherId);
+
 }

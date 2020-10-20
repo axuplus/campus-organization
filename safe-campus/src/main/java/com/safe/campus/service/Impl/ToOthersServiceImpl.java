@@ -15,11 +15,8 @@ import com.safe.campus.service.ToOthersService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.persistence.Id;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -310,6 +307,9 @@ public class ToOthersServiceImpl implements ToOthersService {
                     if (null != student.getClassInfoId()) {
                         sInfo.setClassName(classInfoMapper.selectById(student.getClassInfoId()).getClassInfoName());
                     }
+                    if (null != student.getIdNumber()) {
+                        sInfo.setSIdNumber(student.getIdNumber());
+                    }
                     BuildingStudent buildingInfo = buildingStudentMapper.selectOne(new QueryWrapper<BuildingStudent>().eq("student_id", id));
                     if (PublicUtil.isNotEmpty(buildingInfo)) {
                         BuildingStudentListDto byIds = noMapper.checkBuildingInfoByIds(buildingInfo.getNoId(), buildingInfo.getLevelId(), buildingInfo.getRoomId(), buildingInfo.getBedId());
@@ -329,8 +329,15 @@ public class ToOthersServiceImpl implements ToOthersService {
                 if (PublicUtil.isNotEmpty(teacher)) {
                     tInfo.setTId(teacher.getId());
                     tInfo.setTNumber(teacher.getTNumber());
+                    tInfo.setIdNumber(teacher.getIdNumber());
+                    if (null != teacher.getPhone()) {
+                        tInfo.setPhone(teacher.getPhone());
+                    }
                     if (null != teacher.getSectionId()) {
                         tInfo.setSectionName(sectionMapper.selectById(teacher.getSectionId()).getSectionName());
+                    }
+                    if (null != teacher.getPosition()) {
+                        tInfo.setPosition(teacher.getPosition());
                     }
                 }
                 dto.setTInfo(tInfo);
@@ -431,6 +438,48 @@ public class ToOthersServiceImpl implements ToOthersService {
                 vo.setBeds(vos);
                 return vo;
             }
+        }
+        return null;
+    }
+
+    @Override
+    public List<Object> getStudentsOrTeachersByType(Long masterId, Integer type) {
+        List<Object> list = new ArrayList<>();
+        if (null != masterId && null != type) {
+            if (1 == type) {
+                list = Collections.singletonList(studentMapper.selectList(new QueryWrapper<SchoolStudent>().eq("master_id", masterId)));
+            } else {
+                list = Collections.singletonList(teacherMapper.selectList(new QueryWrapper<SchoolTeacher>().eq("master_id", masterId)));
+            }
+        }
+        return list;
+    }
+
+    @Override
+    public List<ListStudentByTeacherVo> getStudentByTeacherId(Long teacherId) {
+        if (null != teacherId) {
+            List<ListStudentByTeacherVo> vos = new ArrayList<>();
+            List<SchoolClassInfo> infos = classInfoMapper.selectList(new QueryWrapper<SchoolClassInfo>().eq("t_id", teacherId));
+            if (PublicUtil.isNotEmpty(infos)) {
+                infos.forEach(info -> {
+                    List<SchoolStudent> students = studentMapper.selectList(new QueryWrapper<SchoolStudent>().eq("class_info_id", info.getId()));
+                    if (PublicUtil.isNotEmpty(students)) {
+                        students.forEach(student -> {
+                            ListStudentByTeacherVo vo = new ListStudentByTeacherVo();
+                            vo.setSId(student.getId());
+                            vo.setSName(student.getSName());
+                            if (null != student.getSNumber()) {
+                                vo.setSNumber(student.getSNumber());
+                            }
+                            if (null != student.getType()) {
+                                vo.setType(student.getType());
+                            }
+                            vos.add(vo);
+                        });
+                    }
+                });
+            }
+            return vos;
         }
         return null;
     }

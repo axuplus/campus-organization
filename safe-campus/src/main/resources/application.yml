@@ -84,3 +84,5 @@ url:
     - /others/selectBuildingList
     - /others/getBuildingInfoListByIds
     - /others/getStudentsByRoom
+    - /others/getStudentsOrTeachersByType
+    - /others/getStudentByTeacherId

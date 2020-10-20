@@ -11,6 +11,7 @@ import com.safe.campus.model.dto.TeacherByPhoneDto;
 import com.safe.campus.model.vo.*;
 import com.safe.campus.service.ToOthersService;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiModelProperty;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -118,4 +119,16 @@ public class ToOthersController {
         return toOthersService.getStudentsByRoom(roomId);
     }
 
+    @GetMapping("/getStudentsOrTeachersByType")
+    @ApiOperation(value = "获取教职工或学生")
+    public List<Object> getStudentsOrTeachersByType(@ApiParam("学校id(必传)") @RequestParam("masterId") Long masterId, @ApiParam("类型1学生2老师(必传)") @RequestParam("type") Integer type) {
+        return toOthersService.getStudentsOrTeachersByType(masterId, type);
+    }
+
+    @GetMapping("/getStudentByTeacherId")
+    @ApiOperation(value = "获取某个老师班级下面的学生")
+    public List<ListStudentByTeacherVo> getStudentByTeacherId(@RequestParam("teacherId") Long teacherId) {
+        return toOthersService.getStudentByTeacherId(teacherId);
+    }
 }
+
