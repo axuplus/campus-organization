@@ -1,11 +1,13 @@
 package com.data.model.dto;
 
 import lombok.Data;
+
 import java.util.Date;
 
 @Data
 public class LogDto implements java.io.Serializable {
     private Long id;
+    private String type;
     private String name;
     private String userId;
     private String phone;

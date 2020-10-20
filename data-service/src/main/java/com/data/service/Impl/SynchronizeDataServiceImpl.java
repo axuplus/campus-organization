@@ -36,7 +36,7 @@ public class SynchronizeDataServiceImpl extends ServiceImpl<LanrunOpenLogMapper,
     private LanrunOpenLogMapper logMapper;
 
 
-    @Scheduled(cron = "0 */60 * * * ?")
+    @Scheduled(cron = "0 */1 * * * ?")
     @Override
     public void SynchronizeDataFromFuji() {
         // 获取当前时间 & 前一分钟时间
@@ -46,10 +46,10 @@ public class SynchronizeDataServiceImpl extends ServiceImpl<LanrunOpenLogMapper,
         String now, pre;
         now = df.format(new Date());
         pre = df.format(calendar.getTime());
-//        pre = "2020-10-13 09:19:33.000";
-//        now = "2020-10-13 16:39:18.000";
-        log.warn("now=====>>>>> {}", now);
-        log.warn("pre=====>>>>> {}", pre);
+        pre = "2020-10-13 09:19:33.000";
+        now = "2020-10-13 16:39:18.000";
+//        log.warn("now=====>>>>> {}", now);
+//        log.warn("pre=====>>>>> {}", pre);
         // where子句中between在sql server中不起作用 有时间我找一下原因
         String R_JSON = "{\n" +
                 "\"PageSize\": 5000,\n" +
@@ -90,13 +90,14 @@ class execDetails implements Runnable {
     @Override
     public void run() {
         try {
-            Map map = getRecordOpenPictureByOpenPicNo(record.getOpenPicNo(), record.getStaffId(), record.getGid());
+            Map map = getRecordOpenPictureByOpenPicNo(record.getOpenPicNo(), record.getStaffId(), record.getGid(), record.getDevNo());
             log.warn("map = !!!!!!!!!!!!!!!! {}", map);
             LogDto logDto = new LogDto();
             logDto.setName(record.getStaffName());
             logDto.setPhone(map.get(Config.PHONE_KEY).toString());
             logDto.setIdNumber(map.get(Config.ID_NUMBER_KEY).toString());
             logDto.setPhotoPath(map.get(Config.PICTURE_KEY).toString());
+            logDto.setType(map.get(Config.TYPE_KEY).toString());
             logDto.setUserId(record.getStaffId());
             logDto.setEquipment(record.getDevNo());
             logDto.setEquipmentName(record.getDevName());
@@ -110,7 +111,7 @@ class execDetails implements Runnable {
         }
     }
 
-    private Map getRecordOpenPictureByOpenPicNo(String openPicNo, String staffId, String gId) {
+    private Map getRecordOpenPictureByOpenPicNo(String openPicNo, String staffId, String gId, String devNo) {
         Map<String, String> map = new HashMap<>();
         String P_JSON = "{\n" +
                 "\"PageSize\": 10,\n" +
@@ -123,6 +124,7 @@ class execDetails implements Runnable {
                 "}";
         String p_json = HttpUtils.DO_POST(Config.FUJI_API_OPEN_PICTURE, P_JSON, null, null);
         String picture = null;
+        String type = null;
         if (null != p_json) {
             JsonObject jo = new JsonParser().parse(p_json).getAsJsonObject();
             picture = jo
@@ -171,6 +173,23 @@ class execDetails implements Runnable {
                 map.put(Config.PHONE_KEY, "暂无");
             }
             log.warn("身份证号码是===> {}", idNumber + "电话号码是===> {}", phone);
+        }
+
+        String T_JSON = "{\n" +
+                "\"PageSize\": 5,\n" +
+                "\"CurrentPage\": 1,\n" +
+                "\"where\": \"DevTypeCode = 31 and DevNo = " + devNo + "\"\n" +
+                "}";
+        String t_json = HttpUtils.DO_POST(Config.FUJI_API_GET_DEV, T_JSON, null, null);
+        if (null != t_json) {
+            JsonObject jo = new JsonParser().parse(t_json).getAsJsonObject();
+            String str = jo.get("Records")
+                    .getAsJsonArray()
+                    .get(0)
+                    .getAsJsonObject()
+                    .get("Remark").getAsString().replaceAll("\\\\", "");
+            type = new JsonParser().parse(str).getAsJsonObject().get("comego").getAsString();
+            map.put(Config.TYPE_KEY, type);
         }
         return map;
     }

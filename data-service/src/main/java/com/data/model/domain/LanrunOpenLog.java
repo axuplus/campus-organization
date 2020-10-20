@@ -25,6 +25,7 @@ public class LanrunOpenLog implements Serializable {
     private Long id;
     private String name;
     private String userId;
+    private String type;
     private String phone;
     private String idNumber;
     private String equipment;
