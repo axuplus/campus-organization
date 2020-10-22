@@ -86,3 +86,4 @@ url:
     - /others/getStudentsByRoom
     - /others/getStudentsOrTeachersByType
     - /others/getStudentByTeacherId
+    - /others/getStudentCountByTeacherPhone
