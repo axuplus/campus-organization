@@ -130,5 +130,11 @@ public class ToOthersController {
     public List<ListStudentByTeacherVo> getStudentByTeacherId(@RequestParam("teacherId") Long teacherId) {
         return toOthersService.getStudentByTeacherId(teacherId);
     }
+
+    @GetMapping("/getStudentCountByTeacherPhone")
+    @ApiOperation(value = "获取学生统计")
+    public StudentCountVo getStudentCountByTeacherPhone(@RequestParam("tName") String tName, @RequestParam("phone") String phone) {
+        return toOthersService.getStudentCountByTeacherPhone(tName, phone);
+    }
 }
 

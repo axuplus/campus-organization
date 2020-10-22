@@ -275,12 +275,16 @@ public class ToOthersServiceImpl implements ToOthersService {
                 dto.setMasterId(teacher.getMasterId());
                 dto.setMasterName(schoolMaster.selectById(teacher.getMasterId()).getAreaName());
                 dto.setTeacherId(teacher.getId());
+                dto.setTIdNumber(teacher.getIdNumber());
                 if (null != teacher.getSectionId()) {
                     dto.setSectionId(teacher.getSectionId());
                     dto.setSectionName(sectionMapper.selectById(teacher.getSectionId()).getSectionName());
                 }
                 if (null != teacher.getImgId()) {
                     dto.setImg(sysFileService.getFileById(teacher.getImgId()).getFileUrl());
+                }
+                if (teacher.getSex() != null) {
+                    dto.setSex(teacher.getSex());
                 }
                 return dto;
             }
@@ -480,6 +484,28 @@ public class ToOthersServiceImpl implements ToOthersService {
                 });
             }
             return vos;
+        }
+        return null;
+    }
+
+    @Override
+    public StudentCountVo getStudentCountByTeacherPhone(String tName, String phone) {
+        if (null != tName && null != phone) {
+            SchoolTeacher teacher = teacherMapper.selectOne(new QueryWrapper<SchoolTeacher>().eq("t_name", tName).eq("phone", phone));
+            if (PublicUtil.isNotEmpty(teacher)) {
+                SchoolClassInfo info = classInfoMapper.selectOne(new QueryWrapper<SchoolClassInfo>().eq("t_id", teacher.getId()));
+                if (PublicUtil.isNotEmpty(info)) {
+                    StudentCountVo countVo = new StudentCountVo();
+                    countVo.setClassId(info.getClassId());
+                    countVo.setClassName(classMapper.selectById(info.getClassId()).getClassName());
+                    countVo.setClassInfoId(info.getId());
+                    countVo.setClassInfoName(info.getClassInfoName());
+                    countVo.setLiveCount(studentMapper.selectCount(new QueryWrapper<SchoolStudent>().eq("class_info_id", info.getId()).eq("type", 1)));
+                    countVo.setLeaveCount(studentMapper.selectCount(new QueryWrapper<SchoolStudent>().eq("class_info_id", info.getId()).eq("type", 2)));
+                    countVo.setTotal(studentMapper.selectCount(new QueryWrapper<SchoolStudent>().eq("class_info_id", info.getId())));
+                    return countVo;
+                }
+            }
         }
         return null;
     }

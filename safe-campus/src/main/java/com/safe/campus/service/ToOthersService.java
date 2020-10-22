@@ -47,4 +47,5 @@ public interface ToOthersService {
 
     List<ListStudentByTeacherVo> getStudentByTeacherId(Long teacherId);
 
+    StudentCountVo getStudentCountByTeacherPhone(String tName, String phone);
 }
