@@ -87,3 +87,7 @@ url:
     - /others/getStudentsOrTeachersByType
     - /others/getStudentByTeacherId
     - /others/getStudentCountByTeacherPhone
+    - /others/getAllStudents
+    - /others/getAllTeachers
+    - /others/getAllBuildings
+    - /others/getPersonsByType

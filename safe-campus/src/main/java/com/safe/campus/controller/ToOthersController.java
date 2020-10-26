@@ -136,5 +136,35 @@ public class ToOthersController {
     public StudentCountVo getStudentCountByTeacherPhone(@RequestParam("tName") String tName, @RequestParam("phone") String phone) {
         return toOthersService.getStudentCountByTeacherPhone(tName, phone);
     }
+
+    @GetMapping("/getAllStudents")
+    @ApiOperation(value = "获取所有学生")
+    public PageWrapper<List<AllStudentsVo>> getAllStudents(@RequestParam("schoolId") Long schoolId, BaseQueryDto baseQueryDto) {
+        return toOthersService.getAllStudents(schoolId, baseQueryDto);
+    }
+
+    @GetMapping("/getAllTeachers")
+    @ApiOperation(value = "获取所有老师")
+    public PageWrapper<List<AllTeachersVo>> getAllTeachers(@RequestParam("schoolId") Long schoolId, BaseQueryDto baseQueryDto) {
+        return toOthersService.getAllTeachers(schoolId, baseQueryDto);
+    }
+
+
+    @GetMapping("getAllBuildings")
+    @ApiOperation(value = "获取所有楼幢")
+    public Wrapper<List<BuildingClassVo>> getAllBuildings(@RequestParam("schoolId")Long schoolId){
+        return toOthersService.getAllBuildings(schoolId);
+    }
+
+
+    @GetMapping("getPersonsByType")
+    @ApiOperation(value = "获取学生或教师信息")
+    public Wrapper<WhiteListVo> getPersonsByType(@RequestParam("schoolId")Long schoolId,@ApiParam("0学生 1教师")@RequestParam("type")Integer type){
+        return toOthersService.getPersonsByType(schoolId,type);
+    }
+
+
+
+
 }
 

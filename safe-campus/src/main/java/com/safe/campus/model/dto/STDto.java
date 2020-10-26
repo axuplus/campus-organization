@@ -6,6 +6,7 @@ import lombok.Data;
 @Data
 public class STDto {
 
+    private Long schoolId;
     private SInfo sInfo;
     private TInfo tInfo;
 

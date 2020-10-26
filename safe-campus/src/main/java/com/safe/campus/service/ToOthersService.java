@@ -48,4 +48,13 @@ public interface ToOthersService {
     List<ListStudentByTeacherVo> getStudentByTeacherId(Long teacherId);
 
     StudentCountVo getStudentCountByTeacherPhone(String tName, String phone);
+
+    PageWrapper<List<AllStudentsVo>> getAllStudents(Long schoolId, BaseQueryDto baseQueryDto);
+
+    PageWrapper<List<AllTeachersVo>> getAllTeachers(Long schoolId, BaseQueryDto baseQueryDto);
+
+    Wrapper<List<BuildingClassVo>> getAllBuildings(Long schoolId);
+
+    Wrapper<WhiteListVo> getPersonsByType(Long schoolId,Integer type);
+
 }
