@@ -161,7 +161,7 @@ public class SchoolMasterServiceImpl extends ServiceImpl<SchoolMasterMapper, Sch
                 vo.setEndTime(serviceTime.getEndTime());
                 vo.setState(master.getState());
                 QueryWrapper<SysAdmin> queryWrapper = new QueryWrapper<>();
-                queryWrapper.eq("create_user", loginAuthDto.getUserId()).eq("master_id", master.getId());
+                queryWrapper.eq("master_id", master.getId()).eq("level", 2).eq("type", 2);
                 SysAdmin admin = userMapper.selectOne(queryWrapper);
                 vo.setAccount(admin.getUserName());
                 vo.setAppKey(admin.getAppKey());
@@ -261,36 +261,37 @@ public class SchoolMasterServiceImpl extends ServiceImpl<SchoolMasterMapper, Sch
         ListConfigVo listConfigVo = new ListConfigVo();
         listConfigVo.setSchoolName(masterMapper.selectById(masterId).getAreaName());
         List<ListConfigVo.Modules> list = new ArrayList<>();
+        List<Long> ids = null;
         if (PublicUtil.isNotEmpty(routes)) {
-            List<Long> ids = routes.stream().map(MasterRoute::getRouteId).collect(toList());
-            List<RouteConf> allRoutes = confMapper.getAllRoutes();
-            Map<String, List<RouteConf>> map = allRoutes.stream().collect(Collectors.groupingBy(RouteConf::getName));
-            List<String> names = map.keySet().stream().collect(toList());
-            names.forEach(name -> {
-                ListConfigVo.Modules configVo = new ListConfigVo.Modules();
-                List<ListConfigVo.Modules.SubInfo> subInfos = new ArrayList<>();
-                configVo.setModuleName(name);
-                allRoutes.forEach(r -> {
-                    if (r.getName().equals(name)) {
-                        ListConfigVo.Modules.SubInfo subInfo = new ListConfigVo.Modules.SubInfo();
-                        subInfo.setId(r.getId());
-                        subInfo.setSubName(r.getSubName());
-                        if (ids.contains(r.getId())) {
-                            subInfo.setState(1);
-                        } else {
-                            subInfo.setState(0);
-                        }
-                        subInfos.add(subInfo);
-                    }
-                });
-                configVo.setSubInfo(subInfos);
-                list.add(configVo);
-            });
-            listConfigVo.setModules(list);
-            return WrapMapper.ok(listConfigVo);
+            ids = routes.stream().map(MasterRoute::getRouteId).collect(toList());
         }
-        return WrapMapper.error("暂无数据");
+        List<RouteConf> allRoutes = confMapper.getAllRoutes();
+        Map<String, List<RouteConf>> map = allRoutes.stream().collect(Collectors.groupingBy(RouteConf::getName));
+        List<String> names = map.keySet().stream().collect(toList());
+        for (String name : names) {
+            ListConfigVo.Modules configVo = new ListConfigVo.Modules();
+            List<ListConfigVo.Modules.SubInfo> subInfos = new ArrayList<>();
+            configVo.setModuleName(name);
+            for (RouteConf r : allRoutes) {
+                if (r.getName().equals(name)) {
+                    ListConfigVo.Modules.SubInfo subInfo = new ListConfigVo.Modules.SubInfo();
+                    subInfo.setId(r.getId());
+                    subInfo.setSubName(r.getSubName());
+                    if (ids != null && ids.contains(r.getId())) {
+                        subInfo.setState(1);
+                    } else {
+                        subInfo.setState(0);
+                    }
+                    subInfos.add(subInfo);
+                }
+            }
+            configVo.setSubInfo(subInfos);
+            list.add(configVo);
+        }
+        listConfigVo.setModules(list);
+        return WrapMapper.ok(listConfigVo);
     }
+
 
     @Override
     public Wrapper saveOrEditNode(SaveOrEditNodeDto saveOrEditNodeDto) {

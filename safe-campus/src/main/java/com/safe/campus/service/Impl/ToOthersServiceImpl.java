@@ -492,9 +492,9 @@ public class ToOthersServiceImpl implements ToOthersService {
     }
 
     @Override
-    public StudentCountVo getStudentCountByTeacherPhone(String tName, String phone) {
-        if (null != tName && null != phone) {
-            SchoolTeacher teacher = teacherMapper.selectOne(new QueryWrapper<SchoolTeacher>().eq("t_name", tName).eq("phone", phone));
+    public StudentCountVo getStudentCountByTeacherPhone(String tName, Long teacherId) {
+        if (null != tName && null != teacherId) {
+            SchoolTeacher teacher = teacherMapper.selectOne(new QueryWrapper<SchoolTeacher>().eq("t_name", tName).eq("id", teacherId));
             if (PublicUtil.isNotEmpty(teacher)) {
                 SchoolClassInfo info = classInfoMapper.selectOne(new QueryWrapper<SchoolClassInfo>().eq("t_id", teacher.getId()));
                 if (PublicUtil.isNotEmpty(info)) {
@@ -714,6 +714,35 @@ public class ToOthersServiceImpl implements ToOthersService {
                 }
             }
             return WrapMapper.ok(whiteListVo);
+        }
+        return WrapMapper.error("暂无数据");
+    }
+
+    @Override
+    public Wrapper<List<BuildingNoWithLevelVo>> getBuildingNoAndLevels(String schoolId) {
+        if (null != schoolId) {
+            List<BuildingNo> nos = noMapper.selectList(new QueryWrapper<BuildingNo>().eq("master_id", schoolId));
+            if (PublicUtil.isNotEmpty(nos)) {
+                List<BuildingNoWithLevelVo> list = new ArrayList<>();
+                nos.forEach(no -> {
+                    BuildingNoWithLevelVo vo = new BuildingNoWithLevelVo();
+                    vo.setId(no.getId());
+                    vo.setBuildingNo(no.getBuildingNo());
+                    List<BuildingLevel> levels = levelMapper.selectList(new QueryWrapper<BuildingLevel>().eq("building_no_id", no.getId()));
+                    if (PublicUtil.isNotEmpty(levels)) {
+                        List<BuildingNoWithLevelVo.BuildingLevels> levelsList = new ArrayList<>();
+                        levels.forEach(level -> {
+                            BuildingNoWithLevelVo.BuildingLevels buildingLevel = new BuildingNoWithLevelVo.BuildingLevels();
+                            buildingLevel.setId(level.getId());
+                            buildingLevel.setBuildingLevel(level.getBuildingLevel());
+                            levelsList.add(buildingLevel);
+                        });
+                        vo.setBuildingLevels(levelsList);
+                    }
+                    list.add(vo);
+                });
+                return WrapMapper.ok(list);
+            }
         }
         return WrapMapper.error("暂无数据");
     }

@@ -91,3 +91,4 @@ url:
     - /others/getAllTeachers
     - /others/getAllBuildings
     - /others/getPersonsByType
+    - /others/getBuildingNoAndLevels

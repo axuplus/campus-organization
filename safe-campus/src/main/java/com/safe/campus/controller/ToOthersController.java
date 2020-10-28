@@ -3,6 +3,7 @@ package com.safe.campus.controller;
 
 import com.safe.campus.about.utils.wrapper.BaseQueryDto;
 import com.safe.campus.about.utils.wrapper.PageWrapper;
+import com.safe.campus.about.utils.wrapper.WrapMapper;
 import com.safe.campus.about.utils.wrapper.Wrapper;
 import com.safe.campus.model.dto.OthersDto;
 import com.safe.campus.model.dto.STDto;
@@ -133,8 +134,8 @@ public class ToOthersController {
 
     @GetMapping("/getStudentCountByTeacherPhone")
     @ApiOperation(value = "获取学生统计")
-    public StudentCountVo getStudentCountByTeacherPhone(@RequestParam("tName") String tName, @RequestParam("phone") String phone) {
-        return toOthersService.getStudentCountByTeacherPhone(tName, phone);
+    public StudentCountVo getStudentCountByTeacherPhone(@RequestParam("tName") String tName, @RequestParam("teacherId") Long  teacherId) {
+        return toOthersService.getStudentCountByTeacherPhone(tName, teacherId);
     }
 
     @GetMapping("/getAllStudents")
@@ -152,18 +153,22 @@ public class ToOthersController {
 
     @GetMapping("getAllBuildings")
     @ApiOperation(value = "获取所有楼幢")
-    public Wrapper<List<BuildingClassVo>> getAllBuildings(@RequestParam("schoolId")Long schoolId){
+    public Wrapper<List<BuildingClassVo>> getAllBuildings(@RequestParam("schoolId") Long schoolId) {
         return toOthersService.getAllBuildings(schoolId);
     }
 
 
     @GetMapping("getPersonsByType")
     @ApiOperation(value = "获取学生或教师信息")
-    public Wrapper<WhiteListVo> getPersonsByType(@RequestParam("schoolId")Long schoolId,@ApiParam("0学生 1教师")@RequestParam("type")Integer type){
-        return toOthersService.getPersonsByType(schoolId,type);
+    public Wrapper<WhiteListVo> getPersonsByType(@RequestParam("schoolId") Long schoolId, @ApiParam("0学生 1教师") @RequestParam("type") Integer type) {
+        return toOthersService.getPersonsByType(schoolId, type);
     }
 
-
+    @GetMapping("getBuildingNoAndLevels")
+    @ApiOperation(value = "获取楼幢跟楼层")
+    public Wrapper<List<BuildingNoWithLevelVo>> getBuildingNoAndLevels(@RequestParam("schoolId") String schoolId) {
+        return toOthersService.getBuildingNoAndLevels(schoolId);
+    }
 
 
 }

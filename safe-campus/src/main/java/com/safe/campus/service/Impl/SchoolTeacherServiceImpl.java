@@ -9,10 +9,12 @@ import com.github.pagehelper.PageInfo;
 import com.safe.campus.about.dto.LoginAuthDto;
 import com.safe.campus.about.utils.*;
 import com.safe.campus.about.utils.wrapper.*;
+import com.safe.campus.config.ToDevicesUrlConfig;
 import com.safe.campus.enums.ErrorCodeEnum;
 import com.safe.campus.about.exception.BizException;
 import com.safe.campus.mapper.*;
 import com.safe.campus.model.domain.*;
+import com.safe.campus.model.dto.DeviceFace;
 import com.safe.campus.model.dto.SetRoleDto;
 import com.safe.campus.model.dto.TeacherExcelDto;
 import com.safe.campus.model.dto.TeacherInfoDto;
@@ -107,6 +109,17 @@ public class SchoolTeacherServiceImpl extends ServiceImpl<SchoolTeacherMapper, S
         teacher.setTNumber(teacherInfoDto.getTNumber());
         teacher.setCreatedUser(loginAuthDto.getUserId());
         teacherMapper.insert(teacher);
+        if (teacher.getImgId() != null) {
+            // 添加到device那边
+            DeviceFace deviceFace = new DeviceFace();
+            deviceFace.setImgPath(sysFileService.getFileById(teacher.getImgId()).getFileUrl());
+            deviceFace.setSchoolId(teacher.getMasterId().toString());
+            deviceFace.setUserId(teacher.getId().toString());
+            deviceFace.setUserName(teacher.getTName());
+            deviceFace.setUserType("T");
+            String save = HttpUtils.DO_POST(ToDevicesUrlConfig.ADD_TO_DEVICE, deviceFace.toString(), null, null);
+            logger.info("图片添加到设备成功 {}", save);
+        }
         return WrapMapper.ok("保存成功");
     }
 
@@ -144,7 +157,11 @@ public class SchoolTeacherServiceImpl extends ServiceImpl<SchoolTeacherMapper, S
                 }
                 SysAdmin adminUserByTId = adminUserMapper.getAdminUserByTId(teacher.getId());
                 if (PublicUtil.isNotEmpty(adminUserByTId)) {
-                    vo.setState(adminUserByTId.getState());
+                    if (1 == adminUserByTId.getState()) {
+                        vo.setState(-1);
+                    } else if (0 == adminUserByTId.getState()) {
+                        vo.setState(1);
+                    }
                     // 此教职工下面关联的账号
                     QueryWrapper<SysUserRole> userRoleQueryWrapper = new QueryWrapper<>();
                     userRoleQueryWrapper.eq("user_id", adminUserByTId.getId());
@@ -163,7 +180,7 @@ public class SchoolTeacherServiceImpl extends ServiceImpl<SchoolTeacherMapper, S
                         vo.setRoleInfos(roleInfos);
                     }
                 } else {
-                    vo.setState(-1);
+                    vo.setState(0);
                 }
                 list.add(vo);
             });
@@ -181,6 +198,11 @@ public class SchoolTeacherServiceImpl extends ServiceImpl<SchoolTeacherMapper, S
         QueryWrapper<SysAdmin> adminQueryWrapper = new QueryWrapper<>();
         adminQueryWrapper.eq("t_id", id);
         adminUserMapper.delete(adminQueryWrapper);
+        // 删除device那边
+        String url = ToDevicesUrlConfig.DELETE_TO_DEVICE + "?schoolId=" + teacherMapper.selectById(id).getMasterId()
+                + "&userId=" + id + "&userType=T";
+        String delete = HttpUtils.DO_DELETE(url, null, null);
+        logger.info("删除设备照片成功{}", delete);
         teacherMapper.deleteById(id);
         return WrapMapper.ok("删除成功");
     }
@@ -252,6 +274,17 @@ public class SchoolTeacherServiceImpl extends ServiceImpl<SchoolTeacherMapper, S
         teacher.setSex(teacherInfoDto.getSex());
         teacher.setTNumber(teacherInfoDto.getTNumber());
         updateById(teacher);
+        // 更新到device那边
+        if (null != teacher.getImgId()) {
+            DeviceFace deviceFace = new DeviceFace();
+            deviceFace.setImgPath(sysFileService.getFileById(teacher.getImgId()).getFileUrl());
+            deviceFace.setSchoolId(teacher.getMasterId().toString());
+            deviceFace.setUserId(teacher.getId().toString());
+            deviceFace.setUserName(teacher.getTName());
+            deviceFace.setUserType("T");
+            String update = HttpUtils.DO_POST(ToDevicesUrlConfig.UPDATE_TO_DEVICE, deviceFace.toString(), null, null);
+            logger.info("更新设备照片成功 {}", update);
+        }
         return WrapMapper.ok("修改成功");
     }
 
@@ -575,6 +608,15 @@ public class SchoolTeacherServiceImpl extends ServiceImpl<SchoolTeacherMapper, S
                         SysFileVo sysFileVo = sysFileService.fileUpload(multipartFile);
                         teacher.setImgId(sysFileVo.getId());
                         saveOrUpdate(teacher);
+                        // 添加到device那边
+                        DeviceFace deviceFace = new DeviceFace();
+                        deviceFace.setImgPath(sysFileService.getFileById(teacher.getImgId()).getFileUrl());
+                        deviceFace.setSchoolId(teacher.getMasterId().toString());
+                        deviceFace.setUserId(teacher.getId().toString());
+                        deviceFace.setUserName(teacher.getTName());
+                        deviceFace.setUserType("T");
+                        String save = HttpUtils.DO_POST(ToDevicesUrlConfig.ADD_TO_DEVICE, deviceFace.toString(), null, null);
+                        logger.info("图片添加到设备成功 {}", save);
                     }
                 }
                 return WrapMapper.ok();
@@ -613,6 +655,7 @@ public class SchoolTeacherServiceImpl extends ServiceImpl<SchoolTeacherMapper, S
                     sysAdmin.setAppSecret(StringUtils.getRandomString(13).toLowerCase());
                     sysAdmin.setLevel(3);
                     sysAdmin.setType(3);
+                    sysAdmin.setTId(teacher.getId());
                     sysAdmin.setMasterId(masterId);
                     sysAdmin.setCreateUser(loginAuthDto.getUserId());
                     adminUserMapper.insert(sysAdmin);

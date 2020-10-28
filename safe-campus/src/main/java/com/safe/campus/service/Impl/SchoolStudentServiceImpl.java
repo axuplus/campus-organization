@@ -7,21 +7,20 @@ import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.safe.campus.about.dto.LoginAuthDto;
 import com.safe.campus.about.exception.BizException;
-import com.safe.campus.about.utils.EasyExcelUtil;
-import com.safe.campus.about.utils.FileUtils;
-import com.safe.campus.about.utils.PathUtils;
+import com.safe.campus.about.utils.*;
 import com.safe.campus.about.utils.service.GobalInterface;
 import com.safe.campus.about.utils.wrapper.*;
+import com.safe.campus.config.ToDevicesUrlConfig;
 import com.safe.campus.enums.ErrorCodeEnum;
 import com.safe.campus.mapper.*;
 import com.safe.campus.model.domain.*;
 import com.safe.campus.model.dto.BuildingNoMapperDto;
+import com.safe.campus.model.dto.DeviceFace;
 import com.safe.campus.model.dto.SchoolStudentDto;
 import com.safe.campus.model.dto.StudentExcelDto;
 import com.safe.campus.model.vo.*;
 import com.safe.campus.service.BuildingService;
 import com.safe.campus.service.SchoolStudentService;
-import com.safe.campus.about.utils.PublicUtil;
 import com.safe.campus.service.SysFileService;
 import org.apache.http.entity.ContentType;
 import org.modelmapper.ModelMapper;
@@ -90,6 +89,17 @@ public class SchoolStudentServiceImpl extends ServiceImpl<SchoolStudentMapper, S
             map.setIsDelete(0);
             map.setCreatedUser(loginAuthDto.getUserId());
             studentMapper.insert(map);
+            if (null != map.getImgId()) {
+                // 添加到device那边
+                DeviceFace deviceFace = new DeviceFace();
+                deviceFace.setImgPath(sysFileService.getFileById(map.getImgId()).getFileUrl());
+                deviceFace.setSchoolId(map.getMasterId().toString());
+                deviceFace.setUserId(map.getId().toString());
+                deviceFace.setUserName(map.getSName());
+                deviceFace.setUserType("S");
+                String save = HttpUtils.DO_POST(ToDevicesUrlConfig.ADD_TO_DEVICE, deviceFace.toString(), null, null);
+                logger.info("图片添加到设备成功 {}", save);
+            }
             if (PublicUtil.isNotEmpty(dto.getLivingInfo())) {
                 SchoolStudentDto.LivingInfo dtoLivingInfo = dto.getLivingInfo();
                 if (0 != dtoLivingInfo.getBedId() && null != dtoLivingInfo.getBedId()) {
@@ -139,12 +149,28 @@ public class SchoolStudentServiceImpl extends ServiceImpl<SchoolStudentMapper, S
     public Wrapper editStudent(SchoolStudentDto dto) {
         SchoolStudent map = new ModelMapper().map(dto, SchoolStudent.class);
         studentMapper.updateById(map);
+        // 更新到device那边
+        if (null != map.getImgId()) {
+            DeviceFace deviceFace = new DeviceFace();
+            deviceFace.setImgPath(sysFileService.getFileById(map.getImgId()).getFileUrl());
+            deviceFace.setSchoolId(map.getMasterId().toString());
+            deviceFace.setUserId(map.getId().toString());
+            deviceFace.setUserName(map.getSName());
+            deviceFace.setUserType("S");
+            String update = HttpUtils.DO_POST(ToDevicesUrlConfig.UPDATE_TO_DEVICE, deviceFace.toString(), null, null);
+            logger.info("更新设备照片成功 {}", update);
+        }
         return WrapMapper.ok("修改成功");
     }
 
     @Override
     public Wrapper deleteStudent(Long id) {
         if (null != id) {
+            // 删除device那边
+            String url = ToDevicesUrlConfig.DELETE_TO_DEVICE + "?schoolId=" + studentMapper.selectById(id).getMasterId()
+                    + "&userId=" + id + "&userType=S";
+            String delete = HttpUtils.DO_DELETE(url, null, null);
+            logger.info("删除设备照片成功{}", delete);
             studentMapper.deleteById(id);
             return WrapMapper.ok("删除成功");
         }
@@ -351,6 +377,15 @@ public class SchoolStudentServiceImpl extends ServiceImpl<SchoolStudentMapper, S
                         SysFileVo sysFileVo = sysFileService.fileUpload(multipartFile);
                         student.setImgId(sysFileVo.getId());
                         saveOrUpdate(student);
+                        // 添加到device那边
+                        DeviceFace deviceFace = new DeviceFace();
+                        deviceFace.setImgPath(sysFileService.getFileById(student.getImgId()).getFileUrl());
+                        deviceFace.setSchoolId(student.getMasterId().toString());
+                        deviceFace.setUserId(student.getId().toString());
+                        deviceFace.setUserName(student.getSName());
+                        deviceFace.setUserType("S");
+                        String save = HttpUtils.DO_POST(ToDevicesUrlConfig.ADD_TO_DEVICE, deviceFace.toString(), null, null);
+                        logger.info("图片添加到设备成功 {}", save);
                     }
                 }
             } catch (Exception e) {
