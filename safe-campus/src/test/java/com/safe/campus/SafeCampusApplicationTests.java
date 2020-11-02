@@ -67,4 +67,11 @@ class SafeCampusApplicationTests {
             System.out.println("score = " + score);
         });
     }
+
+
+    @Test
+    public void test5() {
+        int i = 7 / 2;
+        System.out.println("i = " + i);
+    }
 }

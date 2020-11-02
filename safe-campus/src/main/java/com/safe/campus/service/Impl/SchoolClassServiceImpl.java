@@ -9,8 +9,10 @@ import com.safe.campus.about.utils.wrapper.*;
 import com.safe.campus.mapper.SchoolClassInfoMapper;
 import com.safe.campus.mapper.SchoolClassMapper;
 import com.safe.campus.mapper.SchoolSectionMapper;
+import com.safe.campus.mapper.SchoolStudentMapper;
 import com.safe.campus.model.domain.SchoolClass;
 import com.safe.campus.model.domain.SchoolClassInfo;
+import com.safe.campus.model.domain.SchoolStudent;
 import com.safe.campus.model.domain.SchoolTeacher;
 import com.safe.campus.model.dto.SchoolClassDto;
 import com.safe.campus.model.vo.*;
@@ -55,6 +57,9 @@ public class SchoolClassServiceImpl extends ServiceImpl<SchoolClassMapper, Schoo
 
     @Autowired
     private SchoolSectionMapper sectionMapper;
+
+    @Autowired
+    private SchoolStudentMapper studentMapper;
 
 
     @Override
@@ -130,6 +135,9 @@ public class SchoolClassServiceImpl extends ServiceImpl<SchoolClassMapper, Schoo
                 }
                 schoolClassMapper.deleteById(id);
             } else if (2 == type) {
+                if (PublicUtil.isNotEmpty(studentMapper.selectList(new QueryWrapper<SchoolStudent>().eq("class_info_id", id)))) {
+                    return WrapMapper.error("此班级下面还有学生");
+                }
                 schoolClassInfoMapper.deleteById(id);
             }
             return WrapMapper.ok("删除成功");
@@ -282,7 +290,7 @@ public class SchoolClassServiceImpl extends ServiceImpl<SchoolClassMapper, Schoo
             }
             return WrapMapper.ok(treeVos);
         }
-        return null;
+        return WrapMapper.ok();
     }
 
     @Override

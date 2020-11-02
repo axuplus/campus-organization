@@ -29,7 +29,7 @@ public interface ToOthersService {
 
     Map getStudentTeacherByIdNumber(String idNumber);
 
-    FaceImgInfoVo getFaceImgInfo(String type, Long id);
+    Wrapper<FaceImgInfoVo> getFaceImgInfo(String type, Long id);
 
     OthersTeacherVo getTeacherForMiniApp(String idNumber);
 
@@ -37,11 +37,11 @@ public interface ToOthersService {
 
     STDto getStudentAndTeacherInfo(Integer type, Long id);
 
-    Map getBuildingInfoList( Long masterId,Integer type, Long id);
+    Wrapper<Map> getBuildingInfoList( Long masterId,Integer type, Long id);
 
     PageWrapper<List<BuildingInfoListRoomVo>> getBuildingInfoListByIds(Long masterId, Integer type, Long id, BaseQueryDto baseQueryDto);
 
-    BuildingInfoListBedVo getStudentsByRoom(Long roomId);
+    Wrapper<BuildingInfoListBedVo> getStudentsByRoom(Long roomId);
 
     List<Object> getStudentsOrTeachersByType(Long masterId, Integer type);
 

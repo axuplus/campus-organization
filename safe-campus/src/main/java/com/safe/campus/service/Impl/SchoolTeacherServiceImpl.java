@@ -1,11 +1,11 @@
 package com.safe.campus.service.Impl;
 
 import com.alibaba.excel.support.ExcelTypeEnum;
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
-import com.github.pagehelper.PageInfo;
 import com.safe.campus.about.dto.LoginAuthDto;
 import com.safe.campus.about.utils.*;
 import com.safe.campus.about.utils.wrapper.*;
@@ -14,7 +14,7 @@ import com.safe.campus.enums.ErrorCodeEnum;
 import com.safe.campus.about.exception.BizException;
 import com.safe.campus.mapper.*;
 import com.safe.campus.model.domain.*;
-import com.safe.campus.model.dto.DeviceFace;
+import com.safe.campus.model.vo.DeviceFaceVO;
 import com.safe.campus.model.dto.SetRoleDto;
 import com.safe.campus.model.dto.TeacherExcelDto;
 import com.safe.campus.model.dto.TeacherInfoDto;
@@ -37,7 +37,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.*;
 import java.nio.charset.Charset;
-import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
@@ -111,13 +110,13 @@ public class SchoolTeacherServiceImpl extends ServiceImpl<SchoolTeacherMapper, S
         teacherMapper.insert(teacher);
         if (teacher.getImgId() != null) {
             // 添加到device那边
-            DeviceFace deviceFace = new DeviceFace();
+            DeviceFaceVO deviceFace = new DeviceFaceVO();
             deviceFace.setImgPath(sysFileService.getFileById(teacher.getImgId()).getFileUrl());
             deviceFace.setSchoolId(teacher.getMasterId().toString());
             deviceFace.setUserId(teacher.getId().toString());
             deviceFace.setUserName(teacher.getTName());
             deviceFace.setUserType("T");
-            String save = HttpUtils.DO_POST(ToDevicesUrlConfig.ADD_TO_DEVICE, deviceFace.toString(), null, null);
+            String save = HttpUtils.DO_POST(ToDevicesUrlConfig.ADD_TO_DEVICE, JSON.toJSONString(deviceFace), null, null);
             logger.info("图片添加到设备成功 {}", save);
         }
         return WrapMapper.ok("保存成功");
@@ -276,13 +275,13 @@ public class SchoolTeacherServiceImpl extends ServiceImpl<SchoolTeacherMapper, S
         updateById(teacher);
         // 更新到device那边
         if (null != teacher.getImgId()) {
-            DeviceFace deviceFace = new DeviceFace();
+            DeviceFaceVO deviceFace = new DeviceFaceVO();
             deviceFace.setImgPath(sysFileService.getFileById(teacher.getImgId()).getFileUrl());
             deviceFace.setSchoolId(teacher.getMasterId().toString());
             deviceFace.setUserId(teacher.getId().toString());
             deviceFace.setUserName(teacher.getTName());
             deviceFace.setUserType("T");
-            String update = HttpUtils.DO_POST(ToDevicesUrlConfig.UPDATE_TO_DEVICE, deviceFace.toString(), null, null);
+            String update = HttpUtils.DO_POST(ToDevicesUrlConfig.UPDATE_TO_DEVICE, JSON.toJSONString(deviceFace), null, null);
             logger.info("更新设备照片成功 {}", update);
         }
         return WrapMapper.ok("修改成功");
@@ -609,13 +608,14 @@ public class SchoolTeacherServiceImpl extends ServiceImpl<SchoolTeacherMapper, S
                         teacher.setImgId(sysFileVo.getId());
                         saveOrUpdate(teacher);
                         // 添加到device那边
-                        DeviceFace deviceFace = new DeviceFace();
+                        DeviceFaceVO deviceFace = new DeviceFaceVO();
                         deviceFace.setImgPath(sysFileService.getFileById(teacher.getImgId()).getFileUrl());
                         deviceFace.setSchoolId(teacher.getMasterId().toString());
                         deviceFace.setUserId(teacher.getId().toString());
                         deviceFace.setUserName(teacher.getTName());
                         deviceFace.setUserType("T");
-                        String save = HttpUtils.DO_POST(ToDevicesUrlConfig.ADD_TO_DEVICE, deviceFace.toString(), null, null);
+                        System.out.println("JSON.toJSONString(deviceFace) = " + JSON.toJSONString(deviceFace));
+                        String save = HttpUtils.DO_POST(ToDevicesUrlConfig.ADD_TO_DEVICE, JSON.toJSONString(deviceFace), null, null);
                         logger.info("图片添加到设备成功 {}", save);
                     }
                 }

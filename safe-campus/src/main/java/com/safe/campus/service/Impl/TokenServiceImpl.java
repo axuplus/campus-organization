@@ -124,8 +124,11 @@ public class TokenServiceImpl extends ServiceImpl<SysAdminUserMapper, SysAdmin> 
                 QueryWrapper<MasterRoute> routeQueryWrapper = new QueryWrapper<>();
                 routeQueryWrapper.eq("master_id", sysAdmin.getMasterId());
                 List<MasterRoute> masterRoutes = routeMapper.selectList(routeQueryWrapper);
-                List<Long> ids = masterRoutes.stream().map(MasterRoute::getRouteId).collect(Collectors.toList());
-                confVo.setConfs(confMapper.selectBatchIds(ids));
+                if (PublicUtil.isNotEmpty(masterRoutes)) {
+                    List<Long> ids = masterRoutes.stream().map(MasterRoute::getRouteId).collect(Collectors.toList());
+                    System.out.println("ids = " + ids);
+                    confVo.setConfs(confMapper.selectBatchIds(ids));
+                }
             }
             return WrapMapper.ok(confVo);
         }

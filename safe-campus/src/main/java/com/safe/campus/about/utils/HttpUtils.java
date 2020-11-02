@@ -1,5 +1,7 @@
 package com.safe.campus.about.utils;
 
+import cn.hutool.http.HttpRequest;
+import cn.hutool.http.HttpUtil;
 import org.apache.http.HttpEntity;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.CookieStore;
@@ -15,6 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -141,7 +144,7 @@ public class HttpUtils {
                 }
             }
             // 组织请求参数
-            StringEntity stringEntity = new StringEntity(stringJson);
+            StringEntity stringEntity = new StringEntity(stringJson, encode);
             httpost.setEntity(stringEntity);
             String content = null;
             // 响应信息

@@ -24,6 +24,7 @@ public class FaceImgInfoVo {
     @Data
     public static class TeacherInfo {
         private Long id;
+        private String img;
         private String teacherName;
         private String tNumber;
         private String sectionName;

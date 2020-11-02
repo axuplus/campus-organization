@@ -1,9 +1,11 @@
 package com.safe.campus.service.Impl;
 
-import com.alibaba.druid.sql.visitor.functions.If;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+import com.safe.campus.about.utils.HttpUtils;
 import com.safe.campus.about.utils.PublicUtil;
 import com.safe.campus.about.utils.wrapper.*;
 import com.safe.campus.mapper.*;
@@ -12,16 +14,16 @@ import com.safe.campus.model.dto.*;
 import com.safe.campus.model.vo.*;
 import com.safe.campus.service.SysFileService;
 import com.safe.campus.service.ToOthersService;
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-
 import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
 public class ToOthersServiceImpl implements ToOthersService {
+
+    public static final String GET_STATE = "http://47.111.229.199:8890/info/getStateByUserId";
+
 
     @Autowired
     private SchoolMasterMapper schoolMaster;
@@ -214,7 +216,7 @@ public class ToOthersServiceImpl implements ToOthersService {
     }
 
     @Override
-    public FaceImgInfoVo getFaceImgInfo(String type, Long id) {
+    public Wrapper<FaceImgInfoVo> getFaceImgInfo(String type, Long id) {
         FaceImgInfoVo infoVo = new FaceImgInfoVo();
         if ("S".equals(type)) {
             infoVo.setState(1);
@@ -235,7 +237,7 @@ public class ToOthersServiceImpl implements ToOthersService {
                 studentInfo.setImg(sysFileService.getFileById(student.getImgId()).getFileUrl());
             }
             infoVo.setStudentInfo(studentInfo);
-            return infoVo;
+            return WrapMapper.ok(infoVo);
         } else if ("T".equals(type)) {
             infoVo.setState(2);
             FaceImgInfoVo.TeacherInfo teacherInfo = new FaceImgInfoVo.TeacherInfo();
@@ -246,8 +248,11 @@ public class ToOthersServiceImpl implements ToOthersService {
             }
             teacherInfo.setTeacherName(teacher.getTName());
             teacherInfo.setSectionName(sectionMapper.selectById(teacher.getSectionId()).getSectionName());
+            if (teacher.getImgId() != null) {
+                teacherInfo.setImg(sysFileService.getFileById(teacher.getImgId()).getFileUrl());
+            }
             infoVo.setTeacherInfo(teacherInfo);
-            return infoVo;
+            return WrapMapper.ok(infoVo);
         }
         return null;
     }
@@ -355,22 +360,22 @@ public class ToOthersServiceImpl implements ToOthersService {
     }
 
     @Override
-    public Map getBuildingInfoList(Long masterId, Integer type, Long id) {
+    public Wrapper<Map> getBuildingInfoList(Long masterId, Integer type, Long id) {
         if (null != masterId) {
             if (null == type || 1 == type) {
                 List<BuildingNo> list = noMapper.selectList(new QueryWrapper<BuildingNo>().eq("master_id", masterId));
                 if (PublicUtil.isNotEmpty(list)) {
-                    return list.stream().collect(Collectors.toMap(BuildingNo::getId, BuildingNo::getBuildingNo));
+                    return WrapMapper.ok(list.stream().collect(Collectors.toMap(BuildingNo::getId, BuildingNo::getBuildingNo)));
                 }
             } else if (2 == type && null != id) {
                 List<BuildingLevel> list = levelMapper.selectList(new QueryWrapper<BuildingLevel>().eq("building_no_id", id));
                 if (PublicUtil.isNotEmpty(list)) {
-                    return list.stream().collect(Collectors.toMap(BuildingLevel::getId, BuildingLevel::getBuildingLevel));
+                    return WrapMapper.ok(list.stream().collect(Collectors.toMap(BuildingLevel::getId, BuildingLevel::getBuildingLevel)));
                 }
             } else if (3 == type && null != id) {
                 List<BuildingRoom> list = roomMapper.selectList(new QueryWrapper<BuildingRoom>().eq("building_level_id", id));
                 if (PublicUtil.isNotEmpty(list)) {
-                    return list.stream().collect(Collectors.toMap(BuildingRoom::getId, BuildingRoom::getBuildingRoom));
+                    return WrapMapper.ok(list.stream().collect(Collectors.toMap(BuildingRoom::getId, BuildingRoom::getBuildingRoom)));
                 }
             }
         }
@@ -411,7 +416,7 @@ public class ToOthersServiceImpl implements ToOthersService {
     }
 
     @Override
-    public BuildingInfoListBedVo getStudentsByRoom(Long roomId) {
+    public Wrapper<BuildingInfoListBedVo> getStudentsByRoom(Long roomId) {
         if (null != roomId) {
             BuildingInfoListBedVo vo = new BuildingInfoListBedVo();
             List<BuildingRoomDto> dtos = roomMapper.selectByRoomId(roomId);
@@ -439,14 +444,24 @@ public class ToOthersServiceImpl implements ToOthersService {
                                 bed.setTeacherInfo(teacher.getTName() + "/" + teacher.getPhone());
                             }
                         }
+                        String doGet = HttpUtils.DO_GET(GET_STATE + "?userId=" + student.getId(), null, null);
+                        System.out.println("doGet = " + doGet);
+                        if (null != doGet && !"".equals(doGet)) {
+                            Map map = new Gson().fromJson(doGet, new TypeToken<Map<String, String>>() {
+                            }.getType());
+                            bed.setState(Integer.valueOf(map.get("state").toString()));
+                            String time = map.get("time").toString().replaceAll("T", " ").substring(0, 19);
+                            bed.setTime(time);
+                            bed.setEquipmentName(map.get("equipmentName").toString());
+                        }
                     }
                     vos.add(bed);
                 });
                 vo.setBeds(vos);
-                return vo;
+                return WrapMapper.ok(vo);
             }
         }
-        return null;
+        return WrapMapper.error("暂无数据");
     }
 
     @Override

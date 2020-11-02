@@ -1,9 +1,9 @@
-package com.safe.campus.model.dto;
+package com.safe.campus.model.vo;
 
 import lombok.Data;
 
 @Data
-public class DeviceFace {
+public class DeviceFaceVO {
 
     private String imgPath;
     private String schoolId;

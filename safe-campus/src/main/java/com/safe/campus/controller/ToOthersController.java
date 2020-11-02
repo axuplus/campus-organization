@@ -82,7 +82,7 @@ public class ToOthersController {
 
     @GetMapping("/getFaceImgInfo")
     @ApiOperation(value = "人脸库人员信息")
-    public FaceImgInfoVo getFaceImgInfo(@ApiParam("S T") @RequestParam("type") String type, @RequestParam("id") Long id) {
+    public Wrapper<FaceImgInfoVo> getFaceImgInfo(@ApiParam("S T") @RequestParam("type") String type, @RequestParam("id") Long id) {
         return toOthersService.getFaceImgInfo(type, id);
     }
 
@@ -101,7 +101,7 @@ public class ToOthersController {
 
     @GetMapping("/selectBuildingList")
     @ApiOperation(value = "获取楼幢或楼层或宿舍下拉列表")
-    public Map getBuildingInfoList(@ApiParam("学校id(必传)") @RequestParam(value = "masterId") Long masterId, @ApiParam("1 选择楼幢 2 楼层 3 宿舍") @RequestParam("type") Integer type, @RequestParam(value = "id", required = false) Long id) {
+    public Wrapper<Map> getBuildingInfoList(@ApiParam("学校id(必传)") @RequestParam(value = "masterId") Long masterId, @ApiParam("1 选择楼幢 2 楼层 3 宿舍") @RequestParam("type") Integer type, @RequestParam(value = "id", required = false) Long id) {
         return toOthersService.getBuildingInfoList(masterId, type, id);
     }
 
@@ -116,7 +116,7 @@ public class ToOthersController {
 
     @GetMapping("/getStudentsByRoom")
     @ApiOperation(value = "获取宿舍人员")
-    public BuildingInfoListBedVo getStudentsByRoom(@RequestParam("roomId") Long roomId) {
+    public Wrapper<BuildingInfoListBedVo> getStudentsByRoom(@RequestParam("roomId") Long roomId) {
         return toOthersService.getStudentsByRoom(roomId);
     }
 
@@ -134,7 +134,7 @@ public class ToOthersController {
 
     @GetMapping("/getStudentCountByTeacherPhone")
     @ApiOperation(value = "获取学生统计")
-    public StudentCountVo getStudentCountByTeacherPhone(@RequestParam("tName") String tName, @RequestParam("teacherId") Long  teacherId) {
+    public StudentCountVo getStudentCountByTeacherPhone(@RequestParam("tName") String tName, @RequestParam("teacherId") Long teacherId) {
         return toOthersService.getStudentCountByTeacherPhone(tName, teacherId);
     }
 

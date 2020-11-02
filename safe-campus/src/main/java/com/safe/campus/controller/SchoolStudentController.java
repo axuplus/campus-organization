@@ -5,8 +5,11 @@ import com.safe.campus.about.annotation.Permission;
 import com.safe.campus.about.annotation.PermissionType;
 import com.safe.campus.about.controller.BaseController;
 import com.safe.campus.about.dto.LoginAuthDto;
+import com.safe.campus.about.utils.service.GobalInterface;
 import com.safe.campus.about.utils.wrapper.BaseQueryDto;
 import com.safe.campus.about.utils.wrapper.PageWrapper;
+import com.safe.campus.mapper.BuildingBedMapper;
+import com.safe.campus.model.domain.BuildingBed;
 import com.safe.campus.model.dto.SchoolStudentDto;
 import com.safe.campus.model.vo.SchoolClassStudentVo;
 import com.safe.campus.model.vo.SchoolStudentBuildingVo;
@@ -44,6 +47,7 @@ public class SchoolStudentController extends BaseController {
 
     @Autowired
     private SchoolStudentService schoolStudentService;
+
 
 
     @Permission(url = qxurl, type = PermissionType.ADD)

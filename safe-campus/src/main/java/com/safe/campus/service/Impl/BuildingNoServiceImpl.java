@@ -619,7 +619,7 @@ public class BuildingNoServiceImpl extends ServiceImpl<BuildingNoMapper, Buildin
             });
             return WrapMapper.ok(list);
         }
-        return null;
+        return WrapMapper.ok();
     }
 
 
