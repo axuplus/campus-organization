@@ -14,6 +14,7 @@ import com.safe.campus.model.vo.SchoolStudentVo;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 /**
  * <p>
@@ -41,7 +42,7 @@ public interface SchoolStudentService extends IService<SchoolStudent> {
 
     List<SchoolStudent> getAllIdsByName(String context);
 
-    Wrapper importSchoolConcentrator(Long masterId,MultipartFile file,  LoginAuthDto loginAuthDto);
+    Wrapper importSchoolConcentrator(Long masterId,MultipartFile file,  LoginAuthDto loginAuthDto) throws ExecutionException, InterruptedException, Exception;
 
     Wrapper importStudentPictureConcentrator(Long masterId,MultipartFile file, LoginAuthDto loginAuthDto);
 
