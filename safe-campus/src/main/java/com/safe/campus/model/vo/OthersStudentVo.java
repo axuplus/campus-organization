@@ -12,4 +12,6 @@ public class OthersStudentVo {
     private String classInfoName;
     private String sNumber;
     private Integer type;
+    private Long masterId;
+    private Long classId;
 }

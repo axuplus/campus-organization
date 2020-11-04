@@ -16,6 +16,7 @@ import com.safe.campus.service.SysFileService;
 import com.safe.campus.service.ToOthersService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -186,11 +187,13 @@ public class ToOthersServiceImpl implements ToOthersService {
             }
             if (null != student.getClassId()) {
                 studentVo.setClassName(classMapper.selectById(student.getClassId()).getClassName());
+                studentVo.setClassId(student.getClassId());
             }
             if (null != student.getClassInfoId()) {
                 studentVo.setClassInfoName(classInfoMapper.selectById(student.getClassInfoId()).getClassInfoName());
             }
             studentVo.setSchoolName(schoolMaster.selectById(student.getMasterId()).getAreaName());
+            studentVo.setMasterId(student.getMasterId());
             return studentVo;
         }
         return null;
