@@ -246,7 +246,7 @@ public class SchoolStudentServiceImpl extends ServiceImpl<SchoolStudentMapper, S
                     .collect(Collectors.toList());
             if (null != result && !result.isEmpty()) {
                 List<StudentExcelDto> same = list.stream().filter(e -> result.contains(e.getIdNumber())).collect(Collectors.toList());
-                return WrapMapper.wrap(200, "身份证号码有重复", same);
+                return WrapMapper.wrap(400, "身份证号码有重复", same);
             }
             // 检查床位
             List<StudentExcelDto> errorDtos = new ArrayList<>();
@@ -272,10 +272,10 @@ public class SchoolStudentServiceImpl extends ServiceImpl<SchoolStudentMapper, S
                 }
             }
             if (PublicUtil.isNotEmpty(errorDtos)) {
-                return WrapMapper.wrap(200, "学生住宿信息不存在", errorDtos);
+                return WrapMapper.wrap(400, "学生住宿信息不存在", errorDtos);
             }
             if (PublicUtil.isNotEmpty(errorBeds)) {
-                return WrapMapper.wrap(200, "此床位已有学生", errorBeds);
+                return WrapMapper.wrap(400, "此床位已有学生", errorBeds);
             }
             QueryWrapper<SchoolStudent> studentQueryWrapper = new QueryWrapper<>();
             studentQueryWrapper.eq("master_id", masterId);
