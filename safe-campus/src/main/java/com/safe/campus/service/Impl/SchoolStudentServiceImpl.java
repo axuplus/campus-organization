@@ -197,6 +197,7 @@ public class SchoolStudentServiceImpl extends ServiceImpl<SchoolStudentMapper, S
                     SchoolStudentListVo listVo = new SchoolStudentListVo();
                     listVo.setId(s.getId());
                     listVo.setIdNumber(s.getIdNumber());
+                    listVo.setSName(s.getSName());
                     listVo.setSNumber(s.getSNumber());
                     if (null != s.getClassId()) {
                         listVo.setClassName(classMapper.selectById(s.getClassId()).getClassName());

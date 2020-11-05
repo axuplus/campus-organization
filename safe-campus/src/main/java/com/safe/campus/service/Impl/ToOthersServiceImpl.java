@@ -79,7 +79,7 @@ public class ToOthersServiceImpl implements ToOthersService {
 
     @Override
     public Wrapper<Map<Long, String>> getAllClassesByMasterId(Long masterId) {
-        List<SchoolClass> classes = classMapper.selectList(new QueryWrapper<SchoolClass>().eq("master_id", masterId));
+        List<SchoolClass> classes = classMapper.selectList(new QueryWrapper<SchoolClass>().eq("master_id", masterId).orderByDesc("id"));
         if (PublicUtil.isNotEmpty(classes)) {
             return WrapMapper.ok(classes.stream().collect(Collectors.toMap(SchoolClass::getId, SchoolClass::getClassName)));
         }
