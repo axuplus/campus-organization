@@ -6,6 +6,7 @@ import com.safe.campus.about.dto.LoginAuthDto;
 import com.safe.campus.about.utils.wrapper.Wrapper;
 import com.safe.campus.model.dto.*;
 import com.safe.campus.model.vo.ListConfigVo;
+import com.safe.campus.model.vo.SchoolMasterListVo;
 import com.safe.campus.service.SchoolMasterService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -62,9 +63,15 @@ public class SchoolMasterController extends BaseController {
         return masterService.listSchool(loginAuthDto);
     }
 
+    @GetMapping("/search")
+    @ApiOperation("搜索")
+    public Wrapper<List<SchoolMasterListVo>> searchSchool(@ApiParam("1名称搜索 2 rootId搜索")@RequestParam("type") Integer type, @RequestParam(value = "masterName",required = false) String masterName, @RequestParam(value = "rootId",required = false) Long rootId) {
+        return masterService.searchSchool(type,masterName,rootId);
+    }
+
     @PostMapping("/saveOrEditNode")
     @ApiOperation("添加节点")
-    public Wrapper saveOrEditNode(@RequestBody  SaveOrEditNodeDto saveOrEditNodeDto) {
+    public Wrapper saveOrEditNode(@RequestBody SaveOrEditNodeDto saveOrEditNodeDto) {
         LoginAuthDto loginAuthDto = getLoginAuthDto();
         return masterService.saveOrEditNode(saveOrEditNodeDto);
     }
@@ -135,8 +142,9 @@ public class SchoolMasterController extends BaseController {
 
     @GetMapping("/getIntroduction")
     @ApiOperation("获取校园简介")
-    public Wrapper<SchoolIntroductionDto> getIntroduction(@RequestParam("masterId")Long masterId) {
+    public Wrapper<SchoolIntroductionDto> getIntroduction(@RequestParam("masterId") Long masterId) {
         return masterService.getIntroduction(masterId);
     }
+
 
 }

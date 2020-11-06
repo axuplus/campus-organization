@@ -5,6 +5,7 @@ import com.safe.campus.about.dto.LoginAuthDto;
 import com.safe.campus.about.utils.wrapper.Wrapper;
 import com.safe.campus.model.domain.SchoolMaster;
 import com.safe.campus.model.dto.*;
+import com.safe.campus.model.vo.SchoolMasterListVo;
 
 import java.util.List;
 
@@ -45,9 +46,9 @@ public interface SchoolMasterService extends IService<SchoolMaster> {
 
     Wrapper saveOrEditNode(SaveOrEditNodeDto saveOrEditNodeDto);
 
-
     Wrapper saveOrEditIntroduction(SchoolIntroductionDto schoolIntroductionDto);
 
-
     Wrapper<SchoolIntroductionDto> getIntroduction(Long masterId);
+
+    Wrapper<List<SchoolMasterListVo>> searchSchool(Integer type,String masterName,Long rootId);
 }

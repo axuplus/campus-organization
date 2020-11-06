@@ -156,7 +156,7 @@ public class SchoolMasterServiceImpl extends ServiceImpl<SchoolMasterMapper, Sch
 
     @Override
     public Wrapper listSchool(LoginAuthDto loginAuthDto) {
-        List<SchoolMaster> masters = masterMapper.getSchoolMater();
+        List<SchoolMaster> masters = masterMapper.selectList(new QueryWrapper<SchoolMaster>().orderByDesc("created_time"));
         if (PublicUtil.isNotEmpty(masters)) {
             List<SchoolMasterListVo> vos = new ArrayList<>();
             for (SchoolMaster master : masters) {
@@ -342,6 +342,35 @@ public class SchoolMasterServiceImpl extends ServiceImpl<SchoolMasterMapper, Sch
                 dto.setImgs(JSON.parseArray(schoolMaster.getImgs(), String.class));
                 return WrapMapper.ok(dto);
             }
+        }
+        return WrapMapper.error("暂无数据");
+    }
+
+    @Override
+    public Wrapper<List<SchoolMasterListVo>> searchSchool(Integer type, String masterName, Long rootId) {
+        List<SchoolMaster> list = null;
+        if (1 == type) {
+            list = masterMapper.selectList(new QueryWrapper<SchoolMaster>().like("area_name", masterName));
+        } else if (2 == type) {
+            list = masterMapper.selectList(new QueryWrapper<SchoolMaster>().eq("root_id", rootId));
+        }
+        if (PublicUtil.isNotEmpty(list)) {
+            List<SchoolMasterListVo> vos = new ArrayList<>();
+            for (SchoolMaster master : list) {
+                SchoolMasterListVo vo = new SchoolMasterListVo();
+                vo.setId(master.getId());
+                vo.setSchoolName(master.getAreaName());
+                SchoolMasterDto.ServiceTime serviceTime = new Gson().fromJson(master.getServiceTime(), SchoolMasterDto.ServiceTime.class);
+                vo.setEndTime(serviceTime.getEndTime());
+                vo.setState(master.getState());
+                QueryWrapper<SysAdmin> queryWrapper = new QueryWrapper<>();
+                queryWrapper.eq("master_id", master.getId()).eq("level", 2).eq("type", 2);
+                SysAdmin admin = userMapper.selectOne(queryWrapper);
+                vo.setAccount(admin.getUserName());
+                vo.setAppKey(admin.getAppKey());
+                vos.add(vo);
+            }
+            return WrapMapper.ok(vos);
         }
         return WrapMapper.error("暂无数据");
     }
