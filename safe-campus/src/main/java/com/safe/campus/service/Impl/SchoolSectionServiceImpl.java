@@ -132,9 +132,9 @@ public class SchoolSectionServiceImpl extends ServiceImpl<SchoolSectionMapper, S
             SchoolSectionVo vo = new SchoolSectionVo();
             vo.setSectionId(schoolSection.getId());
             vo.setSectionName(schoolSection.getSectionName());
-            if(0 != schoolSection.getPId()) {
+            if (0 != schoolSection.getPId()) {
                 vo.setPreSectionName(schoolSectionMapper.selectById(schoolSection.getPId()).getSectionName());
-            }else {
+            } else {
                 vo.setPreSectionName(masterMapper.selectById(schoolSection.getMasterId()).getAreaName());
             }
             if (null != schoolSection.getTId()) {
@@ -256,7 +256,7 @@ public class SchoolSectionServiceImpl extends ServiceImpl<SchoolSectionMapper, S
             return PageWrapMapper.wrap(200, "搜索参数不能为空");
         }
         QueryWrapper<SchoolSection> queryWrapper = new QueryWrapper<>();
-        queryWrapper.like("section_name", name);
+        queryWrapper.eq("master_id", masterId).like("section_name", name);
         Page page = PageHelper.startPage(baseQueryDto.getPage(), baseQueryDto.getPage_size());
         List<SchoolSection> list = schoolSectionMapper.selectList(queryWrapper);
         Long total = page.getTotal();
