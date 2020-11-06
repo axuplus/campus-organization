@@ -1,5 +1,6 @@
 package com.safe.campus.service.Impl;
 
+import com.alibaba.druid.sql.visitor.functions.If;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -135,12 +136,17 @@ public class SchoolMasterServiceImpl extends ServiceImpl<SchoolMasterMapper, Sch
     @Override
     public Wrapper editSchool(LoginAuthDto loginAuthDto, SchoolMasterDto schoolMasterDto) {
         if (PublicUtil.isNotEmpty(schoolMasterDto)) {
-            SchoolMaster master = new SchoolMaster();
-            master.setId(schoolMasterDto.getId());
-            master.setAddress(schoolMasterDto.getAddress());
+            SchoolMaster master = masterMapper.selectById(schoolMasterDto.getId());
+            if (null != schoolMasterDto.getAddress() && !"".equals(schoolMasterDto.getAddress())) {
+                master.setAddress(schoolMasterDto.getAddress());
+            }
             master.setAreaName(schoolMasterDto.getSchoolName());
-            master.setLogo(schoolMasterDto.getLogo());
-            master.setRealPicture(schoolMasterDto.getRealPicture());
+            if (null != schoolMasterDto.getRealPicture() && !"".equals(schoolMasterDto.getRealPicture())) {
+                master.setRealPicture(schoolMasterDto.getRealPicture());
+            }
+            if (null != schoolMasterDto.getLogo() && !"".equals(schoolMasterDto.getLogo())) {
+                master.setLogo(schoolMasterDto.getLogo());
+            }
             master.setRootId(schoolMasterDto.getRootId());
             master.setState(schoolMasterDto.getState());
             masterMapper.updateById(master);
@@ -337,7 +343,7 @@ public class SchoolMasterServiceImpl extends ServiceImpl<SchoolMasterMapper, Sch
                 return WrapMapper.ok(dto);
             }
         }
-        return null;
+        return WrapMapper.error("暂无数据");
     }
 
     private void findChildren(List<SchoolRootTreeVo> sysDepts, List<SchoolRootTreeVo> depts) {

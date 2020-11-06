@@ -13,7 +13,7 @@ public class TeacherInfoDto {
     @ApiModelProperty(value = "学校ID", required = true)
     private Long masterId;
     @ApiModelProperty(value = "姓名", required = true)
-    private String tName;
+    private String name;
     @ApiModelProperty(value = "工号", required = true)
     private String tNumber;
     @ApiModelProperty(value = "1：男 0：女", required = true)

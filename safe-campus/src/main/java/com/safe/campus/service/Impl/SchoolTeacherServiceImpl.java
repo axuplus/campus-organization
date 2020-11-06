@@ -95,7 +95,7 @@ public class SchoolTeacherServiceImpl extends ServiceImpl<SchoolTeacherMapper, S
         teacher.setMasterId(teacherInfoDto.getMasterId());
         teacher.setId(gobalInterface.generateId());
         teacher.setCreatedTime(new Date());
-        teacher.setTName(teacherInfoDto.getTName());
+        teacher.setTName(teacherInfoDto.getName());
         teacher.setImgId(teacherInfoDto.getImgId());
         teacher.setIdNumber(teacherInfoDto.getIdNumber());
         teacher.setIsDelete(0);
@@ -214,6 +214,7 @@ public class SchoolTeacherServiceImpl extends ServiceImpl<SchoolTeacherMapper, S
         SchoolTeacher teacher = teacherMapper.selectById(id);
         if (PublicUtil.isNotEmpty(teacher)) {
             SchoolTeacherVo vo = new ModelMapper().map(teacher, SchoolTeacherVo.class);
+            vo.setName(teacher.getTName());
             List<SchoolClassInfo> classInfoByTid = classInfoMapper.getClassInfoByTid(teacher.getId());
             if (PublicUtil.isNotEmpty(classInfoByTid)) {
                 List<String> classList = new ArrayList<>();
@@ -261,7 +262,7 @@ public class SchoolTeacherServiceImpl extends ServiceImpl<SchoolTeacherMapper, S
             return WrapMapper.error("修改参数不能为空");
         }
         SchoolTeacher teacher = teacherMapper.selectById(teacherInfoDto.getId());
-        teacher.setTName(teacherInfoDto.getTName());
+            teacher.setTName(teacherInfoDto.getName());
         if (teacherInfoDto.getImgId() != null) {
             teacher.setImgId(teacherInfoDto.getImgId());
         }
