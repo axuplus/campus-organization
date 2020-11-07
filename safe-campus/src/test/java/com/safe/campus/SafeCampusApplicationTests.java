@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.*;
+import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
@@ -73,5 +74,13 @@ class SafeCampusApplicationTests {
     public void test5() {
         int i = 7 / 2;
         System.out.println("i = " + i);
+    }
+
+    @Test
+    public void test6() {
+        List<String> strings = Arrays.asList("abc", "", "bc", "efg", "abcd","", "jkl");
+        long count = strings.parallelStream().filter(string -> string.isEmpty()).count();
+        System.err.println("count = " + count);
+         ForkJoinPool forkJoinPool;
     }
 }

@@ -338,6 +338,10 @@ public class SchoolMasterServiceImpl extends ServiceImpl<SchoolMasterMapper, Sch
             if (null != schoolMaster.getDescription() && null != schoolMaster.getImgs()) {
                 SchoolIntroductionDto dto = new SchoolIntroductionDto();
                 dto.setMasterId(masterId);
+                if (null != schoolMaster.getLogo()) {
+                    dto.setLogoUrl(schoolMaster.getLogo());
+                }
+                dto.setSchoolName(schoolMaster.getAreaName());
                 dto.setIntroduction(schoolMaster.getDescription());
                 dto.setImgs(JSON.parseArray(schoolMaster.getImgs(), String.class));
                 return WrapMapper.ok(dto);

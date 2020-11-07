@@ -12,6 +12,10 @@ public class SchoolIntroductionDto {
     private Long masterId;
     @ApiModelProperty(value = "描述")
     private String introduction;
+    @ApiModelProperty(value = "学校名")
+    private String schoolName;
+    @ApiModelProperty(value = "logo")
+    private String logoUrl;
     @ApiModelProperty(value = "轮播图 url")
     private List<String> imgs;
 }
