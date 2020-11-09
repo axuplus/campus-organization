@@ -52,10 +52,10 @@ pagehelper:
   returnPageInfo: check
 
 upload-file:
-  imgPath: C:\Users\14256\Desktop\linshi
-  imgUrl:  http://127.0.0.1/img/
-  imgThumbPath: C:\Users\14256\Desktop\linshi
-  imgThumbUrl: http://127.0.0.1/thumb/
+  imgPath: /images/admin-organization
+  imgUrl: http://vip.amsure.cn:8050/images/admin-organization/
+  imgThumbPath: /images/admin-organization
+  imgThumbUrl: http://vip.amsure.cn:8050/thumb/
 
 token:
   secretKey: 9ac93552c203dde2a133a0988faa05b9
@@ -72,7 +72,7 @@ url:
     - /school/master/getIntroduction
     - /admin/token
     - /admin/exit
-    - /campus/file/img/upload
+    - /file/img/upload
     - /others/selectStudentList
     - /others/getTeacherRoles
     - /others/getStudentByIdNumber

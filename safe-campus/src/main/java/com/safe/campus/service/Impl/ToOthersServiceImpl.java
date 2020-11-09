@@ -532,63 +532,61 @@ public class ToOthersServiceImpl implements ToOthersService {
     }
 
     @Override
-    public PageWrapper<List<AllStudentsVo>> getAllStudents(Long schoolId, BaseQueryDto baseQueryDto) {
-        if (null != schoolId) {
-            List<AllStudentsVo> list = new ArrayList<>();
-            Page page = PageHelper.startPage(baseQueryDto.getPage(), baseQueryDto.getPage_size());
-            List<SchoolStudent> students = studentMapper.selectList(new QueryWrapper<SchoolStudent>().eq("master_id", schoolId));
-            Long total = page.getTotal();
-            if (PublicUtil.isNotEmpty(students)) {
-                students.forEach(student -> {
-                    AllStudentsVo vo = new AllStudentsVo();
-                    vo.setStudentId(student.getId());
-                    vo.setStudentName(student.getSName());
-                    vo.setIdNumber(student.getIdNumber());
-                    if (null != student.getType()) {
-                        vo.setType(student.getType());
-                        if (1 == student.getType()) {
-                            AllStudentsVo.BuildingInfo buildingInfo = new AllStudentsVo.BuildingInfo();
-                            BuildingStudent buildingStudent = buildingStudentMapper.selectOne(new QueryWrapper<BuildingStudent>().eq("student_id", student.getId()));
-                            if (PublicUtil.isNotEmpty(buildingStudent)) {
-                                buildingInfo.setNoName(noMapper.selectById(buildingStudent.getNoId()).getBuildingNo());
-                                buildingInfo.setLevelName(levelMapper.selectById(buildingStudent.getLevelId()).getBuildingLevel());
-                                buildingInfo.setRoomName(roomMapper.selectById(buildingStudent.getRoomId()).getBuildingRoom());
-                                buildingInfo.setBedName(bedMapper.selectById(buildingStudent.getBedId()).getBedName());
-                                vo.setBuildingInfo(buildingInfo);
-                            }
+    public PageWrapper<List<AllStudentsVo>> getAllStudents(BaseQueryDto baseQueryDto) {
+        List<AllStudentsVo> list = new ArrayList<>();
+        Page page = PageHelper.startPage(baseQueryDto.getPage(), baseQueryDto.getPage_size());
+        List<SchoolStudent> students = studentMapper.selectList(new QueryWrapper<SchoolStudent>());
+        Long total = page.getTotal();
+        if (PublicUtil.isNotEmpty(students)) {
+            students.forEach(student -> {
+                AllStudentsVo vo = new AllStudentsVo();
+                vo.setStudentId(student.getId());
+                vo.setStudentName(student.getSName());
+                vo.setIdNumber(student.getIdNumber());
+                if (null != student.getType()) {
+                    vo.setType(student.getType());
+                    if (1 == student.getType()) {
+                        AllStudentsVo.BuildingInfo buildingInfo = new AllStudentsVo.BuildingInfo();
+                        BuildingStudent buildingStudent = buildingStudentMapper.selectOne(new QueryWrapper<BuildingStudent>().eq("student_id", student.getId()));
+                        if (PublicUtil.isNotEmpty(buildingStudent)) {
+                            buildingInfo.setNoName(noMapper.selectById(buildingStudent.getNoId()).getBuildingNo());
+                            buildingInfo.setLevelName(levelMapper.selectById(buildingStudent.getLevelId()).getBuildingLevel());
+                            buildingInfo.setRoomName(roomMapper.selectById(buildingStudent.getRoomId()).getBuildingRoom());
+                            buildingInfo.setBedName(bedMapper.selectById(buildingStudent.getBedId()).getBedName());
+                            vo.setBuildingInfo(buildingInfo);
                         }
                     }
-                    if (student.getJoinTime() != null) {
-                        vo.setJoinTime(student.getJoinTime());
+                }
+                if (student.getJoinTime() != null) {
+                    vo.setJoinTime(student.getJoinTime());
+                }
+                if (null != student.getEndTime()) {
+                    vo.setEndTime(student.getEndTime());
+                }
+                if (null != student.getImgId()) {
+                    vo.setImg(sysFileService.getFileById(student.getImgId()).getFileUrl());
+                }
+                if (null != student.getSex()) {
+                    vo.setSex(student.getSex());
+                }
+                if (null != student.getClassId() && null != student.getClassInfoId()) {
+                    AllStudentsVo.ClassInfo classInfo = new AllStudentsVo.ClassInfo();
+                    classInfo.setClassId(student.getClassId());
+                    classInfo.setClassName(classMapper.selectById(student.getClassId()).getClassName());
+                    classInfo.setClassInfoId(student.getClassInfoId());
+                    SchoolClassInfo schoolClassInfo = classInfoMapper.selectById(student.getClassInfoId());
+                    classInfo.setClassInfoName(schoolClassInfo.getClassInfoName());
+                    if (null != schoolClassInfo.getTId()) {
+                        SchoolTeacher teacher = teacherMapper.selectById(schoolClassInfo.getTId());
+                        classInfo.setTeacherId(teacher.getId());
+                        classInfo.setTeacherName(teacher.getTName());
+                        classInfo.setTeacherNumber(teacher.getTNumber());
                     }
-                    if (null != student.getEndTime()) {
-                        vo.setEndTime(student.getEndTime());
-                    }
-                    if (null != student.getImgId()) {
-                        vo.setImg(sysFileService.getFileById(student.getImgId()).getFileUrl());
-                    }
-                    if (null != student.getSex()) {
-                        vo.setSex(student.getSex());
-                    }
-                    if (null != student.getClassId() && null != student.getClassInfoId()) {
-                        AllStudentsVo.ClassInfo classInfo = new AllStudentsVo.ClassInfo();
-                        classInfo.setClassId(student.getClassId());
-                        classInfo.setClassName(classMapper.selectById(student.getClassId()).getClassName());
-                        classInfo.setClassInfoId(student.getClassInfoId());
-                        SchoolClassInfo schoolClassInfo = classInfoMapper.selectById(student.getClassInfoId());
-                        classInfo.setClassInfoName(schoolClassInfo.getClassInfoName());
-                        if (null != schoolClassInfo.getTId()) {
-                            SchoolTeacher teacher = teacherMapper.selectById(schoolClassInfo.getTId());
-                            classInfo.setTeacherId(teacher.getId());
-                            classInfo.setTeacherName(teacher.getTName());
-                            classInfo.setTeacherNumber(teacher.getTNumber());
-                        }
-                        vo.setClassInfo(classInfo);
-                    }
-                    list.add(vo);
-                });
-                return PageWrapMapper.wrap(list, new PageUtil(total.intValue(), baseQueryDto.getPage(), baseQueryDto.getPage_size()));
-            }
+                    vo.setClassInfo(classInfo);
+                }
+                list.add(vo);
+            });
+            return PageWrapMapper.wrap(list, new PageUtil(total.intValue(), baseQueryDto.getPage(), baseQueryDto.getPage_size()));
         }
         return PageWrapMapper.wrap(200, "暂无数据");
     }

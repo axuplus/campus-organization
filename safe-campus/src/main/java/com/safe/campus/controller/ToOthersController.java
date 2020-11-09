@@ -12,7 +12,6 @@ import com.safe.campus.model.dto.TeacherByPhoneDto;
 import com.safe.campus.model.vo.*;
 import com.safe.campus.service.ToOthersService;
 import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiModelProperty;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -140,8 +139,8 @@ public class ToOthersController {
 
     @GetMapping("/getAllStudents")
     @ApiOperation(value = "获取所有学生")
-    public PageWrapper<List<AllStudentsVo>> getAllStudents(@RequestParam("schoolId") Long schoolId, BaseQueryDto baseQueryDto) {
-        return toOthersService.getAllStudents(schoolId, baseQueryDto);
+    public PageWrapper<List<AllStudentsVo>> getAllStudents( BaseQueryDto baseQueryDto) {
+        return toOthersService.getAllStudents(baseQueryDto);
     }
 
     @GetMapping("/getAllTeachers")

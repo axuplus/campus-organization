@@ -49,7 +49,7 @@ public interface ToOthersService {
 
     StudentCountVo getStudentCountByTeacherPhone(String tName, Long phteacherIdone);
 
-    PageWrapper<List<AllStudentsVo>> getAllStudents(Long schoolId, BaseQueryDto baseQueryDto);
+    PageWrapper<List<AllStudentsVo>> getAllStudents(BaseQueryDto baseQueryDto);
 
     PageWrapper<List<AllTeachersVo>> getAllTeachers(Long schoolId, BaseQueryDto baseQueryDto);
 
