@@ -76,6 +76,8 @@ public class SchoolStudentServiceImpl extends ServiceImpl<SchoolStudentMapper, S
     @Autowired
     private SchoolClassInfoMapper infoMapper;
 
+    @Autowired
+    private SysAdminUserMapper userMapper;
 
     @Autowired
     private BuildingStudentMapper buildingStudentMapper;
@@ -240,12 +242,12 @@ public class SchoolStudentServiceImpl extends ServiceImpl<SchoolStudentMapper, S
         logger.info("Excel {}", list);
         if (PublicUtil.isNotEmpty(list)) {
             // 自检idNumber
-            Map<String, Long> collect = list.stream().collect(Collectors.groupingBy(StudentExcelDto::getIdNumber, Collectors.counting()));
+            Map<String, Long> collect = list.parallelStream().collect(Collectors.groupingBy(StudentExcelDto::getIdNumber, Collectors.counting()));
             List<String> result = collect.entrySet().stream()
                     .filter(e -> e.getValue() > 1).map(Map.Entry::getKey)
                     .collect(Collectors.toList());
             if (null != result && !result.isEmpty()) {
-                List<StudentExcelDto> same = list.stream().filter(e -> result.contains(e.getIdNumber())).collect(Collectors.toList());
+                List<StudentExcelDto> same = list.parallelStream().filter(e -> result.contains(e.getIdNumber())).collect(Collectors.toList());
                 return WrapMapper.wrap(400, "身份证号码有重复", same);
             }
             // 检查床位
@@ -280,8 +282,8 @@ public class SchoolStudentServiceImpl extends ServiceImpl<SchoolStudentMapper, S
             QueryWrapper<SchoolStudent> studentQueryWrapper = new QueryWrapper<>();
             studentQueryWrapper.eq("master_id", masterId);
             List<SchoolStudent> students = studentMapper.selectList(studentQueryWrapper);
-            Map<String, Long> maps = students.stream().collect(Collectors.toMap(SchoolStudent::getIdNumber, SchoolStudent::getId));
-            List<Long> ids = students.stream().map(SchoolStudent::getId).collect(Collectors.toList());
+            Map<String, Long> maps = students.parallelStream().collect(Collectors.toMap(SchoolStudent::getIdNumber, SchoolStudent::getId));
+            List<Long> ids = students.parallelStream().map(SchoolStudent::getId).collect(Collectors.toList());
             // id生成
             IdWorker idWorker = new IdWorker();
             // 指定大小
@@ -328,7 +330,10 @@ public class SchoolStudentServiceImpl extends ServiceImpl<SchoolStudentMapper, S
     }
 
     @Override
-    public Wrapper importStudentPictureConcentrator(Long masterId, MultipartFile file, LoginAuthDto loginAuthDto) {
+    public Wrapper importStudentPictureConcentrator(MultipartFile file, LoginAuthDto loginAuthDto) throws Exception {
+        SysAdmin sysAdmin = userMapper.selectById(loginAuthDto.getUserId());
+        Long masterId = sysAdmin.getMasterId();
+        logger.info("masterId {}", masterId);
         if (file.isEmpty()) {
             logger.info("上传文件为空");
             throw new BizException(ErrorCodeEnum.PUB10000006);
@@ -354,14 +359,14 @@ public class SchoolStudentServiceImpl extends ServiceImpl<SchoolStudentMapper, S
                         String str1 = zipEntryName.substring(0, zipEntryName.indexOf("/"));
                         String str2 = zipEntryName.substring(str1.length() + 1);
                         String name = str2.substring(0, str2.indexOf("-"));
-                        System.out.println("name = " + name);
+                        logger.info("name {}", name);
                         String str3 = str2.substring(0, zipEntryName.indexOf("-"));
                         String idNumber = zipEntryName.substring(str3.length() + 1)
                                 .replace(".jpg", "")
                                 .replace(".png", "")
                                 .replace(".JPG", "")
                                 .replace(".PNG", "");
-                        System.out.println("idNumber = " + idNumber);
+                        logger.info("idNumber {}", idNumber);
                         if ("".equals(name) || "".equals(idNumber)) {
                             throw new BizException(ErrorCodeEnum.PUB10000019);
                         }
@@ -397,6 +402,23 @@ public class SchoolStudentServiceImpl extends ServiceImpl<SchoolStudentMapper, S
         }
         return WrapMapper.ok("导入成功");
     }
+//
+//    public void delZipFile() {
+//        File file = new File(url);
+//        if (file.isDirectory()) {
+//            File[] files = file.listFiles();
+//            for (File f : files) {
+//                if (f.getName().endsWith(".zip")) {  // zip文件  判断 是否存在
+//                    if (f.delete()) {
+//                        logger.info("zip文件已经删除");
+//                    } else {
+//                        logger.info("zip文件删除失败");
+//                    }
+//                }
+//            }
+//        }
+//    }
+
 
     @Override
     public PageWrapper<List<SchoolStudentListVo>> listStudent(Integer type, Long masterId, Long id, BaseQueryDto

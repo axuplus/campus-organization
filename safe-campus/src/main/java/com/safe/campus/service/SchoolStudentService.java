@@ -44,7 +44,7 @@ public interface SchoolStudentService extends IService<SchoolStudent> {
 
     Wrapper importSchoolConcentrator(Long masterId,MultipartFile file,  LoginAuthDto loginAuthDto) throws ExecutionException, InterruptedException, Exception;
 
-    Wrapper importStudentPictureConcentrator(Long masterId,MultipartFile file, LoginAuthDto loginAuthDto);
+    Wrapper importStudentPictureConcentrator(MultipartFile file, LoginAuthDto loginAuthDto) throws Exception;
 
     PageWrapper<List<SchoolStudentListVo>> listStudent(Integer type,Long masterId, Long classId, BaseQueryDto baseQueryDto);
 

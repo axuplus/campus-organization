@@ -104,8 +104,8 @@ public class SchoolStudentController extends BaseController {
     @Permission(url = qxurl, type = PermissionType.ADD)
     @PostMapping("/import/student/picture")
     @ApiOperation("导入照片")
-    public Wrapper importStudentPictureConcentrator(@Param("masterId") Long masterId, @ApiParam(value = "file", required = true) MultipartFile file) throws Exception {
-        return schoolStudentService.importStudentPictureConcentrator(masterId, file, getLoginAuthDto());
+    public Wrapper importStudentPictureConcentrator(@ApiParam(value = "file", required = true) MultipartFile file) throws Exception {
+        return schoolStudentService.importStudentPictureConcentrator(file, getLoginAuthDto());
     }
 
     @ApiOperation("楼幢信息下拉列表")
