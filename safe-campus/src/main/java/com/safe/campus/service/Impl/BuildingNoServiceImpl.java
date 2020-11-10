@@ -77,6 +77,10 @@ public class BuildingNoServiceImpl extends ServiceImpl<BuildingNoMapper, Buildin
         if (PublicUtil.isNotEmpty(saveBuildingInfoDto)) {
             Long id = null;
             if (1 == saveBuildingInfoDto.getType()) {
+                BuildingNo no = noMapper.selectOne(new QueryWrapper<BuildingNo>().eq("master_id", saveBuildingInfoDto.getMasterId()).eq("building_no", saveBuildingInfoDto.getName()));
+                if (PublicUtil.isNotEmpty(no)) {
+                    return WrapMapper.error("楼幢不能重复");
+                }
                 BuildingNo buildingNo = new BuildingNo();
                 buildingNo.setId(gobalInterface.generateId());
                 buildingNo.setMasterId(saveBuildingInfoDto.getMasterId());
@@ -293,8 +297,8 @@ public class BuildingNoServiceImpl extends ServiceImpl<BuildingNoMapper, Buildin
                     BuildingStudentListVo vo = new BuildingStudentListVo();
                     vo.setSName(student.getSName());
                     vo.setSNumber(student.getSNumber());
-                    if(null != student.getClassId() && null != student.getClassInfoId()) {
-                        vo.setClassInfo(classService.getClassAndInfo(student.getClassId(),student.getClassInfoId()));
+                    if (null != student.getClassId() && null != student.getClassInfoId()) {
+                        vo.setClassInfo(classService.getClassAndInfo(student.getClassId(), student.getClassInfoId()));
                     }
                     QueryWrapper<BuildingStudent> queryWrapper = new QueryWrapper<>();
                     queryWrapper.eq("student_id", student.getId());
@@ -433,8 +437,8 @@ public class BuildingNoServiceImpl extends ServiceImpl<BuildingNoMapper, Buildin
                         if (null != student.getSNumber()) {
                             listVo.setSNumber(student.getSNumber());
                         }
-                        if(null != student.getClassId() && null != student.getClassInfoId()) {
-                            listVo.setClassInfo(classService.getClassAndInfo(student.getClassId(),student.getClassInfoId()));
+                        if (null != student.getClassId() && null != student.getClassInfoId()) {
+                            listVo.setClassInfo(classService.getClassAndInfo(student.getClassId(), student.getClassInfoId()));
                         }
                     } else {
                         BuildingBedDto livingInfo = bedMapper.getLivingInfo(bed.getId());
@@ -471,8 +475,8 @@ public class BuildingNoServiceImpl extends ServiceImpl<BuildingNoMapper, Buildin
                     if (null != student.getSNumber()) {
                         listVo.setSNumber(student.getSNumber());
                     }
-                    if(null != student.getClassId() && null != student.getClassInfoId()) {
-                        listVo.setClassInfo(classService.getClassAndInfo(student.getClassId(),student.getClassInfoId()));
+                    if (null != student.getClassId() && null != student.getClassInfoId()) {
+                        listVo.setClassInfo(classService.getClassAndInfo(student.getClassId(), student.getClassInfoId()));
                     }
                     list.add(listVo);
                 });
@@ -498,8 +502,8 @@ public class BuildingNoServiceImpl extends ServiceImpl<BuildingNoMapper, Buildin
                     if (null != student.getSNumber()) {
                         listVo.setSNumber(student.getSNumber());
                     }
-                    if(null != student.getClassId() && null != student.getClassInfoId()) {
-                        listVo.setClassInfo(classService.getClassAndInfo(student.getClassId(),student.getClassInfoId()));
+                    if (null != student.getClassId() && null != student.getClassInfoId()) {
+                        listVo.setClassInfo(classService.getClassAndInfo(student.getClassId(), student.getClassInfoId()));
                     }
                     list.add(listVo);
                 });
@@ -579,24 +583,24 @@ public class BuildingNoServiceImpl extends ServiceImpl<BuildingNoMapper, Buildin
                 });
                 return list;
             }
-        }else {
-                List<BuildingBed> beds = bedMapper.selectList(new QueryWrapper<BuildingBed>().eq("room_id", id));
-                if (PublicUtil.isNotEmpty(beds)) {
-                    beds.forEach(bed -> {
-                        SchoolStudentBuildingVo vo = new SchoolStudentBuildingVo();
-                        if (null == buildingStudentMapper.selectOne(new QueryWrapper<BuildingStudent>().eq("bed_id", bed.getId()))) {
-                            vo.setState(0);
-                        } else {
-                            vo.setState(1);
-                        }
-                        vo.setId(bed.getId());
-                        vo.setType(4);
-                        vo.setName(bed.getBedName());
-                        list.add(vo);
-                    });
-                    return list;
-                }
+        } else {
+            List<BuildingBed> beds = bedMapper.selectList(new QueryWrapper<BuildingBed>().eq("room_id", id));
+            if (PublicUtil.isNotEmpty(beds)) {
+                beds.forEach(bed -> {
+                    SchoolStudentBuildingVo vo = new SchoolStudentBuildingVo();
+                    if (null == buildingStudentMapper.selectOne(new QueryWrapper<BuildingStudent>().eq("bed_id", bed.getId()))) {
+                        vo.setState(0);
+                    } else {
+                        vo.setState(1);
+                    }
+                    vo.setId(bed.getId());
+                    vo.setType(4);
+                    vo.setName(bed.getBedName());
+                    list.add(vo);
+                });
+                return list;
             }
+        }
         return null;
     }
 

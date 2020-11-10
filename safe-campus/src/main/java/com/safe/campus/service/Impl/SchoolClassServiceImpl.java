@@ -68,6 +68,10 @@ public class SchoolClassServiceImpl extends ServiceImpl<SchoolClassMapper, Schoo
             return WrapMapper.error("参数不能为空");
         }
         if (1 == schoolClassDto.getType()) {
+            SchoolClass isExits = schoolClassMapper.selectOne(new QueryWrapper<SchoolClass>().eq("master_id", schoolClassDto.getMasterId()).eq("class_name", schoolClassDto.getName()));
+            if (PublicUtil.isNotEmpty(isExits)) {
+                return WrapMapper.error("年级不能重复");
+            }
             SchoolClass schoolClass = new SchoolClass();
             schoolClass.setId(gobalInterface.generateId());
             schoolClass.setClassName(schoolClassDto.getName());

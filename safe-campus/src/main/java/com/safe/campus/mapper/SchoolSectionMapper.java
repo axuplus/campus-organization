@@ -37,7 +37,7 @@ public interface SchoolSectionMapper extends BaseMapper<SchoolSection> {
     @Select("select * from school_section where state = 0 and is_delete = 0 and master_id = #{masterId}")
     List<SectionTreeVo> findAll(@Param("masterId") Long masterId);
 
-    @Select("SELECT * FROM `school_section` WHERE section_name = #{sectionName}")
-    SchoolSection getSectionByName(@Param("sectionName") String sectionName);
+    @Select("SELECT * FROM `school_section` WHERE section_name = #{sectionName} and master_id = #{masterId}")
+    SchoolSection getSectionByName(@Param("sectionName") String sectionName, @Param("masterId") Long masterId);
 
 }

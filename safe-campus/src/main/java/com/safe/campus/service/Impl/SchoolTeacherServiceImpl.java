@@ -85,6 +85,9 @@ public class SchoolTeacherServiceImpl extends ServiceImpl<SchoolTeacherMapper, S
     @Autowired
     private SysRoleMapper roleMapper;
 
+    @Autowired
+    private SysAdminUserMapper userMapper;
+
 
     @Override
     public Wrapper saveTeacherInfo(TeacherInfoDto teacherInfoDto, LoginAuthDto loginAuthDto) {
@@ -359,7 +362,9 @@ public class SchoolTeacherServiceImpl extends ServiceImpl<SchoolTeacherMapper, S
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public Wrapper importTeacherConcentrator(MultipartFile file, Long masterId, LoginAuthDto loginAuthDto) {
+    public Wrapper importTeacherConcentrator(MultipartFile file, LoginAuthDto loginAuthDto) {
+        SysAdmin sysAdmin = userMapper.selectById(loginAuthDto.getUserId());
+        Long masterId = sysAdmin.getMasterId();
         if (file.isEmpty()) {
             logger.info("上传文件为空");
             throw new BizException(ErrorCodeEnum.PUB10000006);
@@ -376,41 +381,29 @@ public class SchoolTeacherServiceImpl extends ServiceImpl<SchoolTeacherMapper, S
             logger.info("Excel导入失败", e);
         }
         logger.info("Excel {}", list);
-        // 循环导入
         if (PublicUtil.isNotEmpty(list)) {
+            // 自检idNumber
+            Map<String, Long> collect = list.parallelStream().collect(Collectors.groupingBy(TeacherExcelDto::getIdNumber, Collectors.counting()));
+            List<String> result = collect.entrySet().stream()
+                    .filter(e -> e.getValue() > 1).map(Map.Entry::getKey)
+                    .collect(Collectors.toList());
+            if (null != result && !result.isEmpty()) {
+                List<TeacherExcelDto> same = list.parallelStream().filter(e -> result.contains(e.getIdNumber())).collect(Collectors.toList());
+                return WrapMapper.wrap(400, "身份证号码有重复", same);
+            }
+            // 检查数据库
             QueryWrapper<SchoolTeacher> teacherQueryWrapper = new QueryWrapper<>();
             teacherQueryWrapper.eq("master_id", masterId);
             List<SchoolTeacher> teachers = teacherMapper.selectList(teacherQueryWrapper);
-            Map<String, Long> maps = teachers.stream().collect(Collectors.toMap(SchoolTeacher::getIdNumber, SchoolTeacher::getId));
-            list.forEach(t -> {
+            Map<String, Long> maps = teachers.parallelStream().collect(Collectors.toMap(SchoolTeacher::getIdNumber, SchoolTeacher::getId));
+            for (String idNum : result) {
+                if (PublicUtil.isNotEmpty(maps.get(idNum).toString())) {
+                    return WrapMapper.wrap(400, "已有此教师", idNum);
+                }
+            }
+            for (TeacherExcelDto t : list) {
                 Long id = maps.get(t.getIdNumber());
-                // 更新
-                if (null != id) {
-                    SchoolTeacher teacher = teacherMapper.selectById(id);
-                    // 检查部门
-                    if (null != t.getSectionName()) {
-                        teacher.setSectionId(checkSectionId(t.getSectionName()));
-                    }
-                    // 去判断非空字段
-                    if (null != t.getSex()) {
-                        teacher.setSex(checkSex(t.getSex()));
-                    }
-                    if (null != t.getTeacherNumber()) {
-                        teacher.setTNumber(t.getTeacherNumber());
-                    }
-                    if (null != t.getJoinTime()) {
-                        String s = EasyExcelUtil.formatExcelDate(Integer.valueOf(t.getJoinTime()));
-                        teacher.setJoinTime(s);
-                    }
-                    if (null != t.getPositionName()) {
-                        teacher.setPosition(t.getPositionName());
-                    }
-                    if (null != t.getShape()) {
-                        teacher.setState(getState(t.getShape()));
-                    }
-                    teacherMapper.updateById(teacher);
-                } else {
-                    // 插入
+                if (null == id) {
                     SchoolTeacher teacher = new SchoolTeacher();
                     teacher.setId(gobalInterface.generateId());
                     teacher.setMasterId(masterId);
@@ -418,11 +411,16 @@ public class SchoolTeacherServiceImpl extends ServiceImpl<SchoolTeacherMapper, S
                     teacher.setIdNumber(t.getIdNumber());
                     teacher.setPhone(Long.valueOf(t.getPhone()));
                     teacher.setCreatedTime(new Date());
+                    teacher.setState(0);
                     teacher.setIsDelete(0);
                     teacher.setCreatedUser(loginAuthDto.getUserId());
                     // 检查部门
                     if (null != t.getSectionName()) {
-                        teacher.setSectionId(checkSectionId(t.getSectionName()));
+                        Long sectionId = checkSectionId(t.getSectionName(), masterId);
+                        if (null == sectionId) {
+                            return WrapMapper.wrap(400, "部门不存在", t.getSectionName());
+                        }
+                        teacher.setSectionId(sectionId);
                     }
                     // 去判断非空字段
                     if (null != t.getSex()) {
@@ -443,10 +441,10 @@ public class SchoolTeacherServiceImpl extends ServiceImpl<SchoolTeacherMapper, S
                     }
                     teacherMapper.insert(teacher);
                 }
-            });
+            }
             return WrapMapper.ok("导入成功");
         }
-        return WrapMapper.error("位置错误");
+        return WrapMapper.error("Excel导入失败");
     }
 
     /**
@@ -465,12 +463,12 @@ public class SchoolTeacherServiceImpl extends ServiceImpl<SchoolTeacherMapper, S
     /**
      * 检查导入部门是否合法
      */
-    private Long checkSectionId(String str) {
-        SchoolSection sectionByName = sectionMapper.getSectionByName(str);
-        if (null == sectionByName) {
-            throw new BizException(ErrorCodeEnum.PUB10000010);
+    private Long checkSectionId(String str, Long masterId) {
+        SchoolSection sectionByName = sectionMapper.getSectionByName(str, masterId);
+        if (null != sectionByName) {
+            return sectionByName.getId();
         }
-        return sectionByName.getId();
+        return null;
     }
 
     /**
@@ -515,13 +513,6 @@ public class SchoolTeacherServiceImpl extends ServiceImpl<SchoolTeacherMapper, S
     }
 
     @Override
-    public List<SchoolTeacher> getBuildingTeachers(Long masterId) {
-        QueryWrapper<SchoolTeacher> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("master_id", masterId);
-        return teacherMapper.selectList(queryWrapper);
-    }
-
-    @Override
     public Wrapper listRoles(Long masterId, LoginAuthDto loginAuthDto) {
         QueryWrapper<SysRole> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("master_id", masterId).eq("state", 1);
@@ -560,13 +551,16 @@ public class SchoolTeacherServiceImpl extends ServiceImpl<SchoolTeacherMapper, S
     }
 
     @Override
-    public Wrapper importTeacherPictureConcentrator(MultipartFile file, Long masterId, LoginAuthDto loginAuthDto) {
+    public Wrapper importTeacherPictureConcentrator(MultipartFile file, LoginAuthDto loginAuthDto) {
+        SysAdmin sysAdmin = userMapper.selectById(loginAuthDto.getUserId());
+        Long masterId = sysAdmin.getMasterId();
         if (file.isEmpty()) {
             logger.info("上传文件为空");
             throw new BizException(ErrorCodeEnum.PUB10000006);
         }
         String packageName = file.getOriginalFilename();
         if (packageName.matches(".*\\.zip")) {                //是zip压缩文件
+            List<String> list = new ArrayList<>();
             File toFile = null;
             try {
                 toFile = FileUtils.multipartFileToFile(file);
@@ -574,34 +568,29 @@ public class SchoolTeacherServiceImpl extends ServiceImpl<SchoolTeacherMapper, S
                 e.printStackTrace();
             }
             try {
-                //String path = toFile.getAbsolutePath();
                 ZipFile zip = new ZipFile(toFile, Charset.forName("GBK"));
                 for (Enumeration entries = zip.entries(); entries.hasMoreElements(); ) {
                     ZipEntry entry = (ZipEntry) entries.nextElement();
                     String zipEntryName = entry.getName();
-                    // 照片的命名中间以-相隔
                     if (zipEntryName.contains("-")) {
-                        System.out.println("zipEntryName = " + zipEntryName);
+                        logger.warn("zipEntryName---------------------------> {}", zipEntryName);
                         // 截取zip目录之后的字符串
                         String str1 = zipEntryName.substring(0, zipEntryName.indexOf("/"));
                         String str2 = zipEntryName.substring(str1.length() + 1);
                         String name = str2.substring(0, str2.indexOf("-"));
-                        System.out.println("name = " + name);
+                        logger.warn("name {}", name);
                         String str3 = str2.substring(0, zipEntryName.indexOf("-"));
                         String phone = zipEntryName.substring(str3.length() + 1)
                                 .replace(".jpg", "")
                                 .replace(".png", "")
                                 .replace(".JPG", "")
                                 .replace(".PNG", "");
-                        System.out.println("phone = " + phone);
-                        if ("".equals(name) || "".equals(phone)) {
-                            throw new BizException(ErrorCodeEnum.PUB10000019);
-                        }
+                        logger.warn("phone {}", phone);
                         QueryWrapper<SchoolTeacher> teacherQueryWrapper = new QueryWrapper<>();
                         teacherQueryWrapper.eq("t_name", name).eq("phone", phone).eq("master_id", masterId);
                         SchoolTeacher teacher = teacherMapper.selectOne(teacherQueryWrapper);
                         if (PublicUtil.isEmpty(teacher)) {
-                            throw new BizException(ErrorCodeEnum.PUB10000020);
+                            return WrapMapper.wrap(400, "教师不存在", teacher);
                         }
                         InputStream inputStream = zip.getInputStream(entry);
                         MultipartFile multipartFile = new MockMultipartFile(str2, str2,
@@ -619,16 +608,28 @@ public class SchoolTeacherServiceImpl extends ServiceImpl<SchoolTeacherMapper, S
                         System.out.println("JSON.toJSONString(deviceFace) = " + JSON.toJSONString(deviceFace));
                         String save = HttpUtils.DO_POST(ToDevicesUrlConfig.ADD_TO_DEVICE, JSON.toJSONString(deviceFace), null, null);
                         logger.info("图片添加到设备成功 {}", save);
+                    } else {
+                        list.add(zipEntryName);
                     }
                 }
-                return WrapMapper.ok();
+                FileUtils.delteTempFile(toFile);
+                logger.error(list.toString() + "大小是 " + list.size());
+                if (list.size() > 1) {
+                    List<String> returnList = new ArrayList<>();
+                    for (int i = 1; i < list.size(); i++) {
+                        String s = list.get(0);
+                        String replace = list.get(i).replace(s, "");
+                        returnList.add(replace);
+                    }
+                    return WrapMapper.wrap(400, "其余更新成功,以下照片命名不合法", returnList);
+                }
             } catch (Exception e) {
                 e.printStackTrace();
             }
         } else {
             return WrapMapper.error("暂时只支持zip压缩包");
         }
-        return null;
+        return WrapMapper.ok("导入成功");
     }
 
     @Override

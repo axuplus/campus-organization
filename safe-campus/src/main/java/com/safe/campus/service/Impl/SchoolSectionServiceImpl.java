@@ -64,6 +64,10 @@ public class SchoolSectionServiceImpl extends ServiceImpl<SchoolSectionMapper, S
         if (PublicUtil.isEmpty(schoolSectionDto)) {
             return WrapMapper.error("部门信息不能为空");
         }
+        SchoolSection s = schoolSectionMapper.selectOne(new QueryWrapper<SchoolSection>().eq("master_id", schoolSectionDto.getSectionId().equals("section_name")));
+        if (PublicUtil.isNotEmpty(s)) {
+            return WrapMapper.error("部门不能重复");
+        }
         SchoolSection section = new SchoolSection();
         // 根节点
         if (1 == schoolSectionDto.getIsRoot()) {

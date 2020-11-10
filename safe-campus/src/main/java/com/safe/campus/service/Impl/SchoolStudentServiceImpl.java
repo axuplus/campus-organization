@@ -371,7 +371,6 @@ public class SchoolStudentServiceImpl extends ServiceImpl<SchoolStudentMapper, S
                         logger.warn("idNumber {}", idNumber);
                         if ("".equals(name) || "".equals(idNumber)) {
                             return WrapMapper.wrap(400, "照片命名不合法");
-                            //throw new BizException(ErrorCodeEnum.PUB10000019);
                         }
                         QueryWrapper<SchoolStudent> studentQueryWrapper = new QueryWrapper<>();
                         studentQueryWrapper.eq("s_name", name).eq("id_number", idNumber).eq("master_id", masterId);
