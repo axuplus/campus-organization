@@ -540,6 +540,7 @@ public class ToOthersServiceImpl implements ToOthersService {
         if (PublicUtil.isNotEmpty(students)) {
             students.forEach(student -> {
                 AllStudentsVo vo = new AllStudentsVo();
+                vo.setMasterId(student.getMasterId());
                 vo.setStudentId(student.getId());
                 vo.setStudentName(student.getSName());
                 vo.setIdNumber(student.getIdNumber());
@@ -549,13 +550,24 @@ public class ToOthersServiceImpl implements ToOthersService {
                         AllStudentsVo.BuildingInfo buildingInfo = new AllStudentsVo.BuildingInfo();
                         BuildingStudent buildingStudent = buildingStudentMapper.selectOne(new QueryWrapper<BuildingStudent>().eq("student_id", student.getId()));
                         if (PublicUtil.isNotEmpty(buildingStudent)) {
-                            buildingInfo.setNoName(noMapper.selectById(buildingStudent.getNoId()).getBuildingNo());
-                            buildingInfo.setLevelName(levelMapper.selectById(buildingStudent.getLevelId()).getBuildingLevel());
-                            buildingInfo.setRoomName(roomMapper.selectById(buildingStudent.getRoomId()).getBuildingRoom());
-                            buildingInfo.setBedName(bedMapper.selectById(buildingStudent.getBedId()).getBedName());
+                            BuildingNo buildingNo = noMapper.selectById(buildingStudent.getNoId());
+                            buildingInfo.setNoId(buildingNo.getId());
+                            buildingInfo.setNoName(buildingNo.getBuildingNo());
+                            BuildingLevel buildingLevel = levelMapper.selectById(buildingStudent.getLevelId());
+                            buildingInfo.setLevelId(buildingLevel.getId());
+                            buildingInfo.setLevelName(buildingLevel.getBuildingLevel());
+                            BuildingRoom buildingRoom = roomMapper.selectById(buildingStudent.getRoomId());
+                            buildingInfo.setRoomId(buildingRoom.getId());
+                            buildingInfo.setRoomName(buildingRoom.getBuildingRoom());
+                            BuildingBed buildingBed = bedMapper.selectById(buildingStudent.getBedId());
+                            buildingInfo.setBedId(buildingBed.getId());
+                            buildingInfo.setBedName(buildingBed.getBedName());
                             vo.setBuildingInfo(buildingInfo);
                         }
                     }
+                }
+                if (student.getSNumber() != null) {
+                    vo.setSNumber(student.getSNumber());
                 }
                 if (student.getJoinTime() != null) {
                     vo.setJoinTime(student.getJoinTime());

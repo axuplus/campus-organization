@@ -262,7 +262,7 @@ public class SchoolTeacherServiceImpl extends ServiceImpl<SchoolTeacherMapper, S
             return WrapMapper.error("修改参数不能为空");
         }
         SchoolTeacher teacher = teacherMapper.selectById(teacherInfoDto.getId());
-            teacher.setTName(teacherInfoDto.getName());
+        teacher.setTName(teacherInfoDto.getName());
         if (teacherInfoDto.getImgId() != null) {
             teacher.setImgId(teacherInfoDto.getImgId());
         }
@@ -546,6 +546,7 @@ public class SchoolTeacherServiceImpl extends ServiceImpl<SchoolTeacherMapper, S
             if (PublicUtil.isEmpty(adminUserByTId)) {
                 return WrapMapper.error("此教工暂无账号,请先启用账户");
             }
+            userRoleMapper.delete(new QueryWrapper<SysUserRole>().eq("user_id", adminUserByTId.getId()));
             setRoleDto.getRoleId().forEach(i -> {
                 SysUserRole userRole = new SysUserRole();
                 userRole.setId(gobalInterface.generateId());

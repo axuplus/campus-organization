@@ -197,7 +197,7 @@ public class SchoolStudentServiceImpl extends ServiceImpl<SchoolStudentMapper, S
                 List<SchoolStudentListVo> vos = new ArrayList<>();
                 students.forEach(s -> {
                     SchoolStudentListVo listVo = new SchoolStudentListVo();
-                    listVo.setId(s.getId());
+                    listVo.setId(s.getId().toString());
                     listVo.setIdNumber(s.getIdNumber());
                     listVo.setSName(s.getSName());
                     listVo.setSNumber(s.getSNumber());
@@ -352,6 +352,7 @@ public class SchoolStudentServiceImpl extends ServiceImpl<SchoolStudentMapper, S
                 for (Enumeration entries = zip.entries(); entries.hasMoreElements(); ) {
                     ZipEntry entry = (ZipEntry) entries.nextElement();
                     String zipEntryName = entry.getName();
+                    logger.info("zipEntryName =>>>>>>>>>>>>>>>>>>>>>>>>>>>>> {}", zipEntryName);
                     // 照片的命名中间以-相隔
                     if (zipEntryName.contains("-")) {
                         System.out.println("zipEntryName = " + zipEntryName);
@@ -359,29 +360,31 @@ public class SchoolStudentServiceImpl extends ServiceImpl<SchoolStudentMapper, S
                         String str1 = zipEntryName.substring(0, zipEntryName.indexOf("/"));
                         String str2 = zipEntryName.substring(str1.length() + 1);
                         String name = str2.substring(0, str2.indexOf("-"));
-                        logger.info("name {}", name);
+                        logger.warn("name {}", name);
                         String str3 = str2.substring(0, zipEntryName.indexOf("-"));
                         String idNumber = zipEntryName.substring(str3.length() + 1)
                                 .replace(".jpg", "")
                                 .replace(".png", "")
                                 .replace(".JPG", "")
                                 .replace(".PNG", "");
-                        logger.info("idNumber {}", idNumber);
+                        logger.warn("idNumber {}", idNumber);
                         if ("".equals(name) || "".equals(idNumber)) {
-                            throw new BizException(ErrorCodeEnum.PUB10000019);
+                            return WrapMapper.wrap(400, "照片命名不合法" + zipEntryName);
+                            //throw new BizException(ErrorCodeEnum.PUB10000019);
                         }
                         QueryWrapper<SchoolStudent> studentQueryWrapper = new QueryWrapper<>();
                         studentQueryWrapper.eq("s_name", name).eq("id_number", idNumber).eq("master_id", masterId);
                         SchoolStudent student = studentMapper.selectOne(studentQueryWrapper);
                         if (PublicUtil.isEmpty(student)) {
-                            throw new BizException(ErrorCodeEnum.PUB10000020);
+                            return WrapMapper.wrap(400, "学生信息不存在", student);
+                            //throw new BizException(ErrorCodeEnum.PUB10000020);
                         }
                         InputStream inputStream = zip.getInputStream(entry);
                         MultipartFile multipartFile = new MockMultipartFile(str2, str2,
                                 ContentType.APPLICATION_OCTET_STREAM.toString(), inputStream);
                         SysFileVo sysFileVo = sysFileService.fileUpload(multipartFile);
                         student.setImgId(sysFileVo.getId());
-                        saveOrUpdate(student);
+                        studentMapper.updateById(student);
                         // 添加到device那边
                         DeviceFaceVO deviceFace = new DeviceFaceVO();
                         deviceFace.setImgPath(sysFileService.getFileById(student.getImgId()).getFileUrl());
@@ -438,7 +441,7 @@ public class SchoolStudentServiceImpl extends ServiceImpl<SchoolStudentMapper, S
             List<SchoolStudentListVo> vos = new ArrayList<>();
             students.forEach(s -> {
                 SchoolStudentListVo listVo = new SchoolStudentListVo();
-                listVo.setId(s.getId());
+                listVo.setId(s.getId().toString());
                 listVo.setSName(s.getSName());
                 listVo.setIdNumber(s.getIdNumber());
                 listVo.setSNumber(s.getSNumber());

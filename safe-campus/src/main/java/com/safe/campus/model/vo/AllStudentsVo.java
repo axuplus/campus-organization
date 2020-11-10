@@ -5,12 +5,16 @@ import lombok.Data;
 
 @Data
 public class AllStudentsVo {
+    @ApiModelProperty(value = "学校id")
+    private Long masterId;
     @ApiModelProperty(value = "学生ID")
     private Long studentId;
     @ApiModelProperty(value = "学生姓名")
     private String studentName;
     @ApiModelProperty(value = "学生性别")
     private Integer sex;
+    @ApiModelProperty(value = "学号")
+    private String sNumber;
     @ApiModelProperty(value = "照片")
     private String img;
     @ApiModelProperty(value = "身份证号码")
@@ -27,12 +31,20 @@ public class AllStudentsVo {
 
     @Data
     public static class BuildingInfo {
+        @ApiModelProperty(value = "楼幢id")
+        private Long noId;
         @ApiModelProperty(value = "楼幢")
         private String noName;
+        @ApiModelProperty(value = "楼层id")
+        private Long levelId;
         @ApiModelProperty(value = "楼层")
         private String levelName;
+        @ApiModelProperty(value = "宿舍id")
+        private Long roomId;
         @ApiModelProperty(value = "宿舍")
         private String roomName;
+        @ApiModelProperty(value = "床位ID")
+        private Long bedId;
         @ApiModelProperty(value = "床位")
         private String bedName;
     }
