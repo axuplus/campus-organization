@@ -347,15 +347,16 @@ public class SchoolStudentServiceImpl extends ServiceImpl<SchoolStudentMapper, S
                 e.printStackTrace();
             }
             try {
-                //String path = toFile.getAbsolutePath();
+                List<String> list = new ArrayList<>();
                 ZipFile zip = new ZipFile(toFile, Charset.forName("GBK"));
                 for (Enumeration entries = zip.entries(); entries.hasMoreElements(); ) {
                     ZipEntry entry = (ZipEntry) entries.nextElement();
                     String zipEntryName = entry.getName();
-                    logger.info("zipEntryName =>>>>>>>>>>>>>>>>>>>>>>>>>>>>> {}", zipEntryName);
+                    logger.warn("-------------------------------------------->{}", zipEntryName);
+                    // 截取zip目录之后的字符串
                     // 照片的命名中间以-相隔
                     if (zipEntryName.contains("-")) {
-                        System.out.println("zipEntryName = " + zipEntryName);
+                        logger.warn("zipEntryName = {}", zipEntryName);
                         // 截取zip目录之后的字符串
                         String str1 = zipEntryName.substring(0, zipEntryName.indexOf("/"));
                         String str2 = zipEntryName.substring(str1.length() + 1);
@@ -369,14 +370,14 @@ public class SchoolStudentServiceImpl extends ServiceImpl<SchoolStudentMapper, S
                                 .replace(".PNG", "");
                         logger.warn("idNumber {}", idNumber);
                         if ("".equals(name) || "".equals(idNumber)) {
-                            return WrapMapper.wrap(400, "照片命名不合法" + zipEntryName);
+                            return WrapMapper.wrap(400, "照片命名不合法");
                             //throw new BizException(ErrorCodeEnum.PUB10000019);
                         }
                         QueryWrapper<SchoolStudent> studentQueryWrapper = new QueryWrapper<>();
                         studentQueryWrapper.eq("s_name", name).eq("id_number", idNumber).eq("master_id", masterId);
                         SchoolStudent student = studentMapper.selectOne(studentQueryWrapper);
                         if (PublicUtil.isEmpty(student)) {
-                            return WrapMapper.wrap(400, "学生信息不存在", student);
+                            return WrapMapper.wrap(400, "学生不存在", student);
                             //throw new BizException(ErrorCodeEnum.PUB10000020);
                         }
                         InputStream inputStream = zip.getInputStream(entry);
@@ -384,7 +385,7 @@ public class SchoolStudentServiceImpl extends ServiceImpl<SchoolStudentMapper, S
                                 ContentType.APPLICATION_OCTET_STREAM.toString(), inputStream);
                         SysFileVo sysFileVo = sysFileService.fileUpload(multipartFile);
                         student.setImgId(sysFileVo.getId());
-                        studentMapper.updateById(student);
+                        saveOrUpdate(student);
                         // 添加到device那边
                         DeviceFaceVO deviceFace = new DeviceFaceVO();
                         deviceFace.setImgPath(sysFileService.getFileById(student.getImgId()).getFileUrl());
@@ -395,7 +396,20 @@ public class SchoolStudentServiceImpl extends ServiceImpl<SchoolStudentMapper, S
                         System.out.println("JSON.toJSONString(deviceFace) = " + JSON.toJSONString(deviceFace));
                         String save = HttpUtils.DO_POST(ToDevicesUrlConfig.ADD_TO_DEVICE, JSON.toJSONString(deviceFace), null, null);
                         logger.info("图片添加到设备成功 {}", save);
+                    } else {
+                        list.add(zipEntryName);
                     }
+                }
+                FileUtils.delteTempFile(toFile);
+                logger.error(list.toString() + "大小是 " + list.size());
+                if (list.size() > 1) {
+                    List<String> returnList = new ArrayList<>();
+                    for (int i = 1; i < list.size(); i++) {
+                        String s = list.get(0);
+                        String replace = list.get(i).replace(s, "");
+                        returnList.add(replace);
+                    }
+                    return WrapMapper.wrap(400, "其余更新成功,以下照片命名不合法", returnList);
                 }
             } catch (Exception e) {
                 e.printStackTrace();
@@ -405,23 +419,6 @@ public class SchoolStudentServiceImpl extends ServiceImpl<SchoolStudentMapper, S
         }
         return WrapMapper.ok("导入成功");
     }
-//
-//    public void delZipFile() {
-//        File file = new File(url);
-//        if (file.isDirectory()) {
-//            File[] files = file.listFiles();
-//            for (File f : files) {
-//                if (f.getName().endsWith(".zip")) {  // zip文件  判断 是否存在
-//                    if (f.delete()) {
-//                        logger.info("zip文件已经删除");
-//                    } else {
-//                        logger.info("zip文件删除失败");
-//                    }
-//                }
-//            }
-//        }
-//    }
-
 
     @Override
     public PageWrapper<List<SchoolStudentListVo>> listStudent(Integer type, Long masterId, Long id, BaseQueryDto
