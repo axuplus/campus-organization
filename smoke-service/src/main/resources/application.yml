@@ -1,0 +1,44 @@
+server:
+  port: 8050
+spring:
+  profiles:
+    active: '@profileActive@'
+  application:
+    name: '@pom.artifactId@'
+  main:
+    allow-bean-definition-overriding: true
+  datasource:
+    driver-class-name: com.mysql.jdbc.Driver
+    url: jdbc:mysql://120.78.162.181:53306/smoke_db?autoReconnect=true&useUnicode=true&characterEncoding=UTF-8&allowMultiQueries=true&useSSL=false&&serverTimezone=GMT%2B8
+    username: root
+    password: root
+    filters: stat,wall
+    druid:
+      initial-size: 10
+      min-idle: 10
+      max-active: 30
+      test-on-borrow: true
+      time-between-eviction-runs-millis: 60000
+      min-evictable-idle-time-millis: 300000
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+
+logging:
+  level:
+    root: INFO
+    org.apache.ibatis: info
+    java-utils: debug
+  config: classpath:logback.xml
+
+mybatis-plus:
+  mapper-locations: classpath*:/mapper/**/*.xml
+  configuration:
+    map-underscore-to-camel-case: true
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+
+pagehelper:
+  helper-dialect: mysql
+  reasonable: false
+  support-methods-arguments: true
+  params: count=countSql
+  returnPageInfo: check
