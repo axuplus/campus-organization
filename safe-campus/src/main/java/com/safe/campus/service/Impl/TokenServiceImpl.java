@@ -143,6 +143,6 @@ public class TokenServiceImpl extends ServiceImpl<SysAdminUserMapper, SysAdmin> 
                 return WrapMapper.ok(names.stream().anyMatch(name -> "保安".equals(name)));
             }
         }
-        return null;
+        return WrapMapper.ok(false);
     }
 }
