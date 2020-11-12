@@ -14,4 +14,5 @@ public interface TokenService extends IService<SysAdmin> {
 
     Wrapper<ModuleConfVo> getModuleConf(Long userId);
 
+    Wrapper checkAdmin(Long userId);
 }

@@ -23,9 +23,6 @@ import java.util.List;
 @Mapper
 public interface SysUserRoleMapper extends BaseMapper<SysUserRole> {
 
-    @Delete("delete from sys_user_role where user_id = #{userId}")
-    void deleteByAdminId(@Param("userId") Long adminId);
-
     @Select("SELECT\n" +
             "\ta.role_name \n" +
             "FROM\n" +

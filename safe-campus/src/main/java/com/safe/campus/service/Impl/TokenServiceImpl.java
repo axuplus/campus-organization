@@ -12,10 +12,7 @@ import com.safe.campus.about.utils.date.DateUtil;
 import com.safe.campus.about.utils.wrapper.WrapMapper;
 import com.safe.campus.about.utils.wrapper.Wrapper;
 import com.safe.campus.enums.ErrorCodeEnum;
-import com.safe.campus.mapper.MasterRouteMapper;
-import com.safe.campus.mapper.RouteConfMapper;
-import com.safe.campus.mapper.SchoolTeacherMapper;
-import com.safe.campus.mapper.SysAdminUserMapper;
+import com.safe.campus.mapper.*;
 import com.safe.campus.model.domain.MasterRoute;
 import com.safe.campus.model.domain.RouteConf;
 import com.safe.campus.model.domain.SysAdmin;
@@ -50,6 +47,9 @@ public class TokenServiceImpl extends ServiceImpl<SysAdminUserMapper, SysAdmin> 
 
     @Autowired
     private MasterRouteMapper routeMapper;
+
+    @Autowired
+    private SysUserRoleMapper userRoleMapper;
 
     @Value(value = "${token.secretKey}")
     private String token_secret_key;
@@ -131,6 +131,17 @@ public class TokenServiceImpl extends ServiceImpl<SysAdminUserMapper, SysAdmin> 
                 }
             }
             return WrapMapper.ok(confVo);
+        }
+        return null;
+    }
+
+    @Override
+    public Wrapper checkAdmin(Long userId) {
+        if (userId != null) {
+            List<String> names = userRoleMapper.getRoleNamesByUserId(userId);
+            if (PublicUtil.isNotEmpty(names)) {
+                return WrapMapper.ok(names.stream().anyMatch(name -> "保安".equals(name)));
+            }
         }
         return null;
     }

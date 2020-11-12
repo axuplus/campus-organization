@@ -57,4 +57,10 @@ public class TokenController extends BaseController {
     public Wrapper<ModuleConfVo> getModuleConf(@RequestParam("userId") Long userId) {
         return tokenService.getModuleConf(userId);
     }
+
+    @GetMapping(value = "/check")
+    @ApiModelProperty(value = "检查登录账号有没有保安角色", notes = "检查登录账号有没有保安角色")
+    public Wrapper checkAdmin(@RequestParam("userId") Long userId) {
+        return tokenService.checkAdmin(userId);
+    }
 }

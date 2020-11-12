@@ -22,6 +22,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -53,46 +54,98 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
 
     @Override
     public Wrapper<MenuListVo> listMenu(Long roleId) {
+//        MenuListVo menuListVo = new MenuListVo();
+//        MenuListVo.BaseInfo.RoleInfo roleInfo = new MenuListVo.BaseInfo.RoleInfo();
+//        MenuListVo.BaseInfo baseInfo  = new MenuListVo.BaseInfo();
+//        List<MenuListVo.BaseInfo> baseInfoList = new ArrayList<>();
+//        List<MenuListVo.BaseInfo.RoleInfo> list = new ArrayList<>();
+//        SysRole sysRole = roleMapper.selectById(roleId);
+//        menuListVo.setRoleId(roleId);
+//        menuListVo.setRoleName(sysRole.getRoleName());
+//        roleInfo.setName("组织管理");
+//        List<SysModule> modules = moduleMapper.getList();
+//        List<MenuListVo.BaseInfo.RoleInfo.ModuleInfo> moduleInfos = new ArrayList<>();
+//        for (SysModule module : modules) {
+//            MenuListVo.BaseInfo.RoleInfo.ModuleInfo moduleInfo = new MenuListVo.BaseInfo.RoleInfo.ModuleInfo();
+//            moduleInfo.setModuleName(module.getModuleName());
+//            QueryWrapper<SysMenu> menuQueryWrapper = new QueryWrapper<>();
+//            menuQueryWrapper.eq("module_id", module.getId());
+//            List<SysMenu> menus = menuMapper.selectList(menuQueryWrapper);
+//            List<MenuListVo.BaseInfo.RoleInfo.ModuleInfo.MenuInfo> menuInfos = new ArrayList<>();
+//            for (SysMenu menu : menus) {
+//                MenuListVo.BaseInfo.RoleInfo.ModuleInfo.MenuInfo info = new MenuListVo.BaseInfo.RoleInfo.ModuleInfo.MenuInfo();
+//                SysRoleMenu sysRoleMenu = roleMenuMapper.selectOne(new QueryWrapper<SysRoleMenu>().eq("role_id", roleId).eq("menu_id", menu.getId()));
+//                if (PublicUtil.isNotEmpty(sysRoleMenu)) {
+//                    info.setChecked(true);
+//                } else {
+//                    info.setChecked(false);
+//                }
+//                info.setId(menu.getId());
+//                info.setType(menu.getType());
+//                info.setDescription(menu.getDescription());
+//                menuInfos.add(info);
+//            }
+//            moduleInfo.setMenuInfo(menuInfos);
+//            moduleInfos.add(moduleInfo);
+//        }
+//        roleInfo.setModuleInfo(moduleInfos);
+//        list.add(roleInfo);
+//        baseInfo.setName("基本设置");
+//        baseInfo.setRoleIfo(list);
+//        baseInfoList.add(baseInfo);
+//        menuListVo.setBaseInfo(baseInfoList);
+
+
         MenuListVo menuListVo = new MenuListVo();
-        MenuListVo.BaseInfo.RoleInfo roleInfo = new MenuListVo.BaseInfo.RoleInfo();
-        MenuListVo.BaseInfo baseInfo  = new MenuListVo.BaseInfo();
-        List<MenuListVo.BaseInfo> baseInfoList = new ArrayList<>();
-        List<MenuListVo.BaseInfo.RoleInfo> list = new ArrayList<>();
         SysRole sysRole = roleMapper.selectById(roleId);
         menuListVo.setRoleId(roleId);
         menuListVo.setRoleName(sysRole.getRoleName());
-        roleInfo.setName("组织管理");
         List<SysModule> modules = moduleMapper.getList();
-        List<MenuListVo.BaseInfo.RoleInfo.ModuleInfo> moduleInfos = new ArrayList<>();
-        for (SysModule module : modules) {
-            MenuListVo.BaseInfo.RoleInfo.ModuleInfo moduleInfo = new MenuListVo.BaseInfo.RoleInfo.ModuleInfo();
-            moduleInfo.setModuleName(module.getModuleName());
-            QueryWrapper<SysMenu> menuQueryWrapper = new QueryWrapper<>();
-            menuQueryWrapper.eq("module_id", module.getId());
-            List<SysMenu> menus = menuMapper.selectList(menuQueryWrapper);
-            List<MenuListVo.BaseInfo.RoleInfo.ModuleInfo.MenuInfo> menuInfos = new ArrayList<>();
-            for (SysMenu menu : menus) {
-                MenuListVo.BaseInfo.RoleInfo.ModuleInfo.MenuInfo info = new MenuListVo.BaseInfo.RoleInfo.ModuleInfo.MenuInfo();
-                SysRoleMenu sysRoleMenu = roleMenuMapper.selectOne(new QueryWrapper<SysRoleMenu>().eq("role_id", roleId).eq("menu_id", menu.getId()));
-                if (PublicUtil.isNotEmpty(sysRoleMenu)) {
-                    info.setChecked(true);
-                } else {
-                    info.setChecked(false);
+        Map<String, List<SysModule>> owneds = modules.stream().collect(Collectors.groupingBy(SysModule::getOwned));
+        if (PublicUtil.isNotEmpty(owneds)) {
+            List<MenuListVo.BaseInfo> baseInfoList = new ArrayList<>();
+            owneds.forEach((ok, ov) -> {
+                MenuListVo.BaseInfo base = new MenuListVo.BaseInfo();
+                base.setName(ok);
+                List<MenuListVo.BaseInfo.RoleInfo.ModuleInfo> moduleInfos = new ArrayList<>();
+                Map<String, List<SysModule>> belongs = ov.parallelStream().collect(Collectors.groupingBy(SysModule::getBelongs));
+                if (PublicUtil.isNotEmpty(belongs)) {
+                    List<MenuListVo.BaseInfo.RoleInfo> roleInfoList = new ArrayList<>();
+                    belongs.forEach((bk, bv) -> {
+                        MenuListVo.BaseInfo.RoleInfo roleInfo = new MenuListVo.BaseInfo.RoleInfo();
+                        roleInfo.setName(bk);
+                        bv.forEach(module -> {
+                            MenuListVo.BaseInfo.RoleInfo.ModuleInfo moduleInfo = new MenuListVo.BaseInfo.RoleInfo.ModuleInfo();
+                            moduleInfo.setModuleName(module.getModuleName());
+                            QueryWrapper<SysMenu> menuQueryWrapper = new QueryWrapper<>();
+                            menuQueryWrapper.eq("module_id", module.getId());
+                            List<SysMenu> menus = menuMapper.selectList(menuQueryWrapper);
+                            List<MenuListVo.BaseInfo.RoleInfo.ModuleInfo.MenuInfo> menuInfos = new ArrayList<>();
+                            menus.forEach(menu -> {
+                                MenuListVo.BaseInfo.RoleInfo.ModuleInfo.MenuInfo info = new MenuListVo.BaseInfo.RoleInfo.ModuleInfo.MenuInfo();
+                                SysRoleMenu sysRoleMenu = roleMenuMapper.selectOne(new QueryWrapper<SysRoleMenu>().eq("role_id", roleId).eq("menu_id", menu.getId()));
+                                if (PublicUtil.isNotEmpty(sysRoleMenu)) {
+                                    info.setChecked(true);
+                                } else {
+                                    info.setChecked(false);
+                                }
+                                info.setId(menu.getId());
+                                info.setType(menu.getType());
+                                info.setDescription(menu.getDescription());
+                                menuInfos.add(info);
+                            });
+                            moduleInfo.setMenuInfo(menuInfos);
+                            moduleInfos.add(moduleInfo);
+                        });
+                        roleInfo.setModuleInfo(moduleInfos);
+                        roleInfoList.add(roleInfo);
+                    });
+                    base.setRoleIfo(roleInfoList);
                 }
-                info.setId(menu.getId());
-                info.setType(menu.getType());
-                info.setDescription(menu.getDescription());
-                menuInfos.add(info);
-            }
-            moduleInfo.setMenuInfo(menuInfos);
-            moduleInfos.add(moduleInfo);
+                baseInfoList.add(base);
+            });
+            menuListVo.setBaseInfo(baseInfoList);
         }
-        roleInfo.setModuleInfo(moduleInfos);
-        list.add(roleInfo);
-        baseInfo.setName("基本设置");
-        baseInfo.setRoleIfo(list);
-        baseInfoList.add(baseInfo);
-        menuListVo.setBaseInfo(baseInfoList);
         return WrapMapper.ok(menuListVo);
     }
 

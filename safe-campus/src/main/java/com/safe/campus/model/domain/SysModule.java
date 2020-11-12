@@ -13,4 +13,6 @@ public class SysModule {
 
     private Long id;
     private String moduleName;
+    private String belongs;
+    private String owned;
 }
