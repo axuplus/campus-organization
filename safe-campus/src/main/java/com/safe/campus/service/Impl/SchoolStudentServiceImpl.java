@@ -187,39 +187,40 @@ public class SchoolStudentServiceImpl extends ServiceImpl<SchoolStudentMapper, S
 
     @Override
     public PageWrapper<List<SchoolStudentListVo>> searchStudent(Long masterId, String context, BaseQueryDto baseQueryDto) {
-        if (null != context) {
-            QueryWrapper<SchoolStudent> queryWrapper = new QueryWrapper<>();
+        QueryWrapper<SchoolStudent> queryWrapper = new QueryWrapper<>();
+        if (null != context && !"".equals(context)) {
             queryWrapper.eq("master_id", masterId).like("s_name", context);
-            Page page = PageHelper.startPage(baseQueryDto.getPage(), baseQueryDto.getPage_size());
-            List<SchoolStudent> students = studentMapper.selectList(queryWrapper);
-            Long total = page.getTotal();
-            if (PublicUtil.isNotEmpty(students)) {
-                List<SchoolStudentListVo> vos = new ArrayList<>();
-                students.forEach(s -> {
-                    SchoolStudentListVo listVo = new SchoolStudentListVo();
-                    listVo.setId(s.getId().toString());
-                    listVo.setIdNumber(s.getIdNumber());
-                    listVo.setSName(s.getSName());
-                    listVo.setSNumber(s.getSNumber());
-                    if (null != s.getClassId()) {
-                        listVo.setClassName(classMapper.selectById(s.getClassId()).getClassName());
-                    }
-                    if (null != s.getClassInfoId()) {
-                        listVo.setClassInfoName(infoMapper.selectById(s.getClassInfoId()).getClassInfoName());
-                    }
-                    if (null != s.getSex()) {
-                        listVo.setSex(s.getSex());
-                    }
-                    if (null != s.getType()) {
-                        listVo.setType(s.getType());
-                    }
-                    vos.add(listVo);
-                });
-                return PageWrapMapper.wrap(vos, new PageUtil(total.intValue(), baseQueryDto.getPage(), baseQueryDto.getPage_size()));
-            }
-            return PageWrapMapper.wrap(200, "暂无数据");
+        } else {
+            queryWrapper.eq("master_id", masterId).orderByDesc("created_time");
         }
-        return null;
+        Page page = PageHelper.startPage(baseQueryDto.getPage(), baseQueryDto.getPage_size());
+        List<SchoolStudent> students = studentMapper.selectList(queryWrapper);
+        Long total = page.getTotal();
+        if (PublicUtil.isNotEmpty(students)) {
+            List<SchoolStudentListVo> vos = new ArrayList<>();
+            students.forEach(s -> {
+                SchoolStudentListVo listVo = new SchoolStudentListVo();
+                listVo.setId(s.getId().toString());
+                listVo.setIdNumber(s.getIdNumber());
+                listVo.setSName(s.getSName());
+                listVo.setSNumber(s.getSNumber());
+                if (null != s.getClassId()) {
+                    listVo.setClassName(classMapper.selectById(s.getClassId()).getClassName());
+                }
+                if (null != s.getClassInfoId()) {
+                    listVo.setClassInfoName(infoMapper.selectById(s.getClassInfoId()).getClassInfoName());
+                }
+                if (null != s.getSex()) {
+                    listVo.setSex(s.getSex());
+                }
+                if (null != s.getType()) {
+                    listVo.setType(s.getType());
+                }
+                vos.add(listVo);
+            });
+            return PageWrapMapper.wrap(vos, new PageUtil(total.intValue(), baseQueryDto.getPage(), baseQueryDto.getPage_size()));
+        }
+        return PageWrapMapper.wrap(200, "暂无数据");
     }
 
     @Override
@@ -395,13 +396,13 @@ public class SchoolStudentServiceImpl extends ServiceImpl<SchoolStudentMapper, S
                                 .replace(".PNG", "");
                         logger.warn("idNumber {}", idNumber);
                         if ("".equals(name) || "".equals(idNumber)) {
-                            return WrapMapper.wrap(400, "照片命名不合法");
+                            return WrapMapper.wrap(400, "照片命名不合法", "身份证号码是 " + idNumber + "/姓名是 " + name);
                         }
                         QueryWrapper<SchoolStudent> studentQueryWrapper = new QueryWrapper<>();
                         studentQueryWrapper.eq("s_name", name).eq("id_number", idNumber).eq("master_id", masterId);
                         SchoolStudent student = studentMapper.selectOne(studentQueryWrapper);
                         if (PublicUtil.isEmpty(student)) {
-                            return WrapMapper.wrap(400, "学生不存在", student);
+                            return WrapMapper.wrap(400, "学生不存在 ", "身份证号码是 " + idNumber + " 姓名是" + name);
                             //throw new BizException(ErrorCodeEnum.PUB10000020);
                         }
                         InputStream inputStream = zip.getInputStream(entry);
@@ -523,6 +524,12 @@ public class SchoolStudentServiceImpl extends ServiceImpl<SchoolStudentMapper, S
         }
         return WrapMapper.ok(vos);
     }
+
+    @Override
+    public Wrapper test() {
+        SchoolStudent student = studentMapper.selectById(1326944240940474368L);
+        return WrapMapper.ok(student);
+    }
 }
 
 
@@ -572,7 +579,7 @@ class HandleStudent implements Callable {
         } else {
             student.setId(idWorker.nextId());
             student.setMasterId(masterId);
-            student.setIdNumber(s.getIdNumber());
+            student.setIdNumber(s.getIdNumber().replaceAll(" ", ""));
             student.setSName(s.getName());
             student.setCreatedTime(new Date());
             student.setCreatedUser(loginAuthDto.getUserId());

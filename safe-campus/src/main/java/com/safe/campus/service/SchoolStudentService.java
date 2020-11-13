@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.safe.campus.about.dto.LoginAuthDto;
 import com.safe.campus.about.utils.wrapper.BaseQueryDto;
 import com.safe.campus.about.utils.wrapper.PageWrapper;
+import com.safe.campus.about.utils.wrapper.WrapMapper;
 import com.safe.campus.model.domain.SchoolStudent;
 import com.safe.campus.model.dto.SchoolStudentDto;
 import com.safe.campus.about.utils.wrapper.Wrapper;
@@ -51,4 +52,7 @@ public interface SchoolStudentService extends IService<SchoolStudent> {
     Wrapper<List<SchoolStudentBuildingVo>> getStudentBuildingInfo(Long masterId, Integer type, Long id);
 
     Wrapper<List<SchoolClassStudentVo>> getSchoolClassStudent(Long masterId, Long id);
+
+    Wrapper test();
+
 }

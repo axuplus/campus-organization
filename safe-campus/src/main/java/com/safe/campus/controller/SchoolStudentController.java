@@ -8,6 +8,7 @@ import com.safe.campus.about.dto.LoginAuthDto;
 import com.safe.campus.about.utils.service.GobalInterface;
 import com.safe.campus.about.utils.wrapper.BaseQueryDto;
 import com.safe.campus.about.utils.wrapper.PageWrapper;
+import com.safe.campus.about.utils.wrapper.WrapMapper;
 import com.safe.campus.mapper.BuildingBedMapper;
 import com.safe.campus.model.domain.BuildingBed;
 import com.safe.campus.model.dto.SchoolStudentDto;
@@ -120,5 +121,10 @@ public class SchoolStudentController extends BaseController {
     @GetMapping("/classInfo")
     public Wrapper<List<SchoolClassStudentVo>> getSchoolClassStudent(@RequestParam("masterId") Long masterId, @RequestParam(value = "id", required = false) Long id) {
         return schoolStudentService.getSchoolClassStudent(masterId, id);
+    }
+
+    @GetMapping("/test")
+    public Wrapper test(){
+        return schoolStudentService.test();
     }
 }

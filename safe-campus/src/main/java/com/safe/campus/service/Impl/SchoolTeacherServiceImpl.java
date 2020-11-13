@@ -293,16 +293,17 @@ public class SchoolTeacherServiceImpl extends ServiceImpl<SchoolTeacherMapper, S
 
     @Override
     public PageWrapper<List<SchoolTeacherVo>> searchTeacherInfo(Long masterId, String context, BaseQueryDto baseQueryDto) {
-        if ("".equals(context)) {
-            return PageWrapMapper.wrap(200, "搜索条件不能为空");
-        }
         QueryWrapper<SchoolTeacher> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("master_id", masterId)
-                .like("t_name", context).or()
-                .like("t_number", context).or()
-                .like("phone", context).or()
-                .like("join_time", context)
-                .orderByDesc("created_time");
+        if (null != context && !"".equals(context)) {
+            queryWrapper.eq("master_id", masterId)
+                    .like("t_name", context).or()
+                    .like("t_number", context).or()
+                    .like("phone", context).or()
+                    .like("join_time", context)
+                    .orderByDesc("created_time");
+        } else {
+            queryWrapper.eq("master_id", masterId).orderByDesc("created_time ");
+        }
         Page page = PageHelper.startPage(baseQueryDto.getPage(), baseQueryDto.getPage_size());
         List<SchoolTeacher> teachers = teacherMapper.selectList(queryWrapper);
         Long total = page.getTotal();
