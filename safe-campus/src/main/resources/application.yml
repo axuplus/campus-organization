@@ -92,3 +92,4 @@ url:
     - /others/getAllBuildings
     - /others/getPersonsByType
     - /others/getBuildingNoAndLevels
+    - /admin/check

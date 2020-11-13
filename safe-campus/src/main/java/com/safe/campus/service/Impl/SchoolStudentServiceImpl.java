@@ -223,7 +223,10 @@ public class SchoolStudentServiceImpl extends ServiceImpl<SchoolStudentMapper, S
     }
 
     @Override
-    public Wrapper importSchoolConcentrator(Long masterId, MultipartFile file, LoginAuthDto loginAuthDto) throws Exception {
+    public Wrapper importSchoolConcentrator(MultipartFile file, LoginAuthDto loginAuthDto) throws Exception {
+        SysAdmin sysAdmin = userMapper.selectById(loginAuthDto.getUserId());
+        Long masterId = sysAdmin.getMasterId();
+        logger.info("masterId {}", masterId);
         if (file.isEmpty()) {
             logger.info("上传文件为空");
             throw new BizException(ErrorCodeEnum.PUB10000006);
@@ -240,6 +243,7 @@ public class SchoolStudentServiceImpl extends ServiceImpl<SchoolStudentMapper, S
             logger.info("Excel导入失败", e);
         }
         logger.info("Excel {}", list);
+        logger.info("Excel 的大小是 {}", list.size());
         if (PublicUtil.isNotEmpty(list)) {
             // 自检idNumber
             Map<String, Long> collect = list.parallelStream().collect(Collectors.groupingBy(StudentExcelDto::getIdNumber, Collectors.counting()));
@@ -253,6 +257,8 @@ public class SchoolStudentServiceImpl extends ServiceImpl<SchoolStudentMapper, S
             // 检查床位
             List<StudentExcelDto> errorDtos = new ArrayList<>();
             List<StudentExcelDto> errorBeds = new ArrayList<>();
+            List<StudentExcelDto> errorClass = new ArrayList<>();
+            List<StudentExcelDto> errorClassInfo = new ArrayList<>();
             for (StudentExcelDto s : list) {
                 if ("住校生".equals(s.getType())) {
                     if (null != s.getBuildingBed() && null != s.getBuildingLevel() && null != s.getBuildingRoom() && null != s.getBuildingNo()) {
@@ -272,12 +278,31 @@ public class SchoolStudentServiceImpl extends ServiceImpl<SchoolStudentMapper, S
                         }
                     }
                 }
+                // 检查年级班级
+                QueryWrapper<SchoolClass> classQueryWrapper = new QueryWrapper<>();
+                classQueryWrapper.eq("class_name", s.getClassLevel()).eq("master_id", masterId);
+                SchoolClass schoolClass = classMapper.selectOne(classQueryWrapper);
+                if (PublicUtil.isEmpty(schoolClass)) {
+                    errorClass.add(s);
+                }
+                QueryWrapper<SchoolClassInfo> classInfoQueryWrapper = new QueryWrapper<>();
+                classInfoQueryWrapper.eq("class_id", schoolClass.getId()).eq("class_info_name", s.getClassInfo());
+                SchoolClassInfo schoolClassInfo = infoMapper.selectOne(classInfoQueryWrapper);
+                if (PublicUtil.isEmpty(schoolClassInfo)) {
+                    errorClassInfo.add(s);
+                }
             }
             if (PublicUtil.isNotEmpty(errorDtos)) {
                 return WrapMapper.wrap(400, "学生住宿信息不存在", errorDtos);
             }
             if (PublicUtil.isNotEmpty(errorBeds)) {
                 return WrapMapper.wrap(400, "此床位已有学生", errorBeds);
+            }
+            if (PublicUtil.isNotEmpty(errorClass)) {
+                return WrapMapper.wrap(400, "年级不存在", errorClass);
+            }
+            if (PublicUtil.isNotEmpty(errorClassInfo)) {
+                return WrapMapper.wrap(400, "班级不存在", errorClassInfo);
             }
             QueryWrapper<SchoolStudent> studentQueryWrapper = new QueryWrapper<>();
             studentQueryWrapper.eq("master_id", masterId);
@@ -547,7 +572,7 @@ class HandleStudent implements Callable {
         } else {
             student.setId(idWorker.nextId());
             student.setMasterId(masterId);
-            student.setIdNumber(checkIdNumber(s.getIdNumber()));
+            student.setIdNumber(s.getIdNumber());
             student.setSName(s.getName());
             student.setCreatedTime(new Date());
             student.setCreatedUser(loginAuthDto.getUserId());
@@ -572,7 +597,7 @@ class HandleStudent implements Callable {
         }
         // 检查班级
         if (null != s.getClassInfo()) {
-            student.setClassInfoId(getThisStudentClassInfo(s.getClassInfo()));
+            student.setClassInfoId(getThisStudentClassInfo(s.getClassInfo(), student.getClassId()));
         }
         if (null != s.getType()) {
             if (1 == checkStudentType(s.getType())) {
@@ -602,20 +627,12 @@ class HandleStudent implements Callable {
             } else {
                 studentMapper.insert(student);
             }
-        } catch (
-                Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return true;
     }
 
-
-    private String checkIdNumber(String idNumber) {
-        if (idNumber.length() != 18) {
-            throw new BizException(ErrorCodeEnum.PUB10000022);
-        }
-        return idNumber;
-    }
 
     private Integer checkSex(String str) {
         if ("男".equals(str)) {
@@ -636,19 +653,13 @@ class HandleStudent implements Callable {
         QueryWrapper<SchoolClass> classQueryWrapper = new QueryWrapper<>();
         classQueryWrapper.eq("class_name", classLevel).eq("master_id", masterId);
         SchoolClass schoolClass = classMapper.selectOne(classQueryWrapper);
-        if (PublicUtil.isEmpty(schoolClass)) {
-            throw new BizException(ErrorCodeEnum.PUB10000025);
-        }
         return schoolClass.getId();
     }
 
-    private Long getThisStudentClassInfo(String classInfo) {
+    private Long getThisStudentClassInfo(String classInfo, Long classId) {
         QueryWrapper<SchoolClassInfo> classQueryWrapper = new QueryWrapper<>();
-        classQueryWrapper.eq("class_info_name", classInfo);
+        classQueryWrapper.eq("class_id", classId).eq("class_info_name", classInfo);
         SchoolClassInfo schoolClassInfo = infoMapper.selectOne(classQueryWrapper);
-        if (PublicUtil.isEmpty(schoolClassInfo)) {
-            throw new BizException(ErrorCodeEnum.PUB10000026);
-        }
         return schoolClassInfo.getId();
     }
 

@@ -42,7 +42,7 @@ public interface SchoolStudentService extends IService<SchoolStudent> {
 
     List<SchoolStudent> getAllIdsByName(String context);
 
-    Wrapper importSchoolConcentrator(Long masterId,MultipartFile file,  LoginAuthDto loginAuthDto) throws ExecutionException, InterruptedException, Exception;
+    Wrapper importSchoolConcentrator(MultipartFile file,  LoginAuthDto loginAuthDto) throws ExecutionException, InterruptedException, Exception;
 
     Wrapper importStudentPictureConcentrator(MultipartFile file, LoginAuthDto loginAuthDto) throws Exception;
 

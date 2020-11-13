@@ -97,8 +97,8 @@ public class SchoolStudentController extends BaseController {
     @Permission(url = qxurl, type = PermissionType.ADD)
     @PostMapping("/import/student")
     @ApiOperation("导入excel")
-    public Wrapper importStudentConcentrator(@RequestParam("masterId") Long masterId, @ApiParam(value = "file", required = true) MultipartFile file) throws Exception {
-        return schoolStudentService.importSchoolConcentrator(masterId, file, getLoginAuthDto());
+    public Wrapper importStudentConcentrator(@ApiParam(value = "file", required = true) MultipartFile file) throws Exception {
+        return schoolStudentService.importSchoolConcentrator(file, getLoginAuthDto());
     }
 
     @Permission(url = qxurl, type = PermissionType.ADD)
