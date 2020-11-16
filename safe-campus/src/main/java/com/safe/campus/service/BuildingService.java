@@ -63,4 +63,5 @@ public interface BuildingService extends IService<BuildingNo> {
     Wrapper deleteBuildingStudent(Long sId);
 
     List<SchoolStudentBuildingVo> getStudentBuildingInfo(Long masterId,Integer type, Long id);
+
 }

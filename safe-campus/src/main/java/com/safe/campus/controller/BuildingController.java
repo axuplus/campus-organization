@@ -104,7 +104,7 @@ public class BuildingController extends BaseController {
     @ApiOperation("楼幢 管理员列表")
     @GetMapping("/managerList")
     public PageWrapper<List<BuildingManagerVo>> managerList(
-            @ApiParam("楼幢ID ") @RequestParam(value = "id",required = false) Long id,
+            @ApiParam("楼幢ID ") @RequestParam(value = "id", required = false) Long id,
             @RequestParam("masterId") Long materId,
             BaseQueryDto baseQueryDto) {
         return buildingService.managerList(id, materId, baseQueryDto);
@@ -132,7 +132,7 @@ public class BuildingController extends BaseController {
 
     @ApiOperation("配置管理人下拉列表")
     @GetMapping("/get/buildingTeachers")
-    public Wrapper<List<SchoolClassTeachersVo>> listTeachers(@RequestParam("masterId")Long masterId) {
+    public Wrapper<List<SchoolClassTeachersVo>> listTeachers(@RequestParam("masterId") Long masterId) {
         return buildingService.getBuildingTeachers(masterId);
     }
 

@@ -594,9 +594,11 @@ public class ToOthersServiceImpl implements ToOthersService {
                     classInfo.setClassInfoName(schoolClassInfo.getClassInfoName());
                     if (null != schoolClassInfo.getTId()) {
                         SchoolTeacher teacher = teacherMapper.selectById(schoolClassInfo.getTId());
-                        classInfo.setTeacherId(teacher.getId());
-                        classInfo.setTeacherName(teacher.getTName());
-                        classInfo.setTeacherNumber(teacher.getTNumber());
+                        if (PublicUtil.isNotEmpty(teacher)) {
+                            classInfo.setTeacherId(teacher.getId());
+                            classInfo.setTeacherName(teacher.getTName());
+                            classInfo.setTeacherNumber(teacher.getTNumber());
+                        }
                     }
                     vo.setClassInfo(classInfo);
                 }
