@@ -70,8 +70,6 @@ url:
     - bycdao-ui
     - swagger-resources
     - /school/master/getIntroduction
-    - /admin/token
-    - /admin/exit
     - /file/img/upload
     - /others/selectStudentList
     - /others/getTeacherRoles
