@@ -49,7 +49,7 @@ public class SysAdminServiceImpl extends ServiceImpl<SysAdminUserMapper, SysAdmi
     private SysMenuMapper menuMapper;
 
     @Override
-    public Wrapper saveAdminUser(String userName, String password,Long masterId, LoginAuthDto loginAuthDto) {
+    public Wrapper saveAdminUser(String userName, String password, Long masterId, LoginAuthDto loginAuthDto) {
         if (null != userName && 0 != userName.length() && null != password && 0 != password.length()) {
             SysAdmin sysAdmin = adminUserMapper.selectById(loginAuthDto.getUserId());
             SysAdmin admin = new SysAdmin();
@@ -77,6 +77,7 @@ public class SysAdminServiceImpl extends ServiceImpl<SysAdminUserMapper, SysAdmi
 
     /**
      * 这是初始化请求头的时候去验证TokenInterceptor里面的注解
+     *
      * @param userId
      * @param url
      * @param type
@@ -145,7 +146,7 @@ public class SysAdminServiceImpl extends ServiceImpl<SysAdminUserMapper, SysAdmi
     @Override
     public PageWrapper<List<AdminUserVo>> listAdminUser(Long masterId, LoginAuthDto loginAuthDto, BaseQueryDto baseQueryDto) {
         QueryWrapper<SysAdmin> adminQueryWrapper = new QueryWrapper<>();
-        adminQueryWrapper.eq("master_id",masterId);
+        adminQueryWrapper.eq("master_id", masterId);
         Page page = PageHelper.startPage(baseQueryDto.getPage(), baseQueryDto.getPage_size());
         List<SysAdmin> sysAdmins = adminUserMapper.selectList(adminQueryWrapper);
         Long total = page.getTotal();
@@ -158,6 +159,41 @@ public class SysAdminServiceImpl extends ServiceImpl<SysAdminUserMapper, SysAdmi
             });
             return PageWrapMapper.wrap(vos, new PageUtil(total.intValue(), baseQueryDto.getPage(), baseQueryDto.getPage_size()));
         }
-        return PageWrapMapper.wrap(200,"暂无数据");
+        return PageWrapMapper.wrap(200, "暂无数据");
+    }
+
+
+    @Override
+    public Wrapper changePassword(String id, String passWord, String newPwd,LoginAuthDto loginAuthDto) {
+
+        SysAdmin admin = adminUserMapper.selectById(id);
+        if(loginAuthDto.getType()==2){
+            if(admin.getType()!=1){
+                if (Md5Utils.md5Str(passWord).equals(admin.getPassword())) {
+                    admin.setPassword(Md5Utils.md5Str(newPwd));
+                    adminUserMapper.updateById(admin);
+                    return WrapMapper.ok("修改成功");
+                } else {
+                    return WrapMapper.error("旧密码输入错误");
+                }
+            }else {
+                return WrapMapper.error("此账号密码不能修改");
+            }
+        }
+        if(loginAuthDto.getType()==3){
+            if(admin.getType()==3){
+                if (Md5Utils.md5Str(passWord).equals(admin.getPassword())) {
+                    admin.setPassword(Md5Utils.md5Str(newPwd));
+                    adminUserMapper.updateById(admin);
+                    return WrapMapper.ok("修改成功");
+                } else {
+                    return WrapMapper.error("旧密码输入错误");
+                }
+            }else {
+                return WrapMapper.error("此账号密码不能修改");
+            }
+        }
+
+        return WrapMapper.error();
     }
 }

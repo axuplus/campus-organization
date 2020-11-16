@@ -32,4 +32,6 @@ public interface SysAdminService extends IService<SysAdmin> {
 
     PageWrapper<List<AdminUserVo>> listAdminUser(Long masterId, LoginAuthDto loginAuthDto, BaseQueryDto baseQueryDto);
 
+    Wrapper changePassword(String id,String passWord,String newPwd,LoginAuthDto loginAuthDto);
+
 }

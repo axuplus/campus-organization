@@ -76,4 +76,12 @@ public class SysAdminController extends BaseController {
         return adminService.listAdminUser(masterId, getLoginAuthDto(), baseQueryDto);
     }
 
+    @GetMapping("/changePassword")
+    @ApiOperation("修改密码")
+    public Wrapper changePassword(@RequestParam("id") String id,
+                                  @RequestParam("passWord") String passWord,
+                                  @RequestParam("newPwd") String newPwd){
+        return adminService.changePassword(id,passWord,newPwd,getLoginAuthDto());
+    }
+
 }
