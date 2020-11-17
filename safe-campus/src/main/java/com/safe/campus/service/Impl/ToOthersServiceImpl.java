@@ -448,7 +448,9 @@ public class ToOthersServiceImpl implements ToOthersService {
                             SchoolClassInfo classInfo = classInfoMapper.selectById(student.getClassInfoId());
                             if (null != classInfo.getTId()) {
                                 SchoolTeacher teacher = teacherMapper.selectById(classInfo.getTId());
-                                bed.setTeacherInfo(teacher.getTName() + "/" + teacher.getPhone());
+                               if(PublicUtil.isNotEmpty(teacher)){
+                                   bed.setTeacherInfo(teacher.getTName() + "/" + teacher.getPhone());
+                               }
                             }
                         }
                         String doGet = HttpUtils.DO_GET(GET_STATE + "?userId=" + student.getId(), null, null);
