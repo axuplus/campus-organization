@@ -165,22 +165,8 @@ public class SysAdminServiceImpl extends ServiceImpl<SysAdminUserMapper, SysAdmi
 
     @Override
     public Wrapper changePassword(String id, String passWord, String newPwd,LoginAuthDto loginAuthDto) {
-
         SysAdmin admin = adminUserMapper.selectById(id);
-        if(loginAuthDto.getType()==2){
-            if(admin.getType()!=1){
-                if (Md5Utils.md5Str(passWord).equals(admin.getPassword())) {
-                    admin.setPassword(Md5Utils.md5Str(newPwd));
-                    adminUserMapper.updateById(admin);
-                    return WrapMapper.ok("修改成功");
-                } else {
-                    return WrapMapper.error("旧密码输入错误");
-                }
-            }else {
-                return WrapMapper.error("此账号密码不能修改");
-            }
-        }
-        if(loginAuthDto.getType()==3){
+        if(loginAuthDto.getType()==2 || loginAuthDto.getType()==3){
             if(admin.getType()==3){
                 if (Md5Utils.md5Str(passWord).equals(admin.getPassword())) {
                     admin.setPassword(Md5Utils.md5Str(newPwd));
@@ -193,7 +179,7 @@ public class SysAdminServiceImpl extends ServiceImpl<SysAdminUserMapper, SysAdmi
                 return WrapMapper.error("此账号密码不能修改");
             }
         }
-
         return WrapMapper.error();
     }
+
 }
