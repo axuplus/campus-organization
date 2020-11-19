@@ -91,3 +91,5 @@ url:
     - /others/getPersonsByType
     - /others/getBuildingNoAndLevels
     - /admin/check
+    - /admin/token
+    - /admin/exit
