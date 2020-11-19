@@ -1,0 +1,95 @@
+server:
+  port: 8070
+spring:
+  profiles:
+    active: '@profileActive@'
+  application:
+    name: '@pom.artifactId@'
+  main:
+    allow-bean-definition-overriding: true
+  datasource:
+    driver-class-name: com.mysql.jdbc.Driver
+    url: jdbc:mysql://120.78.162.181:53306/test_db?autoReconnect=true&useUnicode=true&characterEncoding=UTF-8&allowMultiQueries=true&useSSL=false&&serverTimezone=GMT%2B8
+    username: root
+    password: root
+    filters: stat,wall
+    druid:
+      initial-size: 10
+      min-idle: 10
+      max-active: 30
+      test-on-borrow: true
+      time-between-eviction-runs-millis: 60000
+      min-evictable-idle-time-millis: 300000
+  redis:
+    database: 0
+    host: 120.78.162.181
+    port: 56379
+    password: redis@123456
+    timeout: 10000
+  servlet:
+    multipart:
+      max-file-size: -1MB
+      max-request-size: -1MB
+
+logging:
+  level:
+    root: INFO
+    org.apache.ibatis: info
+    java-utils: debug
+  config: classpath:logback.xml
+
+mybatis-plus:
+  mapper-locations: classpath*:/mapper/**/*.xml
+  configuration:
+    map-underscore-to-camel-case: true
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+
+pagehelper:
+  helper-dialect: mysql
+  reasonable: false
+  support-methods-arguments: true
+  params: count=countSql
+  returnPageInfo: check
+
+upload-file:
+  imgPath: /images/admin-organization
+  imgUrl: http://vip.amsure.cn:8050/images/admin-organization/
+  imgThumbPath: /images/admin-organization
+  imgThumbUrl: http://vip.amsure.cn:8050/thumb/
+
+token:
+  secretKey: 9ac93552c203dde2a133a0988faa05b9
+  ttl: 7
+
+swagger:
+  enable: true
+
+url:
+  white-list:
+    - /doc.html
+    - bycdao-ui
+    - swagger-resources
+    - /school/master/getIntroduction
+    - /admin/token
+    - /admin/exit
+    - /file/img/upload
+    - /others/selectStudentList
+    - /others/getTeacherRoles
+    - /others/getStudentByIdNumber
+    - /others/getStudentTeacherByIdNumber
+    - /others/getFaceImgInfo
+    - /others/getTeacherForMiniApp
+    - /others/getTeacherByPhone
+    - /others/getStudentAndTeacherInfo
+    - /others/selectBuildingList
+    - /others/getBuildingInfoListByIds
+    - /others/getStudentsByRoom
+    - /others/getStudentsOrTeachersByType
+    - /others/getStudentByTeacherId
+    - /others/getStudentCountByTeacherPhone
+    - /others/getAllStudents
+    - /others/getAllTeachers
+    - /others/getAllBuildings
+    - /others/getPersonsByType
+    - /others/getBuildingNoAndLevels
+    - /admin/check

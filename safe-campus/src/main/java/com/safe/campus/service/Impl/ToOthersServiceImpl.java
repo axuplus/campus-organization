@@ -225,39 +225,43 @@ public class ToOthersServiceImpl implements ToOthersService {
             infoVo.setState(1);
             FaceImgInfoVo.StudentInfo studentInfo = new FaceImgInfoVo.StudentInfo();
             SchoolStudent student = studentMapper.selectById(id);
-            studentInfo.setId(student.getId());
-            studentInfo.setStudentName(student.getSName());
-            if (null != student.getType()) {
-                studentInfo.setType(student.getType());
+            if (PublicUtil.isNotEmpty(student)) {
+                studentInfo.setId(student.getId());
+                studentInfo.setStudentName(student.getSName());
+                if (null != student.getType()) {
+                    studentInfo.setType(student.getType());
+                }
+                if (null != student.getClassId()) {
+                    studentInfo.setClassName(classMapper.selectById(student.getClassId()).getClassName());
+                }
+                if (null != student.getClassInfoId()) {
+                    studentInfo.setClassInfoName(classInfoMapper.selectById(student.getClassInfoId()).getClassInfoName());
+                }
+                if (null != student.getImgId()) {
+                    studentInfo.setImg(sysFileService.getFileById(student.getImgId()).getFileUrl());
+                }
+                infoVo.setStudentInfo(studentInfo);
+                return WrapMapper.ok(infoVo);
             }
-            if (null != student.getClassId()) {
-                studentInfo.setClassName(classMapper.selectById(student.getClassId()).getClassName());
-            }
-            if (null != student.getClassInfoId()) {
-                studentInfo.setClassInfoName(classInfoMapper.selectById(student.getClassInfoId()).getClassInfoName());
-            }
-            if (null != student.getImgId()) {
-                studentInfo.setImg(sysFileService.getFileById(student.getImgId()).getFileUrl());
-            }
-            infoVo.setStudentInfo(studentInfo);
-            return WrapMapper.ok(infoVo);
         } else if ("T".equals(type)) {
             infoVo.setState(2);
             FaceImgInfoVo.TeacherInfo teacherInfo = new FaceImgInfoVo.TeacherInfo();
             SchoolTeacher teacher = teacherMapper.selectById(id);
-            teacherInfo.setId(teacher.getId());
-            if (null != teacher.getTNumber()) {
-                teacherInfo.setTNumber(teacher.getTNumber());
+            if (PublicUtil.isNotEmpty(teacher)) {
+                teacherInfo.setId(teacher.getId());
+                if (null != teacher.getTNumber()) {
+                    teacherInfo.setTNumber(teacher.getTNumber());
+                }
+                teacherInfo.setTeacherName(teacher.getTName());
+                teacherInfo.setSectionName(sectionMapper.selectById(teacher.getSectionId()).getSectionName());
+                if (teacher.getImgId() != null) {
+                    teacherInfo.setImg(sysFileService.getFileById(teacher.getImgId()).getFileUrl());
+                }
+                infoVo.setTeacherInfo(teacherInfo);
+                return WrapMapper.ok(infoVo);
             }
-            teacherInfo.setTeacherName(teacher.getTName());
-            teacherInfo.setSectionName(sectionMapper.selectById(teacher.getSectionId()).getSectionName());
-            if (teacher.getImgId() != null) {
-                teacherInfo.setImg(sysFileService.getFileById(teacher.getImgId()).getFileUrl());
-            }
-            infoVo.setTeacherInfo(teacherInfo);
-            return WrapMapper.ok(infoVo);
         }
-        return null;
+        return WrapMapper.wrap(200, "暂无数据", null);
     }
 
     @Override
@@ -444,7 +448,9 @@ public class ToOthersServiceImpl implements ToOthersService {
                             SchoolClassInfo classInfo = classInfoMapper.selectById(student.getClassInfoId());
                             if (null != classInfo.getTId()) {
                                 SchoolTeacher teacher = teacherMapper.selectById(classInfo.getTId());
-                                bed.setTeacherInfo(teacher.getTName() + "/" + teacher.getPhone());
+                               if(PublicUtil.isNotEmpty(teacher)){
+                                   bed.setTeacherInfo(teacher.getTName() + "/" + teacher.getPhone());
+                               }
                             }
                         }
                         String doGet = HttpUtils.DO_GET(GET_STATE + "?userId=" + student.getId(), null, null);
@@ -590,9 +596,11 @@ public class ToOthersServiceImpl implements ToOthersService {
                     classInfo.setClassInfoName(schoolClassInfo.getClassInfoName());
                     if (null != schoolClassInfo.getTId()) {
                         SchoolTeacher teacher = teacherMapper.selectById(schoolClassInfo.getTId());
-                        classInfo.setTeacherId(teacher.getId());
-                        classInfo.setTeacherName(teacher.getTName());
-                        classInfo.setTeacherNumber(teacher.getTNumber());
+                        if (PublicUtil.isNotEmpty(teacher)) {
+                            classInfo.setTeacherId(teacher.getId());
+                            classInfo.setTeacherName(teacher.getTName());
+                            classInfo.setTeacherNumber(teacher.getTNumber());
+                        }
                     }
                     vo.setClassInfo(classInfo);
                 }
