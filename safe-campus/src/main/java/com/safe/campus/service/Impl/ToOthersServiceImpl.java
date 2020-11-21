@@ -322,7 +322,7 @@ public class ToOthersServiceImpl implements ToOthersService {
                         sInfo.setClassName(classMapper.selectById(student.getClassId()).getClassName());
                     }
                     if (null != student.getClassInfoId()) {
-                        sInfo.setClassName(classInfoMapper.selectById(student.getClassInfoId()).getClassInfoName());
+                        sInfo.setClassInfoName(classInfoMapper.selectById(student.getClassInfoId()).getClassInfoName());
                     }
                     if (null != student.getIdNumber()) {
                         sInfo.setSIdNumber(student.getIdNumber());
@@ -448,9 +448,9 @@ public class ToOthersServiceImpl implements ToOthersService {
                             SchoolClassInfo classInfo = classInfoMapper.selectById(student.getClassInfoId());
                             if (null != classInfo.getTId()) {
                                 SchoolTeacher teacher = teacherMapper.selectById(classInfo.getTId());
-                               if(PublicUtil.isNotEmpty(teacher)){
-                                   bed.setTeacherInfo(teacher.getTName() + "/" + teacher.getPhone());
-                               }
+                                if (PublicUtil.isNotEmpty(teacher)) {
+                                    bed.setTeacherInfo(teacher.getTName() + "/" + teacher.getPhone());
+                                }
                             }
                         }
                         String doGet = HttpUtils.DO_GET(GET_STATE + "?userId=" + student.getId(), null, null);
@@ -742,8 +742,13 @@ public class ToOthersServiceImpl implements ToOthersService {
                         if (null != teacher.getSex()) {
                             vo.setSex(teacher.getSex());
                         }
-                        vo.setSectionId(teacher.getSectionId());
-                        vo.setSectionName(sectionMapper.selectById(teacher.getSectionId()).getSectionName());
+                        if (null != teacher.getSectionId()) {
+                            SchoolSection section = sectionMapper.selectById(teacher.getSectionId());
+                            if (PublicUtil.isNotEmpty(section)) {
+                                vo.setSectionId(section.getId());
+                                vo.setSectionName(section.getSectionName());
+                            }
+                        }
                         list.add(vo);
                     });
                     whiteListVo.setTeacherInfos(list);

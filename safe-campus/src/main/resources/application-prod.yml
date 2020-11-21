@@ -12,6 +12,11 @@ spring:
     url: jdbc:mysql://172.17.0.1:3306/campus_organization?autoReconnect=true&useUnicode=true&characterEncoding=UTF-8&allowMultiQueries=true&useSSL=false&&serverTimezone=GMT%2B8
     username: ztgz
     password: Axkj1Ztgz9Ypt?9FJcampusztgzPublic66
+#  datasource:
+#    driver-class-name: com.mysql.jdbc.Driver
+#    url: jdbc:mysql://172.17.0.2:3306/campus_organization?autoReconnect=true&useUnicode=true&characterEncoding=UTF-8&allowMultiQueries=true&useSSL=false&&serverTimezone=GMT%2B8
+#    username: shzx
+#    password: Axkj1Ztgz9Ypt?9FJcampusztgzPublic66
     filters: stat,wall
     druid:
       initial-size: 10
@@ -56,6 +61,11 @@ upload-file:
   imgUrl: http://ztgz.amsure.cn:8050/images/admin-organization/
   imgThumbPath: /images/admin-organization
   imgThumbUrl: http://ztgz.amsure.cn:8050/images/admin-organization/
+#upload-file:
+#  imgPath: /images/admin-organization
+#  imgUrl: http://ztgz.amsure.cn:8050/images/admin-organization/
+#  imgThumbPath: /images/admin-organization
+#  imgThumbUrl: http://ztgz.amsure.cn:8050/images/admin-organization/
 
 token:
   secretKey: 9ac93552c203dde2a133a0988faa05b9
