@@ -33,4 +33,5 @@ public class AllTeachersVo {
     private Long classInfoId;
     @ApiModelProperty(value = "班级名称")
     private String classInfoName;
+    private Long masterId;
 }

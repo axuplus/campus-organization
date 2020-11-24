@@ -164,7 +164,7 @@ public class SchoolStudentServiceImpl extends ServiceImpl<SchoolStudentMapper, S
             deviceFace.setUserId(map.getId().toString());
             deviceFace.setUserName(map.getSName());
             deviceFace.setUserType("S");
-            String update = HttpUtils.DO_POST(ToDevicesUrlConfig.UPDATE_TO_DEVICE, JSON.toJSONString(deviceFace), null, null);
+            String update = HttpUtils.DO_POST(ToDevicesUrlConfig.ADD_TO_DEVICE, JSON.toJSONString(deviceFace), null, null);
             logger.info("更新设备照片成功 {}", update);
         }
         return WrapMapper.ok("修改成功");

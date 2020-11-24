@@ -51,12 +51,16 @@ public interface ToOthersService {
 
     PageWrapper<List<AllStudentsVo>> getAllStudents(BaseQueryDto baseQueryDto);
 
-    PageWrapper<List<AllTeachersVo>> getAllTeachers(Long schoolId, BaseQueryDto baseQueryDto);
+    PageWrapper<List<AllTeachersVo>> getAllTeachers(BaseQueryDto baseQueryDto);
 
     Wrapper<List<BuildingClassVo>> getAllBuildings(Long schoolId);
 
     Wrapper<WhiteListVo> getPersonsByType(Long schoolId,Integer type);
 
     Wrapper<List<BuildingNoWithLevelVo>> getBuildingNoAndLevels(String schoolId);
+
+    Map getStudentTeacherByStudentId(Long studentId);
+
+    Wrapper getStudentInfoById(Long studentId);
 
 }

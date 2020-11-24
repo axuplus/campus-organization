@@ -66,6 +66,12 @@ public class ToOthersController {
         return toOthersService.getStudentTeacherByIdNumber(idNumber);
     }
 
+    @GetMapping("/getStudentTeacherByStudentId")
+    @ApiOperation(value = "获取学生班主任")
+    public Map getStudentTeacherByStudentId(@RequestParam("studentId") Long studentId) {
+        return toOthersService.getStudentTeacherByStudentId(studentId);
+    }
+
     @GetMapping("/getTeacherForMiniApp")
     @ApiOperation(value = "获取老师信息")
     public OthersTeacherVo getTeacherForMiniApp(@RequestParam("idNumber") String idNumber) {
@@ -139,14 +145,14 @@ public class ToOthersController {
 
     @GetMapping("/getAllStudents")
     @ApiOperation(value = "获取所有学生")
-    public PageWrapper<List<AllStudentsVo>> getAllStudents( BaseQueryDto baseQueryDto) {
+    public PageWrapper<List<AllStudentsVo>> getAllStudents(BaseQueryDto baseQueryDto) {
         return toOthersService.getAllStudents(baseQueryDto);
     }
 
     @GetMapping("/getAllTeachers")
     @ApiOperation(value = "获取所有老师")
-    public PageWrapper<List<AllTeachersVo>> getAllTeachers(@RequestParam("schoolId") Long schoolId, BaseQueryDto baseQueryDto) {
-        return toOthersService.getAllTeachers(schoolId, baseQueryDto);
+    public PageWrapper<List<AllTeachersVo>> getAllTeachers(BaseQueryDto baseQueryDto) {
+        return toOthersService.getAllTeachers(baseQueryDto);
     }
 
 
@@ -169,6 +175,11 @@ public class ToOthersController {
         return toOthersService.getBuildingNoAndLevels(schoolId);
     }
 
+    @ApiOperation("获取学生信息 （学生档案）")
+    @GetMapping("/getStudentInfoById")
+    public Wrapper getStudentInfoById(@RequestParam("studentId") Long studentId) {
+        return toOthersService.getStudentInfoById(studentId);
+    }
 
 }
 
