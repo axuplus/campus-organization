@@ -822,6 +822,10 @@ public class ToOthersServiceImpl implements ToOthersService {
             studentDocVo.setId(student.getId());
             studentDocVo.setType(student.getType());
             studentDocVo.setSIdNumber(student.getIdNumber());
+            studentDocVo.setName(student.getSName());
+            if(null != student.getSex()){
+                studentDocVo.setSex(student.getSex());
+            }
             if (null != student.getSNumber()) {
                 studentDocVo.setSNumber(student.getSNumber());
             }
@@ -843,8 +847,8 @@ public class ToOthersServiceImpl implements ToOthersService {
                     studentDocVo.setBuildingRoom(byIds.getBuildingRoom());
                     studentDocVo.setBuildingBed(byIds.getBedName());
                 }
-                return WrapMapper.ok(studentDocVo);
             }
+            return WrapMapper.ok(studentDocVo);
         }
         return WrapMapper.ok("暂无数据");
     }
