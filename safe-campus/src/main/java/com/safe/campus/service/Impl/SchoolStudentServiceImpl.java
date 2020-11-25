@@ -597,6 +597,14 @@ class HandleStudent implements Callable {
         // 检查性别
         if (null != s.getSex()) {
             student.setSex(checkSex(s.getSex()));
+        } else {
+            String substring = s.getIdNumber().substring(16, 17);
+            int b = Integer.parseInt(substring);
+            if (b % 2 == 0) {
+                student.setSex(0);
+            } else {
+                student.setSex(1);
+            }
         }
         // 检查年级
         if (null != s.getClassLevel()) {

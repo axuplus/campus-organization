@@ -94,6 +94,9 @@ public class SchoolTeacherServiceImpl extends ServiceImpl<SchoolTeacherMapper, S
         if (PublicUtil.isEmpty(teacherInfoDto)) {
             return WrapMapper.error("信息不能为空");
         }
+        if (PublicUtil.isNotEmpty(teacherMapper.selectOne(new QueryWrapper<SchoolTeacher>().eq("id_number", teacherInfoDto.getIdNumber())))) {
+            return WrapMapper.error("不可重复添加");
+        }
         SchoolTeacher teacher = new SchoolTeacher();
         teacher.setMasterId(teacherInfoDto.getMasterId());
         teacher.setId(gobalInterface.generateId());
@@ -426,6 +429,14 @@ public class SchoolTeacherServiceImpl extends ServiceImpl<SchoolTeacherMapper, S
                     // 去判断非空字段
                     if (null != t.getSex()) {
                         teacher.setSex(checkSex(t.getSex()));
+                    } else {
+                        String substring = t.getIdNumber().substring(16, 17);
+                        int b = Integer.parseInt(substring);
+                        if (b % 2 == 0) {
+                            teacher.setSex(0);
+                        } else {
+                            teacher.setSex(1);
+                        }
                     }
                     if (null != t.getTeacherNumber()) {
                         teacher.setTNumber(t.getTeacherNumber());

@@ -823,7 +823,7 @@ public class ToOthersServiceImpl implements ToOthersService {
             studentDocVo.setType(student.getType());
             studentDocVo.setSIdNumber(student.getIdNumber());
             studentDocVo.setName(student.getSName());
-            if(null != student.getSex()){
+            if (null != student.getSex()) {
                 studentDocVo.setSex(student.getSex());
             }
             if (null != student.getSNumber()) {
@@ -837,6 +837,9 @@ public class ToOthersServiceImpl implements ToOthersService {
             }
             if (student.getImgId() != null) {
                 studentDocVo.setImg(sysFileService.getFileById(student.getImgId()).getFileUrl());
+            }
+            if (null != student.getJoinTime()) {
+                studentDocVo.setJoinTime(student.getJoinTime());
             }
             BuildingStudent buildingInfo = buildingStudentMapper.selectOne(new QueryWrapper<BuildingStudent>().eq("student_id", studentId));
             if (PublicUtil.isNotEmpty(buildingInfo)) {
