@@ -1,0 +1,136 @@
+金盾 OneNET平台 设备对接数据协议
+
+Version：V0.52-20180712
+
+数据通讯按顺序发送hex string。
+
+设备数据流
+设备报告：
+Deviec->Server
+{
+  act:report,          //6byte hex string.
+  did:did,             //4byte hex string. u32 device id
+  sid:sid,             //1byte hex string. u8  serial id
+* sub:sidtotal,        //1byte hex string. u8  serial id used total num
+  typ:device type,     //1byte hex string. u8  device type
+  att:device attribute,//1byte hex string. u8  device attribute
+  seq:mode sqquence,   //2byte hex string. u16 device mode sequence.
+  num:SendNum,         //2byte hex string. u16
+  nid:nid,             //4byte hex string. u32 netgate id
+  sta:device state,    //1byte hex string. u8  user define device state.
+  zon:work zone,       //2byte hex string. u16 device work zone.
+  mod:work mode,       //1byte hex string. u8  device work mode.
+  cmd:device cmd,      //1byte hex string. u8  device commande.
+* val:value,           //4byte hex string. float device check value. 
+* csq:csq,             //1byte hex string. u8  rf signal value，0xff->invalid,other->valid
+* net:net link state   //1byte hex string. u8  device net state,linked or unlinked.0->unlinked,other->linked,can accept cmd.
+* ver:version,         //2byte hex string. u16 fixware&hardware version.
+**ack:flag             //1byte hex string. u8  0->not need ack, other->need ack.
+}
+
+
+"att":设备属性，是否允许静音等属性
+"seq":4位ascii设备型号序列码，服务器可
+      以据此得到产品具体型号（关联图片，技术参数,状态信息定义等）
+
+"att"字段定义(2位ascii码,"dd" = 0xdd)：
+        bit7: 1->device support start hush
+        bit6: 1->device support start alarm
+        bit5: 1->device support start test
+        bit4: 1->device support boardcast cmd
+        bit3: 1->device support sos sms config to server&device
+        bit2: 1->device support sos sms config to server(if bit3 is valid)
+
+"sta" 字段缺省定义(2位ascii,"dd" = 0xdd)：
+         b0:1->LowBattery,  0->Normal;
+         b1:1->AC PowerDown,0->Normal;
+         b2:1->Sensor Fault,0->Normal;
+         b3:1->Horm Fault,  0->Normal;
+         b4:1->Flash Fault, 0->Normal;
+         b5:1->Destory,     0->Normal;
+
+"zon"字段定义(4位ascii,"ddss" = 0xddss)：
+         dd定义：
+         0x00->default zone，          （type是红外设备和磁开关设备App可以改变为0x01/0x02/0x03)
+         0x01->invade zone,             (设备App可以改变为0x01/0x02/0x03))
+         0x02->care zone,               (设备App可以改变为0x01/0x02/0x03))
+         0x03->invade zone + care zone, (设备App可以改变为0x01/0x02/0x03))
+         0x10->default zone,            (App不可以从新设定)(网关，火灾设备等非invade&care Funtion Device)
+         0x11->invade zone,             (App不可以从新设定)
+         0x12->care zone,               (App不可以从新设定)
+         0x13->invade zone + care zone. (App不可以从新设定)
+         ss定义：
+         0x02-0x18表示看护功能的触发时间设定小时数。
+
+
+"mod"字段定义(2位ascii,"dd" = 0xdd)：
+         0x00->default state, not change storage's mode state
+         0x01->disable defence,
+         0x02->enable  defence
+
+"cmd"字段定义(2位ascii,"dd" = 0xdd)：
+         0->normal
+         1->normal alarm
+         2->start  net long link
+         3->stop   net long link
+         4->sos signal(server send sos sms)
+         5->sos signal(server no send sos sms)
+         6->invade signal
+         7->test alarm
+         8->nop
+/*
+ 看护和入侵功能设备的上行normal信号，根据返回数据网关决定是否发sos signal或 invade signal
+ 服务器收到sos signal数据处理sos流程，收到 invade signal数据处理invade 流程。
+ */
+
+
+平台ACK
+Server->Device
+{
+  act:ack,             //3byte hex string.
+  did:device id,       //4byte hex string. u32 device id
+  sid:serial id,       //1byte hex string. u8  serial id
+  num:SendNum,         //2byte hex string. u16
+  zon:device work zone,//2byte hex string. u16 device work zone.
+  mod:work mode        //1byte hex string. u8  device netgate's work mokde, "01"->disable defence, "02"->enable defence
+}
+
+
+平台发送控制信息到设备
+Server->Device
+{
+  act:ctrl,             //4byte hex string.
+  did:device id,        //4byte hex string
+  sid:serial id,        //1byte hex string
+  num:SendNum,          //2byte hex string
+  nid:NetGate ID,       //4byte hex string
+  cmd:server ctrl cmd   //1byte hex string
+}
+
+"cmd"字段定义(2位ascii,"dd" = 0xdd)：
+if(did+sid是网关)
+  "cmd"支持下列命令
+         0->nop
+         1->clear alarm(清除警报）（device stop alarm and stop net link）
+         2->start horn&flash       (device start alarm and wait server stop net link)
+         3->stop  horn&flash       (device stop  alarm and wait server stop net link)
+         4->broadcast for mantest start alarm  广播报警
+         5->broadcast for mantest start test   广播测试
+         6->broadcast for mantest start hush   广播静音
+         7->broadcast for mantest stop         停止广播
+else
+   "cmd"支持下列命令         
+         0->nop
+         1->clear alarm(清除警报）(保留)
+         2->device start hush               (if device support)  静音
+         3->device for mantest start alarm  (if device support)  启动报警
+         4->device for mantest start test   (if device support)  启动测试
+         5->device for mantest start hush   (if device support)  启动静音
+         6->device for mantest stop                              停止
+
+/*******************************************************************
+App alarm process
+      startArm/stopArm  control object is netgate  2/3
+      hush              control object is device   2   (if device support)
+      cancel            control object is netgate  1
+*******************************************************************/
