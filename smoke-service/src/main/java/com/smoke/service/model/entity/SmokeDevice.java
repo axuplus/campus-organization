@@ -1,5 +1,7 @@
 package com.smoke.service.model.entity;
 
+import com.baomidou.mybatisplus.annotation.FieldStrategy;
+import com.baomidou.mybatisplus.annotation.TableField;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -29,20 +31,25 @@ public class SmokeDevice implements Serializable {
     @ApiModelProperty(value = "主键ID")
     private Long id;
 
-    @ApiModelProperty(value = "学校ID")
-    private Long masterId;
-
     @ApiModelProperty(value = "设备ID")
     private String deviceId;
 
     @ApiModelProperty(value = "设备名称")
     private String deviceName;
 
-    @ApiModelProperty(value = "0：未关联 1：已关联")
-    private Boolean state;
+    @ApiModelProperty(value = "返回ID")
+    private String returnId;
 
-    @ApiModelProperty(value = "0：下线 1：在线")
-    private Boolean shape;
+    @ApiModelProperty(value = "学校ID")
+    @TableField(updateStrategy = FieldStrategy.IGNORED)
+    private Long masterId;
+
+    @ApiModelProperty(value = "学校名称")
+    @TableField(updateStrategy = FieldStrategy.IGNORED)
+    private String masterName;
+
+    @ApiModelProperty(value = "0：未关联 1：已关联")
+    private Integer state;
 
     @ApiModelProperty(value = "设备厂家")
     private String deviceFactory;
@@ -54,7 +61,7 @@ public class SmokeDevice implements Serializable {
     private String deviceLocation;
 
     @ApiModelProperty(value = "添加时间")
-    private Date createdTime;
+    private String createdTime;
 
 
 }
