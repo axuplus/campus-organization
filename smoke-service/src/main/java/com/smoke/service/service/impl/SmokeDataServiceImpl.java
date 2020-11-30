@@ -25,6 +25,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.net.URLEncoder;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
@@ -57,18 +58,18 @@ public class SmokeDataServiceImpl extends ServiceImpl<SmokeDataMapper, SmokeData
     @Autowired
     private SmokeDeviceMapper deviceMapper;
 
-    //@Scheduled(cron="0/10 * *  * * ? ")   //每10秒执行一次
-    public void synchronizeData() {
+    @Scheduled(cron = "0/30 * *  * * ? ")   //每10秒执行一次
+    public void synchronizeData() throws Exception {
         List<SmokeDevice> devices = deviceMapper.selectList(new QueryWrapper<SmokeDevice>().eq("state", 1));
         if (PublicUtil.isNotEmpty(devices)) {
             List<String> ids = devices.stream().map(SmokeDevice::getReturnId).collect(Collectors.toList());
-            String str = ids.toString().replaceAll("\\{", "").replaceAll("\\}", "");
-            String doGet = HttpUtils.DO_GET(OneNetUrlConfig.BATCH_DATA + str, header, "utf-8");
+            String str = ids.toString().replaceAll("\\[", "").replaceAll("\\]", "").replaceAll(" ", "");
+            String doGet = HttpUtils.DO_GET(OneNetUrlConfig.BATCH_DATA + str, header);
             String error = new JsonParser().parse(doGet).getAsJsonObject().get("error").getAsString();
             if (!"succ".equals(error)) {
                 logger.warn("定时同步数据失败 {}", error);
             }
-            String array = new JsonParser().parse(str)
+            String array = new JsonParser().parse(doGet)
                     .getAsJsonObject()
                     .get("data")
                     .getAsJsonObject()
@@ -78,42 +79,45 @@ public class SmokeDataServiceImpl extends ServiceImpl<SmokeDataMapper, SmokeData
             }.getType());
             if (PublicUtil.isNotEmpty(list)) {
                 list.forEach(data -> {
-                    logger.warn("数据-------------------------->{}", data);
-                    DataTran.DataStream dataStream = data.getDatastreams().get(0);
-                    List<String> strings = dataStream.getValue().subList(26, 27);
-                    Integer state = Integer.valueOf(strings.get(0));
-                    SmokeData smokeData = dataMapper.selectOne(new QueryWrapper<SmokeData>().eq("returnId", data.getId()).orderByDesc("report_time").last("limit 0,1"));
-                    if (PublicUtil.isNotEmpty(smokeData)) {
-                        LocalDateTime newDate = LocalTimeUtils.StringToLocalDateTime(dataStream.getAt());
-                        LocalDateTime oldDate = LocalTimeUtils.StringToLocalDateTime(smokeData.getReportTime());
-                        if (oldDate.isBefore(newDate)) {
+                    logger.info("数据-------------------------->{}", data);
+                    if (null != data.getDatastreams() && !data.getDatastreams().isEmpty()) {
+                        DataTran.DataStream dataStream = data.getDatastreams().get(0);
+                        List<String> strings = dataStream.getValue().subList(26, 27);
+                        Integer state = Integer.valueOf(strings.get(0));
+                        SmokeData smokeData = dataMapper.selectOne(new QueryWrapper<SmokeData>().eq("return_id", data.getId()).orderByDesc("report_time").last("limit 0,1"));
+                        if (PublicUtil.isNotEmpty(smokeData)) {
+                            LocalDateTime newDate = LocalTimeUtils.StringToLocalDateTime(dataStream.getAt());
+                            LocalDateTime oldDate = LocalTimeUtils.StringToLocalDateTime(smokeData.getReportTime());
+                            if (oldDate.isBefore(newDate)) {
+                                SmokeData smoke = new SmokeData();
+                                smoke.setId(GlobalUtils.generateId());
+                                smoke.setReturnId(data.getId());
+                                smoke.setState(state);
+                                smoke.setDeviceLocation(smokeData.getDeviceLocation());
+                                smoke.setDeviceName(smokeData.getDeviceName());
+                                smoke.setMasterId(smokeData.getMasterId());
+                                smoke.setReportTime(dataStream.getAt());
+                                logger.warn("插入-------------------------->{}", smoke.getReportTime());
+                                dataMapper.insert(smoke);
+                            }
+                        } else {
                             SmokeData smoke = new SmokeData();
                             smoke.setId(GlobalUtils.generateId());
                             smoke.setReturnId(data.getId());
                             smoke.setState(state);
-                            smoke.setDeviceLocation(smokeData.getDeviceLocation());
-                            smoke.setDeviceName(smokeData.getDeviceName());
-                            smoke.setMasterId(smokeData.getMasterId());
+                            SmokeDevice smokeDevice = deviceMapper.selectOne(new QueryWrapper<SmokeDevice>().eq("return_id", data.getId()));
+                            smoke.setDeviceLocation(smokeDevice.getDeviceLocation());
+                            smoke.setDeviceName(smokeDevice.getDeviceName());
+                            smoke.setMasterId(smokeDevice.getMasterId());
                             smoke.setReportTime(dataStream.getAt());
-                            logger.warn("插入-------------------------->{}", smoke);
+                            logger.warn("!插入{}------------------>", smoke.getReportTime());
                             dataMapper.insert(smoke);
                         }
-                    } else {
-                        SmokeData smoke = new SmokeData();
-                        smoke.setId(GlobalUtils.generateId());
-                        smoke.setReturnId(data.getId());
-                        smoke.setState(state);
-                        SmokeDevice smokeDevice = deviceMapper.selectOne(new QueryWrapper<SmokeDevice>().eq("return_id", data.getId()));
-                        smoke.setDeviceLocation(smokeDevice.getDeviceLocation());
-                        smoke.setDeviceName(smokeDevice.getDeviceName());
-                        smoke.setMasterId(smokeDevice.getMasterId());
-                        smoke.setReportTime(dataStream.getAt());
-                        logger.warn("!插入{}------------------>", smoke);
-                        dataMapper.insert(smoke);
                     }
                 });
             }
         }
+
     }
 
     @Override

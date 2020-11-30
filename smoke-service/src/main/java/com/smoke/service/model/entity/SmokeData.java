@@ -39,12 +39,8 @@ public class SmokeData implements Serializable {
     @ApiModelProperty(value = "设备位置")
     private String deviceLocation;
 
-    @ApiModelProperty(value = "0：正常 1：报警")
+    @ApiModelProperty(value = "0：正常 1：报警 -1已处理")
     private Integer state;
-
-    @ApiModelProperty(value = "0：已处理 -1：未处理 1：不用处理")
-    private Integer done;
-
 
     @ApiModelProperty(value = "推送时间")
     private String reportTime;

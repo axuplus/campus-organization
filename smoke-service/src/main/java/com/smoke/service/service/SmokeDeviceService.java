@@ -41,4 +41,5 @@ public interface SmokeDeviceService extends IService<SmokeDevice> {
 
     Wrapper<List<SmokeData>> dataList(BaseQueryDto baseQueryDto);
 
+    Wrapper disableCode(Long id);
 }

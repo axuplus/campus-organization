@@ -70,8 +70,8 @@ public class SmokeController {
     @GetMapping("/associateById")
     public Wrapper associateById(@ApiParam("0取消 1关联") @RequestParam("type") Integer type,
                                  @RequestParam("id") Long id,
-                                 @RequestParam(value = "masterId",required = false) Long masterId,
-                                 @RequestParam(value = "masterName",required = false) String masterName) {
+                                 @RequestParam(value = "masterId", required = false) Long masterId,
+                                 @RequestParam(value = "masterName", required = false) String masterName) {
         return deviceService.associateById(type, id, masterId, masterName);
     }
 
@@ -88,6 +88,11 @@ public class SmokeController {
         return deviceService.dataList(baseQueryDto);
     }
 
+    @ApiOperation("解除告警")
+    @GetMapping("/disable")
+    public Wrapper disableCode(@RequestParam("id") Long id) {
+        return deviceService.disableCode(id);
+    }
 
     @PostMapping("/test")
     public Wrapper saveResponse(@RequestBody String response) {

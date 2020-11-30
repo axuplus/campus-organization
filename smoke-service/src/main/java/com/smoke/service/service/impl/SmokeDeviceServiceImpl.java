@@ -301,4 +301,19 @@ public class SmokeDeviceServiceImpl extends ServiceImpl<SmokeDeviceMapper, Smoke
         Long total = page.getTotal();
         return PageWrapMapper.wrap(datas, new PageUtil(total.intValue(), baseQueryDto.getPage(), baseQueryDto.getPage_size()));
     }
+
+    @Override
+    public Wrapper disableCode(Long id) {
+        if (null != id) {
+            SmokeData smokeData = dataMapper.selectById(id);
+            if (PublicUtil.isNotEmpty(smokeData)) {
+                if (smokeData.getState() == 1) {
+                    smokeData.setState(-1);
+                    dataMapper.updateById(smokeData);
+                    return WrapMapper.ok("解除成功");
+                }
+            }
+        }
+        return WrapMapper.error("异常状态");
+    }
 }

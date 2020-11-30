@@ -15,6 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.UnsupportedEncodingException;
+import java.net.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -60,6 +61,35 @@ public class HttpUtils {
         }
         String content = null;
         HttpGet httpGet = new HttpGet(url);
+
+        if (headers != null && headers.size() > 0) {
+            for (Map.Entry<String, String> entry : headers.entrySet()) {
+                httpGet.setHeader(entry.getKey(), entry.getValue());
+            }
+        }
+        CloseableHttpResponse httpResponse = null;
+        try {
+            httpResponse = httpClient.execute(httpGet);
+            HttpEntity entity = httpResponse.getEntity();
+            content = EntityUtils.toString(entity, encode);
+            httpResponse.setHeaders(httpResponse.getAllHeaders());
+            httpResponse.setReasonPhrase(httpResponse.getStatusLine().getReasonPhrase());
+            httpResponse.setStatusCode(httpResponse.getStatusLine().getStatusCode());
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+        }
+        return content;
+    }
+
+    /**
+     * GET请求
+     */
+    public static String DO_GET(String l, Map<String, String> headers) throws Exception {
+        String encode = "utf-8";
+        String content = null;
+        URL url = new URL(l);
+        URI uri = new URI(url.getProtocol(), url.getHost(), url.getPath(), url.getQuery(), null);
+        HttpGet httpGet = new HttpGet(uri);
 
         if (headers != null && headers.size() > 0) {
             for (Map.Entry<String, String> entry : headers.entrySet()) {
