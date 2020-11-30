@@ -10,4 +10,6 @@ public class OthersDto {
     private Long phone;
     private String tNumber;
     private String sNumber;
+    private String studentClass;
+    private String studentClassInfo;
 }

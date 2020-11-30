@@ -6,8 +6,10 @@ import com.github.pagehelper.PageHelper;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.safe.campus.about.utils.HttpUtils;
+import com.safe.campus.about.utils.Md5Utils;
 import com.safe.campus.about.utils.PublicUtil;
 import com.safe.campus.about.utils.wrapper.*;
+import com.safe.campus.config.ToDevicesUrlConfig;
 import com.safe.campus.mapper.*;
 import com.safe.campus.model.domain.*;
 import com.safe.campus.model.dto.*;
@@ -15,15 +17,18 @@ import com.safe.campus.model.vo.*;
 import com.safe.campus.service.SysFileService;
 import com.safe.campus.service.ToOthersService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.instrument.classloading.InstrumentationLoadTimeWeaver;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
 public class ToOthersServiceImpl implements ToOthersService {
-
-    public static final String GET_STATE = "http://47.111.229.199:8890/info/getStateByUserId";
 
 
     @Autowired
@@ -97,6 +102,18 @@ public class ToOthersServiceImpl implements ToOthersService {
                     map.setId(userId);
                     map.setState(2);
                     map.setIdNumber(student.getIdNumber());
+                    if (null != student.getClass()) {
+                        SchoolClass schoolClass = classMapper.selectById(student.getClassId());
+                        if (PublicUtil.isNotEmpty(schoolClass)) {
+                            map.setStudentClass(schoolClass.getClassName());
+                        }
+                    }
+                    if (null != student.getClassInfoId()) {
+                        SchoolClassInfo schoolClassInfo = classInfoMapper.selectById(student.getClassInfoId());
+                        if (PublicUtil.isNotEmpty(schoolClassInfo)) {
+                            map.setStudentClassInfo(schoolClassInfo.getClassInfoName());
+                        }
+                    }
                     return map;
                 }
             } else if ("T".equals(type)) {
@@ -453,7 +470,7 @@ public class ToOthersServiceImpl implements ToOthersService {
                                 }
                             }
                         }
-                        String doGet = HttpUtils.DO_GET(GET_STATE + "?userId=" + student.getId(), null, null);
+                        String doGet = HttpUtils.DO_GET(ToDevicesUrlConfig.GET_STATE + "?userId=" + student.getId(), null, null);
                         System.out.println("doGet = " + doGet);
                         if (null != doGet && !"".equals(doGet)) {
                             Map map = new Gson().fromJson(doGet, new TypeToken<Map<String, String>>() {
@@ -854,5 +871,72 @@ public class ToOthersServiceImpl implements ToOthersService {
             return WrapMapper.ok(studentDocVo);
         }
         return WrapMapper.ok("暂无数据");
+    }
+
+    @Override
+    public PageWrapper<List<Object>> getStudentsOrTeachers(Integer type, BaseQueryDto baseQueryDto, HttpServletRequest request) {
+        Long masterId = 27399619753664L;
+        String value = request.getHeader("auth");
+        System.out.println("value =============================== " + value);
+        if (!Md5Utils.md5Str(String.valueOf(masterId)).equals(value)) {
+            return PageWrapMapper.wrap(400, "请求错误");
+        }
+        List<Object> list = new ArrayList<>();
+        if (1 == type) {
+            Page page = PageHelper.startPage(baseQueryDto.getPage(), baseQueryDto.getPage_size());
+            List<SchoolTeacher> teachers = teacherMapper.selectList(new QueryWrapper<SchoolTeacher>().eq("master_id", masterId).orderByDesc("created_time"));
+            Long total = page.getTotal();
+
+            if (PublicUtil.isNotEmpty(teachers)) {
+                teachers.forEach(t -> {
+                    InfoVo.Teacher teacher = new InfoVo.Teacher();
+                    teacher.setId(t.getId());
+                    teacher.setTeacherName(t.getTName());
+                    if (null != t.getSex()) {
+                        teacher.setGender(t.getSex());
+                    }
+                    teacher.setIdNumber(t.getIdNumber());
+                    teacher.setPhone(String.valueOf(t.getPhone()));
+                    if (null != t.getTNumber() && !"".equals(t.getTNumber())) {
+                        teacher.setTeacherNumber(t.getTNumber());
+                    }
+                    list.add(teacher);
+                });
+                return PageWrapMapper.wrap(list, new PageUtil(total.intValue(), baseQueryDto.getPage(), baseQueryDto.getPage_size()));
+            }
+        } else if (2 == type) {
+            Page page = PageHelper.startPage(baseQueryDto.getPage(), baseQueryDto.getPage_size());
+            List<SchoolStudent> students = studentMapper.selectList(new QueryWrapper<SchoolStudent>().eq("master_id", masterId).orderByDesc("created_time"));
+            Long total = page.getTotal();
+            if (PublicUtil.isNotEmpty(students)) {
+                students.forEach(s -> {
+                    InfoVo.Student student = new InfoVo.Student();
+                    student.setId(s.getId());
+                    student.setStudentName(s.getSName());
+                    student.setIdNumber(s.getIdNumber());
+                    if (null != s.getSNumber() && !"".equals(s.getSNumber())) {
+                        student.setStudentNumber(s.getSNumber());
+                    }
+                    if (null != s.getSex()) {
+                        student.setGender(s.getSex());
+                    }
+                    if (null != s.getClassId()) {
+                        SchoolClass schoolClass = classMapper.selectById(s.getClassId());
+                        if (PublicUtil.isNotEmpty(schoolClass)) {
+                            student.setGradeName(schoolClass.getClassName());
+                        }
+                    }
+                    if (null != s.getClassInfoId()) {
+                        SchoolClassInfo schoolClassInfo = classInfoMapper.selectById(s.getClassInfoId());
+                        if (PublicUtil.isNotEmpty(schoolClassInfo)) {
+                            student.setClassName(schoolClassInfo.getClassInfoName());
+                        }
+                    }
+                    list.add(student);
+                });
+                return PageWrapMapper.wrap(list, new PageUtil(total.intValue(), baseQueryDto.getPage(), baseQueryDto.getPage_size()));
+            }
+        }
+        return PageWrapMapper.wrap(400, "请求错误");
     }
 }

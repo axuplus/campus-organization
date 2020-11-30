@@ -9,6 +9,7 @@ import com.safe.campus.model.dto.SelectStudentListDto;
 import com.safe.campus.model.dto.TeacherByPhoneDto;
 import com.safe.campus.model.vo.*;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.Map;
 
@@ -62,5 +63,8 @@ public interface ToOthersService {
     Map getStudentTeacherByStudentId(Long studentId);
 
     Wrapper getStudentInfoById(Long studentId);
+
+    PageWrapper<List<Object>> getStudentsOrTeachers(Integer type, BaseQueryDto baseQueryDto, HttpServletRequest request);
+
 
 }

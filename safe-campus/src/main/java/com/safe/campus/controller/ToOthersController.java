@@ -17,6 +17,8 @@ import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 import java.util.Map;
 
@@ -180,6 +182,12 @@ public class ToOthersController {
     public Wrapper getStudentInfoById(@RequestParam("studentId") Long studentId) {
         return toOthersService.getStudentInfoById(studentId);
     }
+
+//    @ApiOperation("外部同步接口")
+//    @GetMapping("/info")
+//    public PageWrapper<List<Object>> getStudentsOrTeachers(@RequestParam("type")Integer type, BaseQueryDto baseQueryDto, HttpServletRequest request) {
+//        return toOthersService.getStudentsOrTeachers(type,baseQueryDto, request);
+//    }
 
 }
 

@@ -8,6 +8,10 @@ public class StudentDocVo {
 
     @ApiModelProperty(value = "id")
     private Long id;
+    @ApiModelProperty(value = "姓名")
+    private String name;
+    @ApiModelProperty(value = "性别")
+    private Integer sex;
     @ApiModelProperty(value = "学号")
     private String sNumber;
     @ApiModelProperty(value = "年级名称")
@@ -20,6 +24,8 @@ public class StudentDocVo {
     private Integer type;
     @ApiModelProperty(value = "图片")
     private String img;
+    @ApiModelProperty(value = "入学年月")
+    private String joinTime;
     @ApiModelProperty(value = "楼幢")
     private String buildingNo;
     @ApiModelProperty(value = "楼层")
