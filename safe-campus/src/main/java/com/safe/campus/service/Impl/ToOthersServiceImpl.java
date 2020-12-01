@@ -925,24 +925,22 @@ public class ToOthersServiceImpl implements ToOthersService {
                     queryWrapper = new QueryWrapper<SchoolStudent>().eq("master_id", schoolId).orderByDesc("created_time");
                 }
             } else {
-                Long classInfoId = null;
                 SysAdmin sysAdmin = adminUserMapper.selectById(loginAuthDto.getUserId());
                 if (sysAdmin.getTId() != null) {
                     SchoolClassInfo schoolClassInfo = classInfoMapper.selectOne(new QueryWrapper<SchoolClassInfo>().eq("t_id", sysAdmin.getTId()));
                     if (PublicUtil.isNotEmpty(schoolClassInfo)) {
-                        classInfoId = schoolClassInfo.getId();
-                    }
-                    if (null != context) {
-                        queryWrapper = new QueryWrapper<SchoolStudent>()
-                                .eq("master_id", schoolId)
-                                .eq("class_info_id", classInfoId)
-                                .like("s_name", context)
-                                .orderByDesc("created_time");
-                    } else {
-                        queryWrapper = new QueryWrapper<SchoolStudent>()
-                                .eq("master_id", schoolId)
-                                .eq("class_info_id", schoolClassInfo.getId())
-                                .orderByDesc("created_time");
+                        if (null != context) {
+                            queryWrapper = new QueryWrapper<SchoolStudent>()
+                                    .eq("master_id", schoolId)
+                                    .eq("class_info_id", schoolClassInfo.getId())
+                                    .like("s_name", context)
+                                    .orderByDesc("created_time");
+                        } else {
+                            queryWrapper = new QueryWrapper<SchoolStudent>()
+                                    .eq("master_id", schoolId)
+                                    .eq("class_info_id", schoolClassInfo.getId())
+                                    .orderByDesc("created_time");
+                        }
                     }
                 }
             }
