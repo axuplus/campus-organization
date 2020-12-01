@@ -129,13 +129,13 @@ public class SmokeDeviceServiceImpl extends ServiceImpl<SmokeDeviceMapper, Smoke
                     .collect(Collectors.toList());
             if (null != result && !result.isEmpty()) {
                 List<DeviceExcelDto> same = list.parallelStream().filter(d -> result.contains(d.getDeviceId())).collect(Collectors.toList());
-                return WrapMapper.wrap(400, "设备重复添加", same);
+                return WrapMapper.wrap(200, "设备重复添加", same);
             }
             List<SmokeDevice> devices = deviceMapper.selectList(new QueryWrapper<SmokeDevice>());
             if (PublicUtil.isNotEmpty(devices)) {
                 List<DeviceExcelDto> dtos = list.parallelStream().filter(d -> devices.contains(d.getDeviceId())).collect(Collectors.toList());
                 if (PublicUtil.isNotEmpty(dtos)) {
-                    return WrapMapper.wrap(400, "设备重复添加", dtos.stream().map(DeviceExcelDto::getDeviceId).collect(Collectors.toList()));
+                    return WrapMapper.wrap(200, "设备重复添加", dtos.stream().map(DeviceExcelDto::getDeviceId).collect(Collectors.toList()));
                 }
             }
             list.forEach(d -> {
@@ -255,7 +255,7 @@ public class SmokeDeviceServiceImpl extends ServiceImpl<SmokeDeviceMapper, Smoke
             });
             return PageWrapMapper.wrap(list, new PageUtil(total.intValue(), baseQueryDto.getPage(), baseQueryDto.getPage_size()));
         }
-        return PageWrapMapper.wrap(400, "暂无数据");
+        return PageWrapMapper.wrap(200, "暂无数据");
     }
 
     @Override
@@ -264,10 +264,8 @@ public class SmokeDeviceServiceImpl extends ServiceImpl<SmokeDeviceMapper, Smoke
             if (1 == associateDto.getType()) {
                 associateDto.getIds().forEach(id -> {
                     SmokeDevice device = deviceMapper.selectById(id);
-                    if (id == device.getId()) {
-                        device.setState(1);
-                        deviceMapper.updateById(device);
-                    }
+                    device.setState(1);
+                    deviceMapper.updateById(device);
                 });
             } else {
                 if (associateDto.getIds() != null) {
@@ -295,11 +293,11 @@ public class SmokeDeviceServiceImpl extends ServiceImpl<SmokeDeviceMapper, Smoke
             });
             return WrapMapper.ok(list);
         }
-        return WrapMapper.error("暂无数据");
+        return WrapMapper.ok();
     }
 
     @Override
-    public Wrapper<List<SmokeData>> dataList(Long masterId,BaseQueryDto baseQueryDto) {
+    public Wrapper<List<SmokeData>> dataList(Long masterId, BaseQueryDto baseQueryDto) {
         Page page = PageHelper.startPage(baseQueryDto.getPage(), baseQueryDto.getPage_size());
         List<SmokeData> datas = dataMapper.selectList(new QueryWrapper<SmokeData>().eq("master_id", masterId).orderByDesc("report_time"));
         Long total = page.getTotal();
