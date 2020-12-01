@@ -1,5 +1,6 @@
 package com.safe.campus.service;
 
+import com.safe.campus.about.dto.LoginAuthDto;
 import com.safe.campus.about.utils.wrapper.BaseQueryDto;
 import com.safe.campus.about.utils.wrapper.PageWrapper;
 import com.safe.campus.about.utils.wrapper.Wrapper;
@@ -64,7 +65,5 @@ public interface ToOthersService {
 
     Wrapper getStudentInfoById(Long studentId);
 
-    PageWrapper<List<Object>> getStudentsOrTeachers(Integer type, BaseQueryDto baseQueryDto, HttpServletRequest request);
-
-
+    PageWrapper<Object> getPersonsForDoc(Long schoolId, Integer type,String context,BaseQueryDto baseQueryDto, LoginAuthDto loginAuthDto);
 }

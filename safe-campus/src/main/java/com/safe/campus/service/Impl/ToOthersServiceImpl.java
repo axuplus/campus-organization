@@ -5,6 +5,7 @@ import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.safe.campus.about.dto.LoginAuthDto;
 import com.safe.campus.about.utils.HttpUtils;
 import com.safe.campus.about.utils.Md5Utils;
 import com.safe.campus.about.utils.PublicUtil;
@@ -874,69 +875,114 @@ public class ToOthersServiceImpl implements ToOthersService {
     }
 
     @Override
-    public PageWrapper<List<Object>> getStudentsOrTeachers(Integer type, BaseQueryDto baseQueryDto, HttpServletRequest request) {
-        Long masterId = 27399619753664L;
-        String value = request.getHeader("auth");
-        System.out.println("value =============================== " + value);
-        if (!Md5Utils.md5Str(String.valueOf(masterId)).equals(value)) {
-            return PageWrapMapper.wrap(400, "请求错误");
-        }
-        List<Object> list = new ArrayList<>();
+    public PageWrapper<Object> getPersonsForDoc(Long schoolId, Integer type, String context, BaseQueryDto baseQueryDto, LoginAuthDto loginAuthDto) {
         if (1 == type) {
+            QueryWrapper<SchoolTeacher> queryWrapper = null;
+            if (null != context) {
+                queryWrapper = new QueryWrapper<SchoolTeacher>().eq("master_id", schoolId).like("t_name", context).orderByDesc("created_time");
+            } else {
+                queryWrapper = new QueryWrapper<SchoolTeacher>().eq("master_id", schoolId).orderByDesc("created_time");
+            }
             Page page = PageHelper.startPage(baseQueryDto.getPage(), baseQueryDto.getPage_size());
-            List<SchoolTeacher> teachers = teacherMapper.selectList(new QueryWrapper<SchoolTeacher>().eq("master_id", masterId).orderByDesc("created_time"));
+            List<SchoolTeacher> teachers = teacherMapper.selectList(queryWrapper);
             Long total = page.getTotal();
-
             if (PublicUtil.isNotEmpty(teachers)) {
-                teachers.forEach(t -> {
-                    InfoVo.Teacher teacher = new InfoVo.Teacher();
-                    teacher.setId(t.getId());
-                    teacher.setTeacherName(t.getTName());
-                    if (null != t.getSex()) {
-                        teacher.setGender(t.getSex());
+                List<WhiteListVo.TeacherInfos> list = new ArrayList<>();
+                teachers.forEach(teacher -> {
+                    WhiteListVo.TeacherInfos vo = new WhiteListVo.TeacherInfos();
+                    vo.setId(teacher.getId());
+                    vo.setName(teacher.getTName());
+                    vo.setIdNumber(teacher.getIdNumber());
+                    if (null != teacher.getPhone()) {
+                        vo.setPhone(teacher.getPhone());
                     }
-                    teacher.setIdNumber(t.getIdNumber());
-                    teacher.setPhone(String.valueOf(t.getPhone()));
-                    if (null != t.getTNumber() && !"".equals(t.getTNumber())) {
-                        teacher.setTeacherNumber(t.getTNumber());
+                    if (null != teacher.getPosition()) {
+                        vo.setPosition(teacher.getPosition());
                     }
-                    list.add(teacher);
+                    if (null != teacher.getTNumber()) {
+                        vo.setTNumber(teacher.getTNumber());
+                    }
+                    if (null != teacher.getSex()) {
+                        vo.setSex(teacher.getSex());
+                    }
+                    if (null != teacher.getSectionId()) {
+                        SchoolSection section = sectionMapper.selectById(teacher.getSectionId());
+                        if (PublicUtil.isNotEmpty(section)) {
+                            vo.setSectionId(section.getId());
+                            vo.setSectionName(section.getSectionName());
+                        }
+                    }
+                    list.add(vo);
                 });
                 return PageWrapMapper.wrap(list, new PageUtil(total.intValue(), baseQueryDto.getPage(), baseQueryDto.getPage_size()));
             }
-        } else if (2 == type) {
-            Page page = PageHelper.startPage(baseQueryDto.getPage(), baseQueryDto.getPage_size());
-            List<SchoolStudent> students = studentMapper.selectList(new QueryWrapper<SchoolStudent>().eq("master_id", masterId).orderByDesc("created_time"));
-            Long total = page.getTotal();
-            if (PublicUtil.isNotEmpty(students)) {
-                students.forEach(s -> {
-                    InfoVo.Student student = new InfoVo.Student();
-                    student.setId(s.getId());
-                    student.setStudentName(s.getSName());
-                    student.setIdNumber(s.getIdNumber());
-                    if (null != s.getSNumber() && !"".equals(s.getSNumber())) {
-                        student.setStudentNumber(s.getSNumber());
+        } else {
+            QueryWrapper<SchoolStudent> queryWrapper = null;
+            if (2 == loginAuthDto.getType()) {
+                if (null != context) {
+                    queryWrapper = new QueryWrapper<SchoolStudent>().eq("master_id", schoolId).like("s_name", context).orderByDesc("created_time");
+                } else {
+                    queryWrapper = new QueryWrapper<SchoolStudent>().eq("master_id", schoolId).orderByDesc("created_time");
+                }
+            } else {
+                Long classInfoId = null;
+                SysAdmin sysAdmin = adminUserMapper.selectById(loginAuthDto.getUserId());
+                if (sysAdmin.getTId() != null) {
+                    SchoolClassInfo schoolClassInfo = classInfoMapper.selectOne(new QueryWrapper<SchoolClassInfo>().eq("t_id", sysAdmin.getTId()));
+                    if (PublicUtil.isNotEmpty(schoolClassInfo)) {
+                        classInfoId = schoolClassInfo.getId();
                     }
-                    if (null != s.getSex()) {
-                        student.setGender(s.getSex());
+                    if (null != context) {
+                        queryWrapper = new QueryWrapper<SchoolStudent>()
+                                .eq("master_id", schoolId)
+                                .eq("class_info_id", classInfoId)
+                                .like("s_name", context)
+                                .orderByDesc("created_time");
+                    } else {
+                        queryWrapper = new QueryWrapper<SchoolStudent>()
+                                .eq("master_id", schoolId)
+                                .eq("class_info_id", schoolClassInfo.getId())
+                                .orderByDesc("created_time");
                     }
-                    if (null != s.getClassId()) {
-                        SchoolClass schoolClass = classMapper.selectById(s.getClassId());
-                        if (PublicUtil.isNotEmpty(schoolClass)) {
-                            student.setGradeName(schoolClass.getClassName());
+                }
+            }
+            if (null != queryWrapper) {
+                Page page = PageHelper.startPage(baseQueryDto.getPage(), baseQueryDto.getPage_size());
+                List<SchoolStudent> students = studentMapper.selectList(queryWrapper);
+                Long total = page.getTotal();
+                if (PublicUtil.isNotEmpty(students)) {
+                    List<WhiteListVo.StudentInfos> list = new ArrayList<>();
+                    students.forEach(student -> {
+                        WhiteListVo.StudentInfos vo = new WhiteListVo.StudentInfos();
+                        vo.setStudentId(student.getId());
+                        vo.setStudentName(student.getSName());
+                        vo.setIdNumber(student.getIdNumber());
+                        if (student.getJoinTime() != null) {
+                            vo.setJoinTime(student.getJoinTime());
                         }
-                    }
-                    if (null != s.getClassInfoId()) {
-                        SchoolClassInfo schoolClassInfo = classInfoMapper.selectById(s.getClassInfoId());
-                        if (PublicUtil.isNotEmpty(schoolClassInfo)) {
-                            student.setClassName(schoolClassInfo.getClassInfoName());
+                        if (null != student.getEndTime()) {
+                            vo.setEndTime(student.getEndTime());
                         }
-                    }
-                    list.add(student);
-                });
-                return PageWrapMapper.wrap(list, new PageUtil(total.intValue(), baseQueryDto.getPage(), baseQueryDto.getPage_size()));
+                        if (null != student.getSex()) {
+                            vo.setSex(student.getSex());
+                        }
+                        if (null != student.getType()) {
+                            vo.setType(student.getType());
+                        }
+                        if (null != student.getClassId() && null != student.getClassInfoId()) {
+                            vo.setClassId(student.getClassId());
+                            vo.setClassName(classMapper.selectById(student.getClassId()).getClassName());
+                            vo.setClassInfoId(student.getClassInfoId());
+                            SchoolClassInfo schoolClassInfo = classInfoMapper.selectById(student.getClassInfoId());
+                            vo.setClassInfoName(schoolClassInfo.getClassInfoName());
+                        }
+                        list.add(vo);
+                    });
+                    return PageWrapMapper.wrap(list, new PageUtil(total.intValue(), baseQueryDto.getPage(), baseQueryDto.getPage_size()));
+                }
             }
         }
-        return PageWrapMapper.wrap(400, "请求错误");
+        return PageWrapMapper.wrap(200, "暂无数据");
     }
 }
+

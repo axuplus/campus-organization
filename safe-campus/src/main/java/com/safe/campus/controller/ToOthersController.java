@@ -1,6 +1,8 @@
 package com.safe.campus.controller;
 
 
+import com.safe.campus.about.controller.BaseController;
+import com.safe.campus.about.dto.LoginAuthDto;
 import com.safe.campus.about.utils.wrapper.BaseQueryDto;
 import com.safe.campus.about.utils.wrapper.PageWrapper;
 import com.safe.campus.about.utils.wrapper.WrapMapper;
@@ -25,7 +27,7 @@ import java.util.Map;
 @RestController
 @RequestMapping(value = "/others")
 @Api(value = "其他接口", tags = {"其他接口"})
-public class ToOthersController {
+public class ToOthersController extends BaseController {
 
 
     @Autowired
@@ -183,11 +185,12 @@ public class ToOthersController {
         return toOthersService.getStudentInfoById(studentId);
     }
 
-//    @ApiOperation("外部同步接口")
-//    @GetMapping("/info")
-//    public PageWrapper<List<Object>> getStudentsOrTeachers(@RequestParam("type")Integer type, BaseQueryDto baseQueryDto, HttpServletRequest request) {
-//        return toOthersService.getStudentsOrTeachers(type,baseQueryDto, request);
-//    }
+    @GetMapping("/getPersonsForDoc")
+    @ApiOperation(value = "获取学生或教师 （学生档案）")
+    public PageWrapper<Object> getPersonsForDoc(@RequestParam("schoolId") Long schoolId, @ApiParam("0学生 1教师") @RequestParam("type") Integer type,@RequestParam(value = "context",required = false)String context, BaseQueryDto baseQueryDto) {
+        LoginAuthDto loginAuthDto = getLoginAuthDto();
+        return toOthersService.getPersonsForDoc(schoolId, type, context,baseQueryDto,loginAuthDto);
+    }
 
 }
 
