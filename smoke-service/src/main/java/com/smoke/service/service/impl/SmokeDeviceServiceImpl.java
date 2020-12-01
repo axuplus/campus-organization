@@ -14,6 +14,7 @@ import com.google.gson.JsonParser;
 import com.smoke.service.config.OneNetUrlConfig;
 import com.smoke.service.mapper.SmokeDataMapper;
 import com.smoke.service.mapper.SmokeDeviceMapper;
+import com.smoke.service.model.dto.AssociateDto;
 import com.smoke.service.model.dto.DeviceDto;
 import com.smoke.service.model.dto.DeviceExcelDto;
 import com.smoke.service.model.entity.SmokeData;
@@ -71,6 +72,8 @@ public class SmokeDeviceServiceImpl extends ServiceImpl<SmokeDeviceMapper, Smoke
             SmokeDevice device = new ModelMapper().map(deviceDto, SmokeDevice.class);
             device.setId(GlobalUtils.generateId());
             device.setState(0);
+            device.setMasterId(deviceDto.getMasterId());
+            device.setMasterName(deviceDto.getMasterName());
             device.setCreatedTime(LocalTimeUtils.LocalDateTimeToString());
             if (PublicUtil.isNotEmpty(deviceMapper.selectOne(new QueryWrapper<SmokeDevice>().eq("device_id", deviceDto.getDeviceId())))) {
                 return WrapMapper.error("设备不可重复添加");
@@ -216,19 +219,19 @@ public class SmokeDeviceServiceImpl extends ServiceImpl<SmokeDeviceMapper, Smoke
     }
 
     @Override
-    public PageWrapper<List<DeviceListVo>> listDevices(Integer type, String deviceId, BaseQueryDto baseQueryDto) {
+    public PageWrapper<List<DeviceListVo>> listDevices(Integer type, Long masterId, String deviceId, BaseQueryDto baseQueryDto) {
         QueryWrapper<SmokeDevice> wrapper = null;
         if (0 == type) {
             if (null != deviceId) {
-                wrapper = new QueryWrapper<SmokeDevice>().like("device_id", deviceId).orderByDesc("created_time");
+                wrapper = new QueryWrapper<SmokeDevice>().eq("master_id", masterId).like("device_id", deviceId).orderByDesc("created_time");
             } else {
-                wrapper = new QueryWrapper<SmokeDevice>().eq("state", 0).orderByDesc("created_time");
+                wrapper = new QueryWrapper<SmokeDevice>().eq("master_id", masterId).orderByDesc("created_time");
             }
         } else {
             if (null != deviceId) {
-                wrapper = new QueryWrapper<SmokeDevice>().like("device_id", deviceId).eq("state", 1).orderByDesc("created_time");
+                wrapper = new QueryWrapper<SmokeDevice>().like("device_id", deviceId).eq("state", 1).eq("master_id", masterId).orderByDesc("created_time");
             } else {
-                wrapper = new QueryWrapper<SmokeDevice>().eq("state", 1).orderByDesc("created_time");
+                wrapper = new QueryWrapper<SmokeDevice>().eq("state", 1).eq("master_id", masterId).orderByDesc("created_time");
             }
         }
         Page page = PageHelper.startPage(baseQueryDto.getPage(), baseQueryDto.getPage_size());
@@ -242,10 +245,12 @@ public class SmokeDeviceServiceImpl extends ServiceImpl<SmokeDeviceMapper, Smoke
                 String code = new JsonParser().parse(doGet).getAsJsonObject().get("error").getAsString();
                 logger.warn("OneNet获取设备状态 -------------------------> {}", code);
                 if (!"succ".equals(code)) {
-                    throw new BizException(ErrorCodeEnum.PUB10000011);
+                    map.setOnline("false");
+                    // throw new BizException(ErrorCodeEnum.PUB10000011);
+                } else {
+                    String online = new JsonParser().parse(doGet).getAsJsonObject().get("data").getAsJsonObject().get("online").getAsString();
+                    map.setOnline(online);
                 }
-                String online = new JsonParser().parse(doGet).getAsJsonObject().get("data").getAsJsonObject().get("online").getAsString();
-                map.setOnline(online);
                 list.add(map);
             });
             return PageWrapMapper.wrap(list, new PageUtil(total.intValue(), baseQueryDto.getPage(), baseQueryDto.getPage_size()));
@@ -254,33 +259,32 @@ public class SmokeDeviceServiceImpl extends ServiceImpl<SmokeDeviceMapper, Smoke
     }
 
     @Override
-    public Wrapper associateById(Integer type, Long id, Long masterId, String masterName) {
-        if (null != type && null != id) {
-            SmokeDevice device = deviceMapper.selectById(id);
-            if (PublicUtil.isNotEmpty(device)) {
-                if (0 == type) {
-                    device.setMasterId(null);
-                    device.setMasterName(null);
+    public Wrapper associateById(AssociateDto associateDto) {
+        if (PublicUtil.isNotEmpty(associateDto)) {
+            if (1 == associateDto.getType()) {
+                associateDto.getIds().forEach(id -> {
+                    SmokeDevice device = deviceMapper.selectById(id);
+                    if (id == device.getId()) {
+                        device.setState(1);
+                        deviceMapper.updateById(device);
+                    }
+                });
+            } else {
+                if (associateDto.getIds() != null) {
+                    Long id = associateDto.getIds().get(0);
+                    SmokeDevice device = deviceMapper.selectById(id);
                     device.setState(0);
                     deviceMapper.updateById(device);
-                } else {
-                    if (null == masterId && null == masterName) {
-                        return WrapMapper.error("参数不能为空");
-                    }
-                    device.setMasterId(masterId);
-                    device.setMasterName(masterName);
-                    device.setState(1);
-                    deviceMapper.updateById(device);
                 }
-                return WrapMapper.ok("操作成功");
             }
+            return WrapMapper.ok("操作成功");
         }
         return WrapMapper.error("操作失败");
     }
 
     @Override
-    public Wrapper<List<DeviceListVo>> deviceCodeList() {
-        List<SmokeDevice> devices = deviceMapper.selectList(new QueryWrapper<SmokeDevice>().eq("state", 0).orderByDesc("created_time"));
+    public Wrapper<List<DeviceListVo>> deviceCodeList(Long masterId) {
+        List<SmokeDevice> devices = deviceMapper.selectList(new QueryWrapper<SmokeDevice>().eq("master_id", masterId).eq("state", 0).orderByDesc("created_time"));
         if (PublicUtil.isNotEmpty(devices)) {
             List<DeviceListVo> list = new ArrayList<>();
             devices.forEach(d -> {
@@ -295,9 +299,9 @@ public class SmokeDeviceServiceImpl extends ServiceImpl<SmokeDeviceMapper, Smoke
     }
 
     @Override
-    public Wrapper<List<SmokeData>> dataList(BaseQueryDto baseQueryDto) {
+    public Wrapper<List<SmokeData>> dataList(Long masterId,BaseQueryDto baseQueryDto) {
         Page page = PageHelper.startPage(baseQueryDto.getPage(), baseQueryDto.getPage_size());
-        List<SmokeData> datas = dataMapper.selectList(new QueryWrapper<SmokeData>().orderByDesc("report_time"));
+        List<SmokeData> datas = dataMapper.selectList(new QueryWrapper<SmokeData>().eq("master_id", masterId).orderByDesc("report_time"));
         Long total = page.getTotal();
         return PageWrapMapper.wrap(datas, new PageUtil(total.intValue(), baseQueryDto.getPage(), baseQueryDto.getPage_size()));
     }

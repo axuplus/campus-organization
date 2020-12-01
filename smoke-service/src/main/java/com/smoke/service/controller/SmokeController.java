@@ -1,5 +1,6 @@
 package com.smoke.service.controller;
 
+import com.smoke.service.model.dto.AssociateDto;
 import com.smoke.service.model.dto.DeviceDto;
 import com.smoke.service.model.entity.SmokeData;
 import com.smoke.service.model.vo.DeviceListVo;
@@ -62,30 +63,27 @@ public class SmokeController {
 
     @ApiOperation("搜索&列表（传值搜索 否则列表）")
     @GetMapping("/listDevices")
-    public PageWrapper<List<DeviceListVo>> listDevices(@ApiParam("0 总后台 1 学校后台") Integer type, @RequestParam(value = "deviceId", required = false) String deviceId, BaseQueryDto baseQueryDto) {
-        return deviceService.listDevices(type, deviceId, baseQueryDto);
+    public PageWrapper<List<DeviceListVo>> listDevices(@ApiParam("0 总后台 1学校")@RequestParam("type")Integer type,@RequestParam("masterId") Long masterId, @RequestParam(value = "deviceId", required = false) String deviceId, BaseQueryDto baseQueryDto) {
+        return deviceService.listDevices(type,masterId, deviceId, baseQueryDto);
     }
 
     @ApiOperation("关联/取消 设备")
-    @GetMapping("/associateById")
-    public Wrapper associateById(@ApiParam("0取消 1关联") @RequestParam("type") Integer type,
-                                 @RequestParam("id") Long id,
-                                 @RequestParam(value = "masterId", required = false) Long masterId,
-                                 @RequestParam(value = "masterName", required = false) String masterName) {
-        return deviceService.associateById(type, id, masterId, masterName);
+    @PostMapping("/associateByIds")
+    public Wrapper associateById(@RequestBody AssociateDto associateDto) {
+        return deviceService.associateById(associateDto);
     }
 
     @ApiOperation("设备码下拉列表")
     @GetMapping("/deviceCodeList")
-    public Wrapper<List<DeviceListVo>> deviceCodeList() {
-        return deviceService.deviceCodeList();
+    public Wrapper<List<DeviceListVo>> deviceCodeList(@RequestParam("masterId")Long masterId) {
+        return deviceService.deviceCodeList(masterId);
     }
 
 
     @ApiOperation("数据列表")
     @GetMapping("/dataList")
-    public Wrapper<List<SmokeData>> dataList(BaseQueryDto baseQueryDto) {
-        return deviceService.dataList(baseQueryDto);
+    public Wrapper<List<SmokeData>> dataList(@RequestParam("masterId")Long masterId, BaseQueryDto baseQueryDto) {
+        return deviceService.dataList(masterId,baseQueryDto);
     }
 
     @ApiOperation("解除告警")

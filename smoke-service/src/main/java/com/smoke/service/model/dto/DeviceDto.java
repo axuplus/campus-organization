@@ -9,6 +9,10 @@ public class DeviceDto {
     private Long id;
     @ApiModelProperty(value = "设备ID", required = true)
     private String deviceId;
+    @ApiModelProperty(value = "学校ID", required = true)
+    private Long masterId;
+    @ApiModelProperty(value = "学校名称")
+    private String masterName;
     @ApiModelProperty(value = "设备名称", required = true)
     private String deviceName;
     @ApiModelProperty(value = "设备厂家", required = true)

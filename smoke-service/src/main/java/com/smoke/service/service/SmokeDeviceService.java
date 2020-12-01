@@ -1,6 +1,7 @@
 package com.smoke.service.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.smoke.service.model.dto.AssociateDto;
 import com.smoke.service.model.dto.DeviceDto;
 import com.smoke.service.model.entity.SmokeData;
 import com.smoke.service.model.vo.DeviceListVo;
@@ -33,13 +34,13 @@ public interface SmokeDeviceService extends IService<SmokeDevice> {
 
     Wrapper<DeviceVo> editInfoById(DeviceDto deviceDto);
 
-    PageWrapper<List<DeviceListVo>> listDevices(Integer type,String deviceId, BaseQueryDto baseQueryDto);
+    PageWrapper<List<DeviceListVo>> listDevices(Integer type,Long masterId,String deviceId, BaseQueryDto baseQueryDto);
 
-    Wrapper associateById(Integer type, Long id, Long masterId, String masterName);
+    Wrapper associateById(AssociateDto associateDto);
 
-    Wrapper<List<DeviceListVo>> deviceCodeList();
+    Wrapper<List<DeviceListVo>> deviceCodeList(Long masterId);
 
-    Wrapper<List<SmokeData>> dataList(BaseQueryDto baseQueryDto);
+    Wrapper<List<SmokeData>> dataList(Long masterId,BaseQueryDto baseQueryDto);
 
     Wrapper disableCode(Long id);
 }
