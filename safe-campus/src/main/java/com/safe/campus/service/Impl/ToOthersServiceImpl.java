@@ -713,7 +713,7 @@ public class ToOthersServiceImpl implements ToOthersService {
                 if (PublicUtil.isNotEmpty(students)) {
                     students.forEach(student -> {
                         WhiteListVo.StudentInfos vo = new WhiteListVo.StudentInfos();
-                        vo.setStudentId(student.getId());
+                        vo.setStudentId(student.getId().toString());
                         vo.setStudentName(student.getSName());
                         vo.setIdNumber(student.getIdNumber());
                         if (student.getJoinTime() != null) {
@@ -833,8 +833,8 @@ public class ToOthersServiceImpl implements ToOthersService {
     }
 
     @Override
-    public Wrapper getStudentInfoById(Long studentId) {
-        SchoolStudent student = studentMapper.selectById(studentId);
+    public Wrapper getStudentInfoById(String studentId) {
+        SchoolStudent student = studentMapper.selectById(Long.valueOf(studentId));
         if (PublicUtil.isNotEmpty(student)) {
             StudentDocVo studentDocVo = new StudentDocVo();
             studentDocVo.setId(student.getId());
@@ -952,7 +952,7 @@ public class ToOthersServiceImpl implements ToOthersService {
                     List<WhiteListVo.StudentInfos> list = new ArrayList<>();
                     students.forEach(student -> {
                         WhiteListVo.StudentInfos vo = new WhiteListVo.StudentInfos();
-                        vo.setStudentId(student.getId());
+                        vo.setStudentId(student.getId().toString());
                         vo.setStudentName(student.getSName());
                         vo.setIdNumber(student.getIdNumber());
                         if (student.getJoinTime() != null) {

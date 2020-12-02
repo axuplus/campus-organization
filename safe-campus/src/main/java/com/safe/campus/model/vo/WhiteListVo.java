@@ -18,7 +18,7 @@ public class WhiteListVo {
     @Data
     public static class StudentInfos {
         @ApiModelProperty(value = "学生ID")
-        private Long studentId;
+        private String studentId;
         @ApiModelProperty(value = "学生姓名")
         private String studentName;
         @ApiModelProperty(value = "学生性别")

@@ -181,7 +181,7 @@ public class ToOthersController extends BaseController {
 
     @ApiOperation("获取学生信息 （学生档案）")
     @GetMapping("/getStudentInfoById")
-    public Wrapper getStudentInfoById(@RequestParam("studentId") Long studentId) {
+    public Wrapper getStudentInfoById(@RequestParam("studentId") String studentId) {
         return toOthersService.getStudentInfoById(studentId);
     }
 

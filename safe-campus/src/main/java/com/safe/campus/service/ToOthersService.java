@@ -63,7 +63,7 @@ public interface ToOthersService {
 
     Map getStudentTeacherByStudentId(Long studentId);
 
-    Wrapper getStudentInfoById(Long studentId);
+    Wrapper getStudentInfoById(String studentId);
 
     PageWrapper<Object> getPersonsForDoc(Long schoolId, Integer type,String context,BaseQueryDto baseQueryDto, LoginAuthDto loginAuthDto);
 }
