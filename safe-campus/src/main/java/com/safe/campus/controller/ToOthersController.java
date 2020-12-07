@@ -192,5 +192,12 @@ public class ToOthersController extends BaseController {
         return toOthersService.getPersonsForDoc(schoolId, type, context,baseQueryDto,loginAuthDto);
     }
 
+
+    @ApiOperation("获取班主任学生")
+    @GetMapping("/getStudentsByTeacherId")
+    public Wrapper getStudentsByTeacherId(@RequestParam("teacherId") Long  teacherId) {
+        return toOthersService.getStudentsByTeacherId(teacherId);
+    }
+
 }
 

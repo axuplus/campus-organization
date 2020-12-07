@@ -17,6 +17,7 @@ import com.safe.campus.model.dto.*;
 import com.safe.campus.model.vo.*;
 import com.safe.campus.service.SysFileService;
 import com.safe.campus.service.ToOthersService;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.instrument.classloading.InstrumentationLoadTimeWeaver;
 import org.springframework.stereotype.Service;
@@ -981,6 +982,33 @@ public class ToOthersServiceImpl implements ToOthersService {
             }
         }
         return PageWrapMapper.wrap(200, "暂无数据");
+    }
+
+    @Override
+    public Wrapper getStudentsByTeacherId(Long teacherId) {
+        if (null == teacherId) {
+            return WrapMapper.error("参数不能为空");
+        }
+        SchoolClassInfo schoolClassInfo = classInfoMapper.selectOne(new QueryWrapper<SchoolClassInfo>().eq("t_id", teacherId));
+        if (PublicUtil.isNotEmpty(schoolClassInfo)) {
+            List<SchoolStudent> students = studentMapper.selectList(new QueryWrapper<SchoolStudent>().eq("class_info_id", schoolClassInfo.getId()));
+            if (PublicUtil.isNotEmpty(students)) {
+                List<SchoolStudentVo> list = new ArrayList<>();
+                students.forEach(student -> {
+                    SchoolStudentVo map = new ModelMapper().map(student, SchoolStudentVo.class);
+                    if (1 == student.getType()) {
+                        map.setType(student.getType());
+                    } else {
+                        map.setType(student.getType());
+                    }
+                    map.setClassName(classMapper.selectById(student.getClassId()).getClassName());
+                    map.setClassInfoName(schoolClassInfo.getClassInfoName());
+                    list.add(map);
+                });
+                return WrapMapper.ok(list);
+            }
+        }
+        return WrapMapper.error("暂无信息");
     }
 }
 
