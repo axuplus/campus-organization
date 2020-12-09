@@ -40,7 +40,7 @@ public interface SmokeDeviceService extends IService<SmokeDevice> {
 
     Wrapper<List<DeviceListVo>> deviceCodeList(Long masterId);
 
-    Wrapper<List<SmokeData>> dataList(Long masterId,BaseQueryDto baseQueryDto);
+    Wrapper<List<SmokeData>> dataList(Long masterId,Integer type,BaseQueryDto baseQueryDto);
 
     Wrapper disableCode(Long id);
 }

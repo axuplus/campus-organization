@@ -14,6 +14,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -63,8 +64,8 @@ public class SmokeController {
 
     @ApiOperation("搜索&列表（传值搜索 否则列表）")
     @GetMapping("/listDevices")
-    public PageWrapper<List<DeviceListVo>> listDevices(@ApiParam("0 总后台 1学校")@RequestParam("type")Integer type,@RequestParam("masterId") Long masterId, @RequestParam(value = "deviceId", required = false) String deviceId, BaseQueryDto baseQueryDto) {
-        return deviceService.listDevices(type,masterId, deviceId, baseQueryDto);
+    public PageWrapper<List<DeviceListVo>> listDevices(@ApiParam("0 总后台 1学校") @RequestParam("type") Integer type, @RequestParam("masterId") Long masterId, @RequestParam(value = "deviceId", required = false) String deviceId, BaseQueryDto baseQueryDto) {
+        return deviceService.listDevices(type, masterId, deviceId, baseQueryDto);
     }
 
     @ApiOperation("关联/取消 设备")
@@ -75,15 +76,15 @@ public class SmokeController {
 
     @ApiOperation("设备码下拉列表")
     @GetMapping("/deviceCodeList")
-    public Wrapper<List<DeviceListVo>> deviceCodeList(@RequestParam("masterId")Long masterId) {
+    public Wrapper<List<DeviceListVo>> deviceCodeList(@RequestParam("masterId") Long masterId) {
         return deviceService.deviceCodeList(masterId);
     }
 
 
     @ApiOperation("数据列表")
     @GetMapping("/dataList")
-    public Wrapper<List<SmokeData>> dataList(@RequestParam("masterId")Long masterId, BaseQueryDto baseQueryDto) {
-        return deviceService.dataList(masterId,baseQueryDto);
+    public Wrapper<List<SmokeData>> dataList(@RequestParam("masterId") Long masterId,@RequestParam(value = "type",required = false)Integer type, BaseQueryDto baseQueryDto) {
+        return deviceService.dataList(masterId,type, baseQueryDto);
     }
 
     @ApiOperation("解除告警")
@@ -101,4 +102,5 @@ public class SmokeController {
     public String test(@RequestParam("msg") String msg, @RequestParam("nonce") String nonce, @RequestParam("signature") String signature) {
         return dataService.test(msg, nonce, signature);
     }
+
 }

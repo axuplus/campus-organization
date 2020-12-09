@@ -297,9 +297,15 @@ public class SmokeDeviceServiceImpl extends ServiceImpl<SmokeDeviceMapper, Smoke
     }
 
     @Override
-    public Wrapper<List<SmokeData>> dataList(Long masterId, BaseQueryDto baseQueryDto) {
+    public Wrapper<List<SmokeData>> dataList(Long masterId, Integer type, BaseQueryDto baseQueryDto) {
+        QueryWrapper<SmokeData> queryWrapper = new QueryWrapper<>();
+        if (null != type) {
+            queryWrapper.eq("master_id", masterId).eq("state",1).orderByDesc("report_time");
+        }else {
+            queryWrapper.eq("master_id", masterId).orderByDesc("report_time");
+        }
         Page page = PageHelper.startPage(baseQueryDto.getPage(), baseQueryDto.getPage_size());
-        List<SmokeData> datas = dataMapper.selectList(new QueryWrapper<SmokeData>().eq("master_id", masterId).orderByDesc("report_time"));
+        List<SmokeData> datas = dataMapper.selectList(queryWrapper);
         Long total = page.getTotal();
         return PageWrapMapper.wrap(datas, new PageUtil(total.intValue(), baseQueryDto.getPage(), baseQueryDto.getPage_size()));
     }
