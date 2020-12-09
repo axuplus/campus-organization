@@ -4,7 +4,10 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.safe.campus.model.domain.SchoolStudent;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Select;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
 
 /**
  * <p>
@@ -18,6 +21,6 @@ import org.springframework.stereotype.Component;
 @Mapper
 public interface SchoolStudentMapper extends BaseMapper<SchoolStudent> {
 
-    int saveOrUpdate(SchoolStudent schoolStudent);
-
+    @Select("select * from school_student where class_info_id = #{classInfoId} ORDER BY  convert(s_name  using gbk)  asc")
+    List<SchoolStudent> selectStudentsOrderByName(@Param("classInfoId")Long classInfoId);
 }

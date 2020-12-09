@@ -991,7 +991,7 @@ public class ToOthersServiceImpl implements ToOthersService {
         }
         SchoolClassInfo schoolClassInfo = classInfoMapper.selectOne(new QueryWrapper<SchoolClassInfo>().eq("t_id", teacherId));
         if (PublicUtil.isNotEmpty(schoolClassInfo)) {
-            List<SchoolStudent> students = studentMapper.selectList(new QueryWrapper<SchoolStudent>().eq("class_info_id", schoolClassInfo.getId()));
+            List<SchoolStudent> students = studentMapper.selectStudentsOrderByName(schoolClassInfo.getId());
             if (PublicUtil.isNotEmpty(students)) {
                 List<SchoolStudentVo> list = new ArrayList<>();
                 students.forEach(student -> {
