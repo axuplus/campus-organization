@@ -18,11 +18,13 @@ import com.safe.campus.enums.ErrorCodeEnum;
 import com.safe.campus.mapper.*;
 import com.safe.campus.model.domain.*;
 import com.safe.campus.model.dto.BuildingNoMapperDto;
+import com.safe.campus.model.dto.MqSysDto;
 import com.safe.campus.model.vo.DeviceFaceVO;
 import com.safe.campus.model.dto.SchoolStudentDto;
 import com.safe.campus.model.dto.StudentExcelDto;
 import com.safe.campus.model.vo.*;
 import com.safe.campus.service.BuildingService;
+import com.safe.campus.service.MqMessageService;
 import com.safe.campus.service.SchoolStudentService;
 import com.safe.campus.service.SysFileService;
 import lombok.extern.slf4j.Slf4j;
@@ -30,6 +32,7 @@ import org.apache.http.entity.ContentType;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.amqp.core.AmqpTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.stereotype.Service;
@@ -85,6 +88,9 @@ public class SchoolStudentServiceImpl extends ServiceImpl<SchoolStudentMapper, S
     @Autowired
     private SysFileService sysFileService;
 
+    @Autowired
+    private MqMessageService mqMessageService;
+
 
     @Override
     public Wrapper saveStudent(SchoolStudentDto dto, LoginAuthDto loginAuthDto) {
@@ -95,6 +101,17 @@ public class SchoolStudentServiceImpl extends ServiceImpl<SchoolStudentMapper, S
             map.setCreatedTime(new Date());
             map.setIsDelete(0);
             map.setCreatedUser(loginAuthDto.getUserId());
+            if (null != dto.getSex()) {
+                map.setSex(dto.getSex());
+            } else {
+                String substring = map.getIdNumber().substring(16, 17);
+                int b = Integer.parseInt(substring);
+                if (b % 2 == 0) {
+                    map.setSex(0);
+                } else {
+                    map.setSex(1);
+                }
+            }
             studentMapper.insert(map);
             if (null != map.getImgId()) {
                 // 添加到device那边
@@ -122,6 +139,14 @@ public class SchoolStudentServiceImpl extends ServiceImpl<SchoolStudentMapper, S
                     buildingStudentMapper.insert(buildingStudent);
                 }
             }
+            MqSysDto mqSysDto = new MqSysDto();
+            mqSysDto.setUserId(map.getId());
+            mqSysDto.setMasterId(map.getMasterId());
+            mqSysDto.setIdNumber(map.getIdNumber());
+            mqSysDto.setName(map.getSName());
+            mqSysDto.setType(0);
+            Object MqMsg = mqMessageService.sendSynchronizeMessages("people.insert", mqSysDto.toString());
+            logger.info("消息队列 S MqMsg {}",MqMsg);
             return WrapMapper.ok("保存成功");
         }
         return null;
@@ -178,6 +203,15 @@ public class SchoolStudentServiceImpl extends ServiceImpl<SchoolStudentMapper, S
                     + "&userId=" + id + "&userType=S";
             String delete = HttpUtils.DO_DELETE(url, null, null);
             logger.info("删除设备照片成功{}", delete);
+            SchoolStudent student = studentMapper.selectById(id);
+            MqSysDto mqSysDto = new MqSysDto();
+            mqSysDto.setUserId(student.getId());
+            mqSysDto.setMasterId(student.getMasterId());
+            mqSysDto.setIdNumber(student.getIdNumber());
+            mqSysDto.setName(student.getSName());
+            mqSysDto.setType(0);
+            Object MqMsg = mqMessageService.sendSynchronizeMessages("people.delete", mqSysDto.toString());
+            logger.info("消息队列 S MqMsg {}",MqMsg);
             studentMapper.deleteById(id);
             buildingStudentMapper.delete(new QueryWrapper<BuildingStudent>().eq("student_id", id));
             return WrapMapper.ok("删除成功");
@@ -327,7 +361,8 @@ public class SchoolStudentServiceImpl extends ServiceImpl<SchoolStudentMapper, S
                         studentMapper,
                         classMapper,
                         infoMapper,
-                        buildingStudentMapper));
+                        buildingStudentMapper,
+                        mqMessageService));
                 logger.warn("future=====>{}", future);
             }
             threadPool.shutdown();
@@ -547,9 +582,10 @@ class HandleStudent implements Callable {
     private SchoolClassMapper classMapper;
     private SchoolClassInfoMapper infoMapper;
     private BuildingStudentMapper buildingStudentMapper;
+    private MqMessageService mqMessageService;
 
 
-    public HandleStudent(Long masterId, IdWorker idWorker, List<Long> ids, StudentExcelDto s, Map<String, Long> maps, List<SchoolStudent> students, LoginAuthDto loginAuthDto, BuildingService buildingService, SchoolStudentMapper studentMapper, SchoolClassMapper classMapper, SchoolClassInfoMapper infoMapper, BuildingStudentMapper buildingStudentMapper) {
+    public HandleStudent(Long masterId, IdWorker idWorker, List<Long> ids, StudentExcelDto s, Map<String, Long> maps, List<SchoolStudent> students, LoginAuthDto loginAuthDto, BuildingService buildingService, SchoolStudentMapper studentMapper, SchoolClassMapper classMapper, SchoolClassInfoMapper infoMapper, BuildingStudentMapper buildingStudentMapper, MqMessageService mqMessageService) {
         this.masterId = masterId;
         this.idWorker = idWorker;
         this.ids = ids;
@@ -562,6 +598,7 @@ class HandleStudent implements Callable {
         this.classMapper = classMapper;
         this.infoMapper = infoMapper;
         this.buildingStudentMapper = buildingStudentMapper;
+        this.mqMessageService = mqMessageService;
     }
 
     @Override
@@ -636,6 +673,14 @@ class HandleStudent implements Callable {
                 student.setType(2);
             }
         }
+        MqSysDto mqSysDto = new MqSysDto();
+        mqSysDto.setUserId(student.getId());
+        mqSysDto.setMasterId(student.getMasterId());
+        mqSysDto.setIdNumber(student.getIdNumber());
+        mqSysDto.setName(student.getSName());
+        mqSysDto.setType(0);
+        Object MqMsg = mqMessageService.sendSynchronizeMessages("people.insert", mqSysDto.toString());
+        log.info("消息队列 S MqMsg {}",MqMsg);
         try {
             if (ids.contains(student.getId())) {
                 studentMapper.updateById(student);

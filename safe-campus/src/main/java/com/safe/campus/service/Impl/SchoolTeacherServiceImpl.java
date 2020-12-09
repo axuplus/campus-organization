@@ -14,6 +14,7 @@ import com.safe.campus.enums.ErrorCodeEnum;
 import com.safe.campus.about.exception.BizException;
 import com.safe.campus.mapper.*;
 import com.safe.campus.model.domain.*;
+import com.safe.campus.model.dto.MqSysDto;
 import com.safe.campus.model.vo.DeviceFaceVO;
 import com.safe.campus.model.dto.SetRoleDto;
 import com.safe.campus.model.dto.TeacherExcelDto;
@@ -22,6 +23,7 @@ import com.safe.campus.model.vo.SchoolTeacherSectionVo;
 import com.safe.campus.model.vo.SchoolTeacherVo;
 import com.safe.campus.model.vo.SysFileVo;
 import com.safe.campus.model.vo.SysRoleVo;
+import com.safe.campus.service.MqMessageService;
 import com.safe.campus.service.SchoolTeacherService;
 import com.safe.campus.service.SysFileService;
 import com.safe.campus.about.utils.service.GobalInterface;
@@ -88,6 +90,9 @@ public class SchoolTeacherServiceImpl extends ServiceImpl<SchoolTeacherMapper, S
     @Autowired
     private SysAdminUserMapper userMapper;
 
+    @Autowired
+    private MqMessageService mqMessageService;
+
 
     @Override
     public Wrapper saveTeacherInfo(TeacherInfoDto teacherInfoDto, LoginAuthDto loginAuthDto) {
@@ -109,7 +114,17 @@ public class SchoolTeacherServiceImpl extends ServiceImpl<SchoolTeacherMapper, S
         teacher.setJoinTime(teacherInfoDto.getJoinTime());
         teacher.setPosition(teacherInfoDto.getPosition());
         teacher.setSectionId(teacherInfoDto.getSectionId());
-        teacher.setSex(teacherInfoDto.getSex());
+        if (null != teacher.getSex()) {
+            teacher.setSex(teacherInfoDto.getSex());
+        } else {
+            String substring = teacher.getIdNumber().substring(16, 17);
+            int b = Integer.parseInt(substring);
+            if (b % 2 == 0) {
+                teacher.setSex(0);
+            } else {
+                teacher.setSex(1);
+            }
+        }
         teacher.setState(0);
         teacher.setTNumber(teacherInfoDto.getTNumber());
         teacher.setCreatedUser(loginAuthDto.getUserId());
@@ -125,6 +140,14 @@ public class SchoolTeacherServiceImpl extends ServiceImpl<SchoolTeacherMapper, S
             String save = HttpUtils.DO_POST(ToDevicesUrlConfig.ADD_TO_DEVICE, JSON.toJSONString(deviceFace), null, null);
             logger.info("图片添加到设备成功 {}", save);
         }
+        MqSysDto mqSysDto = new MqSysDto();
+        mqSysDto.setUserId(teacher.getId());
+        mqSysDto.setMasterId(teacher.getMasterId());
+        mqSysDto.setIdNumber(teacher.getIdNumber());
+        mqSysDto.setName(teacher.getTName());
+        mqSysDto.setType(1);
+        Object MqMsg = mqMessageService.sendSynchronizeMessages("people.insert", mqSysDto.toString());
+        logger.info("消息队列 T MqMsg {}",MqMsg);
         return WrapMapper.ok("保存成功");
     }
 
@@ -208,6 +231,15 @@ public class SchoolTeacherServiceImpl extends ServiceImpl<SchoolTeacherMapper, S
                 + "&userId=" + id + "&userType=T";
         String delete = HttpUtils.DO_DELETE(url, null, null);
         logger.info("删除设备照片成功{}", delete);
+        SchoolTeacher teacher = teacherMapper.selectById(id);
+        MqSysDto mqSysDto = new MqSysDto();
+        mqSysDto.setUserId(teacher.getId());
+        mqSysDto.setMasterId(teacher.getMasterId());
+        mqSysDto.setIdNumber(teacher.getIdNumber());
+        mqSysDto.setName(teacher.getTName());
+        mqSysDto.setType(1);
+        Object MqMsg = mqMessageService.sendSynchronizeMessages("people.delete", mqSysDto.toString());
+        logger.info("消息队列 T MqMsg {}",MqMsg);
         teacherMapper.deleteById(id);
         return WrapMapper.ok("删除成功");
     }
@@ -451,6 +483,14 @@ public class SchoolTeacherServiceImpl extends ServiceImpl<SchoolTeacherMapper, S
                     if (null != t.getShape()) {
                         teacher.setState(getState(t.getShape()));
                     }
+                    MqSysDto mqSysDto = new MqSysDto();
+                    mqSysDto.setUserId(teacher.getId());
+                    mqSysDto.setMasterId(teacher.getMasterId());
+                    mqSysDto.setIdNumber(teacher.getIdNumber());
+                    mqSysDto.setName(teacher.getTName());
+                    mqSysDto.setType(1);
+                    Object MqMsg = mqMessageService.sendSynchronizeMessages("people.insert", mqSysDto.toString());
+                    logger.info("消息队列 T MqMsg {}",MqMsg);
                     teacherMapper.insert(teacher);
                 }
             }
