@@ -1010,5 +1010,33 @@ public class ToOthersServiceImpl implements ToOthersService {
         }
         return WrapMapper.error("暂无信息");
     }
+
+    @Override
+    public Boolean sys(Integer type) {
+        if (1 == type) {
+            List<SchoolTeacher> teachers = teacherMapper.selectList(new QueryWrapper<SchoolTeacher>());
+            teachers.forEach(teacher -> {
+                    MqSysDto mqSysDto = new MqSysDto();
+                    mqSysDto.setType(1);
+                    mqSysDto.setName(teacher.getTName());
+                    mqSysDto.setIdNumber(teacher.getIdNumber());
+                    mqSysDto.setMasterId(teacher.getMasterId());
+                    mqSysDto.setUserId(teacher.getId());
+                    HttpUtils.DO_POST("http://ztgz.amsure.cn:8890/sys/ttt",new Gson().toJson(mqSysDto),null,null);
+            });
+        }else {
+            List<SchoolStudent> students = studentMapper.selectList(new QueryWrapper<SchoolStudent>());
+            students.forEach(teacher -> {
+                MqSysDto mqSysDto = new MqSysDto();
+                mqSysDto.setType(1);
+                mqSysDto.setName(teacher.getSName());
+                mqSysDto.setIdNumber(teacher.getIdNumber());
+                mqSysDto.setMasterId(teacher.getMasterId());
+                mqSysDto.setUserId(teacher.getId());
+                HttpUtils.DO_POST("http://ztgz.amsure.cn:8890/sys/ttt",new Gson().toJson(mqSysDto),null,null);
+            });
+        }
+        return true;
+    }
 }
 

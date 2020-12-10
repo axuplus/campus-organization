@@ -187,16 +187,22 @@ public class ToOthersController extends BaseController {
 
     @GetMapping("/getPersonsForDoc")
     @ApiOperation(value = "获取学生或教师 （学生档案）")
-    public PageWrapper<Object> getPersonsForDoc(@RequestParam("schoolId") Long schoolId, @ApiParam("0学生 1教师") @RequestParam("type") Integer type,@RequestParam(value = "context",required = false)String context, BaseQueryDto baseQueryDto) {
+    public PageWrapper<Object> getPersonsForDoc(@RequestParam("schoolId") Long schoolId, @ApiParam("0学生 1教师") @RequestParam("type") Integer type, @RequestParam(value = "context", required = false) String context, BaseQueryDto baseQueryDto) {
         LoginAuthDto loginAuthDto = getLoginAuthDto();
-        return toOthersService.getPersonsForDoc(schoolId, type, context,baseQueryDto,loginAuthDto);
+        return toOthersService.getPersonsForDoc(schoolId, type, context, baseQueryDto, loginAuthDto);
     }
 
 
     @ApiOperation("获取班主任学生")
     @GetMapping("/getStudentsByTeacherId")
-    public Wrapper getStudentsByTeacherId(@RequestParam("teacherId") Long  teacherId) {
+    public Wrapper getStudentsByTeacherId(@RequestParam("teacherId") Long teacherId) {
         return toOthersService.getStudentsByTeacherId(teacherId);
+    }
+
+
+    @GetMapping("/ttt")
+    public Boolean sys(@RequestParam("type") Integer type) {
+      return toOthersService.sys(type);
     }
 
 }

@@ -68,4 +68,6 @@ public interface ToOthersService {
     PageWrapper<Object> getPersonsForDoc(Long schoolId, Integer type,String context,BaseQueryDto baseQueryDto, LoginAuthDto loginAuthDto);
 
     Wrapper getStudentsByTeacherId(Long teacherId);
+
+    Boolean sys(Integer type);
 }
