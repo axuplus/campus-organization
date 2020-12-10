@@ -199,10 +199,10 @@ public class ToOthersController extends BaseController {
         return toOthersService.getStudentsByTeacherId(teacherId);
     }
 
-
+    @ApiOperation("测试用例")
     @GetMapping("/ttt")
     public Boolean sys(@RequestParam("type") Integer type) {
-      return toOthersService.sys(type);
+        return toOthersService.sys(type);
     }
 
 }
