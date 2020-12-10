@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import com.safe.campus.about.IdWorker;
 import com.safe.campus.about.dto.LoginAuthDto;
 import com.safe.campus.about.exception.BizException;
@@ -145,7 +146,7 @@ public class SchoolStudentServiceImpl extends ServiceImpl<SchoolStudentMapper, S
             mqSysDto.setIdNumber(map.getIdNumber());
             mqSysDto.setName(map.getSName());
             mqSysDto.setType(0);
-            Object MqMsg = mqMessageService.sendSynchronizeMessages("people.insert", mqSysDto.toString());
+            Object MqMsg = mqMessageService.sendSynchronizeMessages("people.insert", new Gson().toJson(mqSysDto));
             logger.info("消息队列 S MqMsg {}",MqMsg);
             return WrapMapper.ok("保存成功");
         }
@@ -210,7 +211,7 @@ public class SchoolStudentServiceImpl extends ServiceImpl<SchoolStudentMapper, S
             mqSysDto.setIdNumber(student.getIdNumber());
             mqSysDto.setName(student.getSName());
             mqSysDto.setType(0);
-            Object MqMsg = mqMessageService.sendSynchronizeMessages("people.delete", mqSysDto.toString());
+            Object MqMsg = mqMessageService.sendSynchronizeMessages("people.delete", new Gson().toJson(mqSysDto));
             logger.info("消息队列 S MqMsg {}",MqMsg);
             studentMapper.deleteById(id);
             buildingStudentMapper.delete(new QueryWrapper<BuildingStudent>().eq("student_id", id));
@@ -679,7 +680,7 @@ class HandleStudent implements Callable {
         mqSysDto.setIdNumber(student.getIdNumber());
         mqSysDto.setName(student.getSName());
         mqSysDto.setType(0);
-        Object MqMsg = mqMessageService.sendSynchronizeMessages("people.insert", mqSysDto.toString());
+        Object MqMsg = mqMessageService.sendSynchronizeMessages("people.insert", new Gson().toJson(mqSysDto));
         log.info("消息队列 S MqMsg {}",MqMsg);
         try {
             if (ids.contains(student.getId())) {

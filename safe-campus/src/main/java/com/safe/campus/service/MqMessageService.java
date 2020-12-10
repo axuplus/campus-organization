@@ -1,7 +1,9 @@
 package com.safe.campus.service;
 
 
+import com.safe.campus.model.dto.MqSysDto;
+
 public interface MqMessageService {
 
-    Object sendSynchronizeMessages(String routineKey, Object object);
+    Object sendSynchronizeMessages(String routineKey, String mqSysDto);
 }

@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
+import com.google.gson.Gson;
 import com.safe.campus.about.dto.LoginAuthDto;
 import com.safe.campus.about.utils.*;
 import com.safe.campus.about.utils.wrapper.*;
@@ -146,7 +147,7 @@ public class SchoolTeacherServiceImpl extends ServiceImpl<SchoolTeacherMapper, S
         mqSysDto.setIdNumber(teacher.getIdNumber());
         mqSysDto.setName(teacher.getTName());
         mqSysDto.setType(1);
-        Object MqMsg = mqMessageService.sendSynchronizeMessages("people.insert", mqSysDto.toString());
+        Object MqMsg = mqMessageService.sendSynchronizeMessages("people.insert",new Gson().toJson(mqSysDto));
         logger.info("消息队列 T MqMsg {}",MqMsg);
         return WrapMapper.ok("保存成功");
     }
@@ -238,7 +239,7 @@ public class SchoolTeacherServiceImpl extends ServiceImpl<SchoolTeacherMapper, S
         mqSysDto.setIdNumber(teacher.getIdNumber());
         mqSysDto.setName(teacher.getTName());
         mqSysDto.setType(1);
-        Object MqMsg = mqMessageService.sendSynchronizeMessages("people.delete", mqSysDto.toString());
+        Object MqMsg = mqMessageService.sendSynchronizeMessages("people.delete", new Gson().toJson(mqSysDto));
         logger.info("消息队列 T MqMsg {}",MqMsg);
         teacherMapper.deleteById(id);
         return WrapMapper.ok("删除成功");
@@ -489,7 +490,7 @@ public class SchoolTeacherServiceImpl extends ServiceImpl<SchoolTeacherMapper, S
                     mqSysDto.setIdNumber(teacher.getIdNumber());
                     mqSysDto.setName(teacher.getTName());
                     mqSysDto.setType(1);
-                    Object MqMsg = mqMessageService.sendSynchronizeMessages("people.insert", mqSysDto.toString());
+                    Object MqMsg = mqMessageService.sendSynchronizeMessages("people.insert", new Gson().toJson(mqSysDto));
                     logger.info("消息队列 T MqMsg {}",MqMsg);
                     teacherMapper.insert(teacher);
                 }
