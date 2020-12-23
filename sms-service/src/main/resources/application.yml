@@ -1,0 +1,7 @@
+server:
+  port: 8068
+spring:
+  profiles:
+    active: '@profileActive@'
+  application:
+    name: '@pom.artifactId@'
