@@ -207,8 +207,11 @@ public class SchoolSectionServiceImpl extends ServiceImpl<SchoolSectionMapper, S
             if (0 == section.getPId()) {
                 vo.setPreSectionName(schoolMaster.getAreaName());
             } else {
-                SchoolSection pre = list.get(i - 1);
-                vo.setPreSectionName(pre.getSectionName());
+//                if (i - 1 >= 0) {
+//                    SchoolSection pre = list.get(i - 1);
+//                    vo.setPreSectionName(pre.getSectionName());
+//                }
+                vo.setPreSectionName(schoolSectionMapper.selectById(section.getPId()).getSectionName());
             }
             if (PublicUtil.isNotEmpty(section.getTId())) {
                 SchoolTeacher teacherBySection = teacherService.getTeacherBySection(section.getTId());
@@ -302,7 +305,12 @@ public class SchoolSectionServiceImpl extends ServiceImpl<SchoolSectionMapper, S
                     SectionTeachersVo teachersVo = new SectionTeachersVo();
                     teachersVo.setTId(c.getId());
                     teachersVo.setTName(c.getTName());
-                    teachersVo.setSectionName(schoolSectionMapper.selectById(c.getSectionId()).getSectionName());
+                    if (null != c.getSectionId()) {
+                        SchoolSection section = schoolSectionMapper.selectById(c.getSectionId());
+                        if (PublicUtil.isNotEmpty(section)) {
+                            teachersVo.setSectionName(section.getSectionName());
+                        }
+                    }
                     list.add(teachersVo);
                 }
             });
