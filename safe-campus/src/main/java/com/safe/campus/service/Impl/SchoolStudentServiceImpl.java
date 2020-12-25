@@ -96,6 +96,10 @@ public class SchoolStudentServiceImpl extends ServiceImpl<SchoolStudentMapper, S
     @Override
     public Wrapper saveStudent(SchoolStudentDto dto, LoginAuthDto loginAuthDto) {
         if (PublicUtil.isNotEmpty(dto)) {
+            SchoolStudent student = studentMapper.selectOne(new QueryWrapper<SchoolStudent>().eq("id_number", dto.getIdNumber()));
+            if (PublicUtil.isNotEmpty(student)) {
+                return WrapMapper.error("不可重复添加");
+            }
             SchoolStudent map = new ModelMapper().map(dto, SchoolStudent.class);
             map.setId(gobalInterface.generateId());
             map.setJoinTime(dto.getJoinTime());
@@ -147,7 +151,7 @@ public class SchoolStudentServiceImpl extends ServiceImpl<SchoolStudentMapper, S
             mqSysDto.setName(map.getSName());
             mqSysDto.setType(0);
             Object MqMsg = mqMessageService.sendSynchronizeMessages("people.insert", new Gson().toJson(mqSysDto));
-            logger.info("消息队列 S MqMsg {}",MqMsg);
+            logger.info("消息队列 S MqMsg {}", MqMsg);
             return WrapMapper.ok("保存成功");
         }
         return null;
@@ -212,7 +216,7 @@ public class SchoolStudentServiceImpl extends ServiceImpl<SchoolStudentMapper, S
             mqSysDto.setName(student.getSName());
             mqSysDto.setType(0);
             Object MqMsg = mqMessageService.sendSynchronizeMessages("people.delete", new Gson().toJson(mqSysDto));
-            logger.info("消息队列 S MqMsg {}",MqMsg);
+            logger.info("消息队列 S MqMsg {}", MqMsg);
             studentMapper.deleteById(id);
             buildingStudentMapper.delete(new QueryWrapper<BuildingStudent>().eq("student_id", id));
             return WrapMapper.ok("删除成功");
@@ -681,7 +685,7 @@ class HandleStudent implements Callable {
         mqSysDto.setName(student.getSName());
         mqSysDto.setType(0);
         Object MqMsg = mqMessageService.sendSynchronizeMessages("people.insert", new Gson().toJson(mqSysDto));
-        log.info("消息队列 S MqMsg {}",MqMsg);
+        log.info("消息队列 S MqMsg {}", MqMsg);
         try {
             if (ids.contains(student.getId())) {
                 studentMapper.updateById(student);
