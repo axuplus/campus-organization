@@ -227,8 +227,12 @@ public class ToOthersServiceImpl implements ToOthersService {
                 if (PublicUtil.isNotEmpty(schoolClassInfo)) {
                     if (null != schoolClassInfo.getTId()) {
                         SchoolTeacher teacher = teacherMapper.selectById(schoolClassInfo.getTId());
-                        Map<Long, String> map = new HashMap<>();
-                        map.put(teacher.getId(), teacher.getTName());
+                        SchoolMaster schoolMaster = this.schoolMaster.selectById(teacher.getMasterId());
+                        Map<String, String> map = new HashMap<>();
+                        map.put("teacherId", teacher.getId().toString());
+                        map.put("teacherName", teacher.getTName());
+                        map.put("schoolId", schoolMaster.getId().toString());
+                        map.put("schoolName", schoolMaster.getAreaName());
                         return map;
                     }
                 }
@@ -1016,15 +1020,15 @@ public class ToOthersServiceImpl implements ToOthersService {
         if (1 == type) {
             List<SchoolTeacher> teachers = teacherMapper.selectList(new QueryWrapper<SchoolTeacher>());
             teachers.forEach(teacher -> {
-                    MqSysDto mqSysDto = new MqSysDto();
-                    mqSysDto.setType(1);
-                    mqSysDto.setName(teacher.getTName());
-                    mqSysDto.setIdNumber(teacher.getIdNumber());
-                    mqSysDto.setMasterId(teacher.getMasterId());
-                    mqSysDto.setUserId(teacher.getId());
-                    HttpUtils.DO_POST("http://ztgz.amsure.cn:8890/sys/ttt",new Gson().toJson(mqSysDto),null,null);
+                MqSysDto mqSysDto = new MqSysDto();
+                mqSysDto.setType(1);
+                mqSysDto.setName(teacher.getTName());
+                mqSysDto.setIdNumber(teacher.getIdNumber());
+                mqSysDto.setMasterId(teacher.getMasterId());
+                mqSysDto.setUserId(teacher.getId());
+                HttpUtils.DO_POST("http://ztgz.amsure.cn:8890/sys/ttt", new Gson().toJson(mqSysDto), null, null);
             });
-        }else {
+        } else {
             List<SchoolStudent> students = studentMapper.selectList(new QueryWrapper<SchoolStudent>());
             students.forEach(teacher -> {
                 MqSysDto mqSysDto = new MqSysDto();
@@ -1033,7 +1037,7 @@ public class ToOthersServiceImpl implements ToOthersService {
                 mqSysDto.setIdNumber(teacher.getIdNumber());
                 mqSysDto.setMasterId(teacher.getMasterId());
                 mqSysDto.setUserId(teacher.getId());
-                HttpUtils.DO_POST("http://ztgz.amsure.cn:8890/sys/ttt",new Gson().toJson(mqSysDto),null,null);
+                HttpUtils.DO_POST("http://ztgz.amsure.cn:8890/sys/ttt", new Gson().toJson(mqSysDto), null, null);
             });
         }
         return true;
