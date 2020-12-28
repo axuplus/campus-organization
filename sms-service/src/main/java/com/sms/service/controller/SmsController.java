@@ -16,7 +16,7 @@ public class SmsController {
     private SmsService smsService;
 
     @PostMapping("/sendSmsByStuName")
-    public Map sendSmsByStuName(@RequestBody Map map){
+    public  Map<String, String> sendSmsByStuName(@RequestBody Map<String, String> map) {
         return smsService.sendSmsByStuName(map);
     }
 }

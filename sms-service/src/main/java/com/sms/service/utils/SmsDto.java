@@ -9,6 +9,7 @@ public class SmsDto {
     private Long sendTime;
     private String senderName;
     private String studentName;
+    private String sourceMobile;
 
     public String getToken() {
         return token;
@@ -74,5 +75,13 @@ public class SmsDto {
 
     public void setStudentName(String studentName) {
         this.studentName = studentName;
+    }
+
+    public String getSourceMobile() {
+        return sourceMobile;
+    }
+
+    public void setSourceMobile(String sourceMobile) {
+        this.sourceMobile = sourceMobile;
     }
 }

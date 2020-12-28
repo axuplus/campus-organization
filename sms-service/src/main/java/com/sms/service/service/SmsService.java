@@ -6,5 +6,5 @@ import java.util.Map;
 
 public interface SmsService {
 
-    Map sendSmsByStuName( Map map);
+    Map<String, String> sendSmsByStuName( Map map);
 }
