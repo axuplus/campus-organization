@@ -24,4 +24,7 @@ public class LoginTokenVo implements java.io.Serializable {
     @ApiModelProperty(value = "过期时间", name = "expireIn")
     private Long expireIn;
 
+    @ApiModelProperty(value = "教师ID", name = "teacherId")
+    private Long teacherId;
+
 }
