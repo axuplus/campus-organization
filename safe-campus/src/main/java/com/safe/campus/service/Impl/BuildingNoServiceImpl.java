@@ -130,7 +130,7 @@ public class BuildingNoServiceImpl extends ServiceImpl<BuildingNoMapper, Buildin
 
     @Override
     public Wrapper saveBuildingStudent(BuildingStudentDto buildingStudentDto) {
-        if (PublicUtil.isNotEmpty(buildingStudentDto)) {
+        if (PublicUtil.isEmpty(buildingStudentDto)) {
             return WrapMapper.error("参数不能为空");
         }
         BuildingStudent student = new BuildingStudent();
