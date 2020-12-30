@@ -9,4 +9,6 @@ public class MqSysDto {
     private String name;
     private Integer type;
     private String idNumber;
+    private Long classId;
+    private Long classInfoId;
 }

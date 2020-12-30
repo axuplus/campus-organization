@@ -150,6 +150,8 @@ public class SchoolStudentServiceImpl extends ServiceImpl<SchoolStudentMapper, S
             mqSysDto.setIdNumber(map.getIdNumber());
             mqSysDto.setName(map.getSName());
             mqSysDto.setType(0);
+            mqSysDto.setClassId(map.getClassId());
+            mqSysDto.setClassInfoId(map.getClassInfoId());
             Object MqMsg = mqMessageService.sendSynchronizeMessages("people.insert", new Gson().toJson(mqSysDto));
             logger.info("消息队列 S MqMsg {}", MqMsg);
             return WrapMapper.ok("保存成功");

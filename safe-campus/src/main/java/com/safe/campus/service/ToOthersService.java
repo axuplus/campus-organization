@@ -70,4 +70,6 @@ public interface ToOthersService {
     Wrapper getStudentsByTeacherId(Long teacherId);
 
     Boolean sys(Integer type);
+
+    List<Map<String, List<String>>> getTotalByGradeId(Long masterId, Long classId);
 }

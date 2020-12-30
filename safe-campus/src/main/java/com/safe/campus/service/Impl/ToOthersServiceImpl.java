@@ -1032,15 +1032,44 @@ public class ToOthersServiceImpl implements ToOthersService {
             List<SchoolStudent> students = studentMapper.selectList(new QueryWrapper<SchoolStudent>());
             students.forEach(teacher -> {
                 MqSysDto mqSysDto = new MqSysDto();
-                mqSysDto.setType(1);
+                mqSysDto.setType(0);
                 mqSysDto.setName(teacher.getSName());
                 mqSysDto.setIdNumber(teacher.getIdNumber());
                 mqSysDto.setMasterId(teacher.getMasterId());
+                mqSysDto.setClassId(teacher.getClassId());
+                mqSysDto.setClassInfoId(teacher.getClassInfoId());
                 mqSysDto.setUserId(teacher.getId());
+                try {
+                    Thread.sleep(200);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
                 HttpUtils.DO_POST("http://ztgz.amsure.cn:8890/sys/ttt", new Gson().toJson(mqSysDto), null, null);
             });
         }
         return true;
+    }
+
+    @Override
+    public List<Map<String, List<String>>> getTotalByGradeId(Long masterId, Long classId) {
+        if (null != masterId && null != classId) {
+            List<SchoolClassInfo> infos = classInfoMapper.selectList(new QueryWrapper<SchoolClassInfo>().eq("class_id", classId));
+            if (PublicUtil.isNotEmpty(infos)) {
+                List<Map<String, List<String>>> list = new ArrayList<>();
+                infos.forEach(info -> {
+                    Map<String, List<String>> map = new HashMap<>();
+                    List<SchoolStudent> students = studentMapper.selectList(new QueryWrapper<SchoolStudent>().eq("class_info_id", info.getId()).eq("master_id", masterId));
+                    if (PublicUtil.isNotEmpty(students)) {
+                        map.put(info.getId().toString() + "/" + info.getClassInfoName(), students.parallelStream().map(SchoolStudent::getIdNumber).collect(Collectors.toList()));
+                    } else {
+                        map.put(info.getId().toString() + "/" + info.getClassInfoName(), null);
+                    }
+                    list.add(map);
+                });
+                return list;
+            }
+        }
+        return null;
     }
 }
 

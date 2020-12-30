@@ -305,7 +305,7 @@ public class BuildingNoServiceImpl extends ServiceImpl<BuildingNoMapper, Buildin
                     QueryWrapper<BuildingStudent> queryWrapper = new QueryWrapper<>();
                     queryWrapper.eq("student_id", student.getId());
                     BuildingStudent selectOne = buildingStudentMapper.selectOne(queryWrapper);
-                    vo.setId(selectOne.getId());
+                    vo.setId(selectOne.getId().toString());
                     vo.setBedNo(bedMapper.selectById(selectOne.getBedId()).getBedName());
                     BuildingRoom room = roomMapper.selectById(selectOne.getRoomId());
                     vo.setBuildingRoom(room.getBuildingRoom());
@@ -426,7 +426,7 @@ public class BuildingNoServiceImpl extends ServiceImpl<BuildingNoMapper, Buildin
                     BuildingStudent s = buildingStudentMapper.selectOne(new QueryWrapper<BuildingStudent>().eq("bed_id", bed.getId()));
                     BuildingStudentListVo listVo = new BuildingStudentListVo();
                     if (PublicUtil.isNotEmpty(s)) {
-                        listVo.setId(s.getId());
+                        listVo.setId(s.getId().toString());
                         BuildingStudentListDto buildingStudentListDto = noMapper.checkBuildingInfoByIds(s.getNoId(), s.getLevelId(), s.getRoomId(), s.getBedId());
                         listVo.setBedNo(buildingStudentListDto.getBedName());
                         listVo.setBedId(s.getBedId());
@@ -465,7 +465,7 @@ public class BuildingNoServiceImpl extends ServiceImpl<BuildingNoMapper, Buildin
                 List<BuildingStudentListVo> list = new ArrayList<>();
                 buildingStudents.forEach(s -> {
                     BuildingStudentListVo listVo = new BuildingStudentListVo();
-                    listVo.setId(s.getId());
+                    listVo.setId(s.getId().toString());
                     BuildingStudentListDto buildingStudentListDto = noMapper.checkBuildingInfoByIds(s.getNoId(), s.getLevelId(), s.getRoomId(), s.getBedId());
                     listVo.setBedNo(buildingStudentListDto.getBedName());
                     listVo.setBuildingRoom(buildingStudentListDto.getBuildingRoom());
@@ -492,7 +492,7 @@ public class BuildingNoServiceImpl extends ServiceImpl<BuildingNoMapper, Buildin
                 List<BuildingStudentListVo> list = new ArrayList<>();
                 thisSchoolStudent.forEach(s -> {
                     BuildingStudentListVo listVo = new BuildingStudentListVo();
-                    listVo.setId(s.getId());
+                    listVo.setId(s.getId().toString());
                     BuildingStudentListDto buildingStudentListDto = noMapper.checkBuildingInfoByIds(s.getNoId(), s.getLevelId(), s.getRoomId(), s.getBedId());
                     listVo.setBedNo(buildingStudentListDto.getBedName());
                     listVo.setBuildingRoom(buildingStudentListDto.getBuildingRoom());

@@ -14,6 +14,7 @@ import com.safe.campus.model.dto.TeacherByPhoneDto;
 import com.safe.campus.model.vo.*;
 import com.safe.campus.service.ToOthersService;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiModelProperty;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -203,6 +204,12 @@ public class ToOthersController extends BaseController {
     @GetMapping("/ttt")
     public Boolean sys(@RequestParam("type") Integer type) {
         return toOthersService.sys(type);
+    }
+
+    @ApiModelProperty(value = "获取班级统计人数")
+    @GetMapping("/getTotalByGradeId")
+    public List<Map<String, List<String>>> getTotalByGradeId(@RequestParam("masterId") Long masterId, @RequestParam("classId") Long classId) {
+        return toOthersService.getTotalByGradeId(masterId, classId);
     }
 
 }
