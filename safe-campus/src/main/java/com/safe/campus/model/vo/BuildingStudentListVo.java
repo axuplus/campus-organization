@@ -11,10 +11,16 @@ public class BuildingStudentListVo {
     private Long bedId;
     @ApiModelProperty(value = "楼幢")
     private String buildingNo;
+    @ApiModelProperty(value = "楼幢")
+    private Long buildingNoId;
     @ApiModelProperty(value = "楼幢层")
     private String buildingLevel;
+    @ApiModelProperty(value = "楼幢层")
+    private Long buildingLevelId;
     @ApiModelProperty(value = "宿舍")
     private String buildingRoom;
+    @ApiModelProperty(value = "宿舍")
+    private Long buildingRoomId;
     @ApiModelProperty(value = "床号")
     private String bedNo;
     @ApiModelProperty(value = "学生姓名")

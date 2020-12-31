@@ -428,6 +428,9 @@ public class BuildingNoServiceImpl extends ServiceImpl<BuildingNoMapper, Buildin
                     if (PublicUtil.isNotEmpty(s)) {
                         listVo.setId(s.getId().toString());
                         BuildingStudentListDto buildingStudentListDto = noMapper.checkBuildingInfoByIds(s.getNoId(), s.getLevelId(), s.getRoomId(), s.getBedId());
+                        listVo.setBuildingNoId(s.getNoId());
+                        listVo.setBuildingLevelId(s.getLevelId());
+                        listVo.setBuildingRoomId(s.getRoomId());
                         listVo.setBedNo(buildingStudentListDto.getBedName());
                         listVo.setBedId(s.getBedId());
                         listVo.setBuildingRoom(buildingStudentListDto.getBuildingRoom());
@@ -467,6 +470,9 @@ public class BuildingNoServiceImpl extends ServiceImpl<BuildingNoMapper, Buildin
                     BuildingStudentListVo listVo = new BuildingStudentListVo();
                     listVo.setId(s.getId().toString());
                     BuildingStudentListDto buildingStudentListDto = noMapper.checkBuildingInfoByIds(s.getNoId(), s.getLevelId(), s.getRoomId(), s.getBedId());
+                    listVo.setBuildingNoId(s.getNoId());
+                    listVo.setBuildingLevelId(s.getLevelId());
+                    listVo.setBuildingRoomId(s.getRoomId());
                     listVo.setBedNo(buildingStudentListDto.getBedName());
                     listVo.setBuildingRoom(buildingStudentListDto.getBuildingRoom());
                     listVo.setBuildingLevel(buildingStudentListDto.getBuildingLevel());
@@ -494,6 +500,9 @@ public class BuildingNoServiceImpl extends ServiceImpl<BuildingNoMapper, Buildin
                     BuildingStudentListVo listVo = new BuildingStudentListVo();
                     listVo.setId(s.getId().toString());
                     BuildingStudentListDto buildingStudentListDto = noMapper.checkBuildingInfoByIds(s.getNoId(), s.getLevelId(), s.getRoomId(), s.getBedId());
+                    listVo.setBuildingNoId(s.getNoId());
+                    listVo.setBuildingLevelId(s.getLevelId());
+                    listVo.setBuildingRoomId(s.getRoomId());
                     listVo.setBedNo(buildingStudentListDto.getBedName());
                     listVo.setBuildingRoom(buildingStudentListDto.getBuildingRoom());
                     listVo.setBuildingLevel(buildingStudentListDto.getBuildingLevel());
