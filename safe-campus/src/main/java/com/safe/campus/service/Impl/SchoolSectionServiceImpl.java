@@ -119,7 +119,9 @@ public class SchoolSectionServiceImpl extends ServiceImpl<SchoolSectionMapper, S
                 section.setLevel(1);
             }
         }
-        if (null != schoolSectionInfoDto.getTId()) {
+        if (null == schoolSectionInfoDto.getTId()) {
+            section.setTId(null);
+        } else {
             section.setTId(schoolSectionInfoDto.getTId());
         }
         updateById(section);
