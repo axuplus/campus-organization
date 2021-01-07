@@ -187,6 +187,27 @@ public class SchoolStudentServiceImpl extends ServiceImpl<SchoolStudentMapper, S
     @Override
     public Wrapper editStudent(SchoolStudentDto dto) {
         SchoolStudent map = new ModelMapper().map(dto, SchoolStudent.class);
+        if (PublicUtil.isNotEmpty(dto.getLivingInfo())) {
+            BuildingStudent buildingStudent = buildingStudentMapper.selectOne(new QueryWrapper<BuildingStudent>().eq("bed_id", dto.getLivingInfo().getBedId()));
+            if (PublicUtil.isNotEmpty(buildingStudent)) {
+                return WrapMapper.error("床位已被占用");
+            }else {
+                SchoolStudent student = studentMapper.selectById(map.getId());
+                if (student.getType() == 0) {
+                    BuildingStudent building = new BuildingStudent();
+                    SchoolStudentDto.LivingInfo livingInfo = dto.getLivingInfo();
+                    building.setId(gobalInterface.generateId());
+                    building.setStudentId(dto.getId());
+                    building.setNoId(livingInfo.getBuildingNoId());
+                    building.setLevelId(livingInfo.getBuildingLevelId());
+                    building.setRoomId(livingInfo.getBuildingRoomId());
+                    building.setBedId(livingInfo.getBedId());
+                    building.setIsDelete(0);
+                    building.setCreateTime(new Date());
+                    buildingStudentMapper.insert(building);
+                }
+            }
+        }
         studentMapper.updateById(map);
         // 更新到device那边
         if (null != map.getImgId()) {
@@ -574,9 +595,9 @@ public class SchoolStudentServiceImpl extends ServiceImpl<SchoolStudentMapper, S
     }
 
     @Override
-    public void updateTypeBySId(Long sId) {
+    public void updateTypeBySId(Long sId, Integer type) {
         SchoolStudent student = studentMapper.selectById(sId);
-        student.setType(0);
+        student.setType(type);
         studentMapper.updateById(student);
     }
 }

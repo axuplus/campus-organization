@@ -130,7 +130,7 @@ public class BuildingNoServiceImpl extends ServiceImpl<BuildingNoMapper, Buildin
 
     @Override
     public Wrapper saveBuildingStudent(BuildingStudentDto buildingStudentDto) {
-        System.out.println("buildingStudentDto = " + buildingStudentDto);
+        System.out.println("buildingStudentDto =>>>>>>>>>>>>>>>>>>>>>>>>>>>> " + buildingStudentDto);
         if (PublicUtil.isEmpty(buildingStudentDto)) {
             return WrapMapper.error("参数不能为空");
         }
@@ -148,6 +148,7 @@ public class BuildingNoServiceImpl extends ServiceImpl<BuildingNoMapper, Buildin
         student.setIsDelete(0);
         student.setCreateTime(new Date());
         buildingStudentMapper.insert(student);
+        studentService.updateTypeBySId(buildingStudent.getStudentId(), 1);
         return WrapMapper.ok("保存成功");
     }
 
@@ -307,17 +308,19 @@ public class BuildingNoServiceImpl extends ServiceImpl<BuildingNoMapper, Buildin
                     if (null != student.getClassId() && null != student.getClassInfoId()) {
                         vo.setClassInfo(classService.getClassAndInfo(student.getClassId(), student.getClassInfoId()));
                     }
-                    QueryWrapper<BuildingStudent> queryWrapper = new QueryWrapper<>();
-                    queryWrapper.eq("student_id", student.getId());
-                    BuildingStudent selectOne = buildingStudentMapper.selectOne(queryWrapper);
-                    vo.setId(selectOne.getId().toString());
-                    vo.setBedNo(bedMapper.selectById(selectOne.getBedId()).getBedName());
-                    BuildingRoom room = roomMapper.selectById(selectOne.getRoomId());
-                    vo.setBuildingRoom(room.getBuildingRoom());
-                    BuildingLevel level = levelMapper.selectById(room.getBuildingLevelId());
-                    vo.setBuildingLevel(level.getBuildingLevel());
-                    BuildingNo buildingNo = noMapper.selectById(level.getBuildingNoId());
-                    vo.setBuildingNo(buildingNo.getBuildingNo());
+                    if (student.getType() == 1) {
+                        QueryWrapper<BuildingStudent> queryWrapper = new QueryWrapper<>();
+                        queryWrapper.eq("student_id", student.getId());
+                        BuildingStudent selectOne = buildingStudentMapper.selectOne(queryWrapper);
+                        vo.setId(selectOne.getId().toString());
+                        vo.setBedNo(bedMapper.selectById(selectOne.getBedId()).getBedName());
+                        BuildingRoom room = roomMapper.selectById(selectOne.getRoomId());
+                        vo.setBuildingRoom(room.getBuildingRoom());
+                        BuildingLevel level = levelMapper.selectById(room.getBuildingLevelId());
+                        vo.setBuildingLevel(level.getBuildingLevel());
+                        BuildingNo buildingNo = noMapper.selectById(level.getBuildingNoId());
+                        vo.setBuildingNo(buildingNo.getBuildingNo());
+                    }
                     list.add(vo);
                 });
                 return WrapMapper.ok(list);
@@ -558,7 +561,7 @@ public class BuildingNoServiceImpl extends ServiceImpl<BuildingNoMapper, Buildin
     public Wrapper deleteBuildingStudent(Long sId) {
         if (null != sId) {
             BuildingStudent buildingStudent = buildingStudentMapper.selectById(sId);
-            studentService.updateTypeBySId(buildingStudent.getStudentId());
+            studentService.updateTypeBySId(buildingStudent.getStudentId(), 0);
             buildingStudentMapper.deleteById(sId);
             return WrapMapper.ok("删除成功");
         }
