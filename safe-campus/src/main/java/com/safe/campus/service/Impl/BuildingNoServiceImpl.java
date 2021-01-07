@@ -452,6 +452,9 @@ public class BuildingNoServiceImpl extends ServiceImpl<BuildingNoMapper, Buildin
                         listVo.setBuildingRoom(livingInfo.getBuildingRoom());
                         listVo.setBuildingLevel(livingInfo.getBuildingLevel());
                         listVo.setBuildingNo(livingInfo.getBuildingNo());
+                        listVo.setBuildingNoId(Long.valueOf(livingInfo.getBuildingNoId()));
+                        listVo.setBuildingLevelId(Long.valueOf(livingInfo.getBuildingLevelId()));
+                        listVo.setBuildingRoomId(Long.valueOf(livingInfo.getBuildingRoomId()));
                         listVo.setState(0);
                     }
                     list.add(listVo);
