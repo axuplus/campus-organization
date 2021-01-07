@@ -185,6 +185,7 @@ public class BuildingNoServiceImpl extends ServiceImpl<BuildingNoMapper, Buildin
             List<BuildingStudentVo> list = new ArrayList<>();
             allStudent.forEach(s -> {
                 BuildingStudentVo map = new ModelMapper().map(s, BuildingStudentVo.class);
+                map.setId(s.getId().toString());
                 if (1 == s.getSex()) {
                     map.setSex("男");
                 } else {
@@ -561,7 +562,7 @@ public class BuildingNoServiceImpl extends ServiceImpl<BuildingNoMapper, Buildin
     public Wrapper deleteBuildingStudent(Long sId) {
         if (null != sId) {
             BuildingStudent buildingStudent = buildingStudentMapper.selectById(sId);
-            studentService.updateTypeBySId(buildingStudent.getStudentId(), 0);
+            studentService.updateTypeBySId(buildingStudent.getStudentId(), 2);
             buildingStudentMapper.deleteById(sId);
             return WrapMapper.ok("删除成功");
         }
