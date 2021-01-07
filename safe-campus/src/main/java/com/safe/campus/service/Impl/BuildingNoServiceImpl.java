@@ -130,8 +130,13 @@ public class BuildingNoServiceImpl extends ServiceImpl<BuildingNoMapper, Buildin
 
     @Override
     public Wrapper saveBuildingStudent(BuildingStudentDto buildingStudentDto) {
+        System.out.println("buildingStudentDto = " + buildingStudentDto);
         if (PublicUtil.isEmpty(buildingStudentDto)) {
             return WrapMapper.error("参数不能为空");
+        }
+        BuildingStudent buildingStudent = buildingStudentMapper.selectOne(new QueryWrapper<BuildingStudent>().eq("student_id", buildingStudentDto.getStudentId()));
+        if (PublicUtil.isNotEmpty(buildingStudent)) {
+            return WrapMapper.error("不能重复添加");
         }
         BuildingStudent student = new BuildingStudent();
         student.setId(gobalInterface.generateId());
@@ -552,6 +557,8 @@ public class BuildingNoServiceImpl extends ServiceImpl<BuildingNoMapper, Buildin
     @Override
     public Wrapper deleteBuildingStudent(Long sId) {
         if (null != sId) {
+            BuildingStudent buildingStudent = buildingStudentMapper.selectById(sId);
+            studentService.updateTypeBySId(buildingStudent.getStudentId());
             buildingStudentMapper.deleteById(sId);
             return WrapMapper.ok("删除成功");
         }

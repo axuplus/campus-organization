@@ -55,4 +55,5 @@ public interface SchoolStudentService extends IService<SchoolStudent> {
 
     Wrapper test();
 
+    void updateTypeBySId(Long sId);
 }

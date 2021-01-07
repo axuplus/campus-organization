@@ -1,5 +1,7 @@
 package com.safe.campus.model.domain;
 
+import com.baomidou.mybatisplus.annotation.FieldStrategy;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -31,6 +33,7 @@ public class SchoolSection implements Serializable {
     @Id
     private Long id;
 
+    @TableField(updateStrategy = FieldStrategy.IGNORED)
     private Long tId;
 
 

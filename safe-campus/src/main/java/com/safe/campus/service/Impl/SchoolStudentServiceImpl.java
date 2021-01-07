@@ -572,6 +572,13 @@ public class SchoolStudentServiceImpl extends ServiceImpl<SchoolStudentMapper, S
         SchoolStudent student = studentMapper.selectById(1326944240940474368L);
         return WrapMapper.ok(student);
     }
+
+    @Override
+    public void updateTypeBySId(Long sId) {
+        SchoolStudent student = studentMapper.selectById(sId);
+        student.setType(0);
+        studentMapper.updateById(student);
+    }
 }
 
 
