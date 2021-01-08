@@ -193,7 +193,7 @@ public class SchoolStudentServiceImpl extends ServiceImpl<SchoolStudentMapper, S
                 return WrapMapper.error("床位已被占用");
             }else {
                 SchoolStudent student = studentMapper.selectById(map.getId());
-                if (student.getType() == 0) {
+                if (student.getType() == 2) {
                     BuildingStudent building = new BuildingStudent();
                     SchoolStudentDto.LivingInfo livingInfo = dto.getLivingInfo();
                     building.setId(gobalInterface.generateId());

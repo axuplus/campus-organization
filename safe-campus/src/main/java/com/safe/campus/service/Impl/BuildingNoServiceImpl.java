@@ -130,7 +130,6 @@ public class BuildingNoServiceImpl extends ServiceImpl<BuildingNoMapper, Buildin
 
     @Override
     public Wrapper saveBuildingStudent(BuildingStudentDto buildingStudentDto) {
-        System.out.println("buildingStudentDto =>>>>>>>>>>>>>>>>>>>>>>>>>>>> " + buildingStudentDto);
         if (PublicUtil.isEmpty(buildingStudentDto)) {
             return WrapMapper.error("参数不能为空");
         }
@@ -148,7 +147,7 @@ public class BuildingNoServiceImpl extends ServiceImpl<BuildingNoMapper, Buildin
         student.setIsDelete(0);
         student.setCreateTime(new Date());
         buildingStudentMapper.insert(student);
-        studentService.updateTypeBySId(buildingStudent.getStudentId(), 1);
+        studentService.updateTypeBySId(buildingStudentDto.getStudentId(), 1);
         return WrapMapper.ok("保存成功");
     }
 
