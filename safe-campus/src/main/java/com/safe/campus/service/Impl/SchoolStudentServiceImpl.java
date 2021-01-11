@@ -190,8 +190,10 @@ public class SchoolStudentServiceImpl extends ServiceImpl<SchoolStudentMapper, S
         if (PublicUtil.isNotEmpty(dto.getLivingInfo())) {
             BuildingStudent buildingStudent = buildingStudentMapper.selectOne(new QueryWrapper<BuildingStudent>().eq("bed_id", dto.getLivingInfo().getBedId()));
             if (PublicUtil.isNotEmpty(buildingStudent)) {
-                return WrapMapper.error("床位已被占用");
-            }else {
+                if (!dto.getId().equals(buildingStudent.getStudentId())) {
+                    return WrapMapper.error("床位已被占用");
+                }
+            } else {
                 SchoolStudent student = studentMapper.selectById(map.getId());
                 if (student.getType() == 2) {
                     BuildingStudent building = new BuildingStudent();
