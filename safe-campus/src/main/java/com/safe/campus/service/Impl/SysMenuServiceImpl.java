@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * <p>
@@ -107,11 +108,11 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
             owneds.forEach((ok, ov) -> {
                 MenuListVo.BaseInfo base = new MenuListVo.BaseInfo();
                 base.setName(ok);
-                List<MenuListVo.BaseInfo.RoleInfo.ModuleInfo> moduleInfos = new ArrayList<>();
                 Map<String, List<SysModule>> belongs = ov.parallelStream().collect(Collectors.groupingBy(SysModule::getBelongs));
+                List<MenuListVo.BaseInfo.RoleInfo> roleInfoList = new ArrayList<>();
                 if (PublicUtil.isNotEmpty(belongs)) {
-                    List<MenuListVo.BaseInfo.RoleInfo> roleInfoList = new ArrayList<>();
                     belongs.forEach((bk, bv) -> {
+                        List<MenuListVo.BaseInfo.RoleInfo.ModuleInfo> moduleInfos = new ArrayList<>();
                         MenuListVo.BaseInfo.RoleInfo roleInfo = new MenuListVo.BaseInfo.RoleInfo();
                         roleInfo.setName(bk);
                         bv.forEach(module -> {
