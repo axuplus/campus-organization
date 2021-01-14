@@ -446,7 +446,7 @@ public class SchoolTeacherServiceImpl extends ServiceImpl<SchoolTeacherMapper, S
                     teacher.setMasterId(masterId);
                     teacher.setTName(t.getName());
                     teacher.setIdNumber(t.getIdNumber());
-                    teacher.setPhone(Long.valueOf(t.getPhone()));
+                    teacher.setPhone(Long.valueOf(t.getPhone()).longValue());
                     teacher.setCreatedTime(new Date());
                     teacher.setState(0);
                     teacher.setIsDelete(0);

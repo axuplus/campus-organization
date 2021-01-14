@@ -51,6 +51,9 @@ public class TokenServiceImpl extends ServiceImpl<SysAdminUserMapper, SysAdmin> 
     @Autowired
     private SysUserRoleMapper userRoleMapper;
 
+    @Autowired
+    private SysRoleMenuMapper roleMenuMapper;
+
     @Value(value = "${token.secretKey}")
     private String token_secret_key;
 
@@ -95,11 +98,17 @@ public class TokenServiceImpl extends ServiceImpl<SysAdminUserMapper, SysAdmin> 
         loginTokenVo.setToken(jwtInfo.getToken());
         loginTokenVo.setExpireIn(jwtInfo.getExpireIn());
         loginTokenVo.setType(sysAdminUser.getType());
-        if ( 2 == sysAdminUser.getType()) {
+        if (2 == sysAdminUser.getType()) {
             loginTokenVo.setMasterId(sysAdminUser.getMasterId());
+            loginTokenVo.setAccess(true);
         } else if (sysAdminUser.getType() == 3) {
             loginTokenVo.setMasterId(sysAdminUser.getMasterId());
             loginTokenVo.setTeacherId(sysAdminUser.getTId());
+            if (PublicUtil.isNotEmpty(roleMenuMapper.checkShow(sysAdminUser.getId()))) {
+                loginTokenVo.setAccess(true);
+            } else {
+                loginTokenVo.setAccess(false);
+            }
         }
         return loginTokenVo;
     }

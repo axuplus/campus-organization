@@ -27,4 +27,7 @@ public class LoginTokenVo implements java.io.Serializable {
     @ApiModelProperty(value = "教师ID", name = "teacherId")
     private Long teacherId;
 
+    @ApiModelProperty(value = "是否有出勤统计页面权限权限", name = "access")
+    private boolean access;
+
 }
