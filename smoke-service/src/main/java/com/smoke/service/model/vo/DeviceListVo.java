@@ -13,6 +13,8 @@ public class DeviceListVo {
     private Integer state;
     @ApiModelProperty(value = "false：离线 true：在线")
     private String online;
+    @ApiModelProperty(value = "返回ID")
+    private String returnId;
     @ApiModelProperty(value = "绑定学校")
     private String masterName;
     @ApiModelProperty(value = "设备名称")

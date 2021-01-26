@@ -8,10 +8,10 @@ spring:
   main:
     allow-bean-definition-overriding: true
   datasource:
-    driver-class-name: com.mysql.jdbc.Driver
-    url: jdbc:mysql://120.78.162.181:53306/smoke_db?autoReconnect=true&useUnicode=true&characterEncoding=UTF-8&allowMultiQueries=true&useSSL=false&&serverTimezone=GMT%2B8
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://47.111.229.199:3306/smoke_db?autoReconnect=true&useUnicode=true&characterEncoding=UTF-8&allowMultiQueries=true&useSSL=false&&serverTimezone=GMT%2B8
     username: root
-    password: root
+    password: eR7uG5v6XEwjaqwd[]C9
     filters: stat,wall
     druid:
       initial-size: 10
