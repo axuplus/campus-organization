@@ -34,16 +34,16 @@ public class SmsServiceImpl implements SmsService {
         smsDto.setToken(TOKEN);
         smsDto.setAction("smsToPersonByStuName");
         smsDto.setSourceMobile("10657061854");
-        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy年MM月dd日 HH点:mm分");
+        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy年MM月dd日 HH点mm分");
         String time = dateTimeFormatter.format(LocalDateTime.now());
-        String content = smsDto.getStudentName() + "，您好，现在是" + time + ",您的小孩已" + type + "，请您关注！五中关怀孩子每一天。";
+        String content = smsDto.getStudentName() + "，您好，现在是" + time + ", 您的小孩已" + type + "，请您关注！五中关怀孩子每一天。";
         smsDto.setContent(content);
         String doPost = HttpUtils.DO_POST(SMS_URL, Encrypt.encode(new Gson().toJson(smsDto)), null, null);
         logger.warn("发送结果 {}", doPost);
         String decode = Encrypt.decode(doPost);
         logger.warn("解密结果--------------> {}", decode);
         HashMap<String, String> hashMap = new HashMap<>();
-        hashMap.put(smsDto.getStudentName(), doPost);
+        hashMap.put(smsDto.getStudentName(), decode);
         return hashMap;
     }
 }
