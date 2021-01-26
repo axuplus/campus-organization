@@ -157,9 +157,9 @@ public class SchoolTeacherServiceImpl extends ServiceImpl<SchoolTeacherMapper, S
     public PageWrapper<List<SchoolTeacherVo>> listTeacherInfo(Integer type, Long masterId, Long id, BaseQueryDto baseQueryDto) {
         QueryWrapper<SchoolTeacher> queryWrapper = new QueryWrapper<>();
         if (2 == type) {
-            queryWrapper.eq("master_id", masterId).eq("section_id", id).orderByDesc("created_time ");
+            queryWrapper.eq("master_id", masterId).eq("section_id", id);
         } else if (1 == type) {
-            queryWrapper.eq("master_id", masterId).orderByDesc("created_time ");
+            queryWrapper.eq("master_id", masterId);
         }
         Page page = PageHelper.startPage(baseQueryDto.getPage(), baseQueryDto.getPage_size());
         List<SchoolTeacher> teachers = teacherMapper.selectList(queryWrapper);

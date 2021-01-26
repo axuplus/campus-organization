@@ -1,9 +1,20 @@
 package com.safe.campus;
 
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.google.gson.Gson;
+import com.safe.campus.about.utils.HttpUtils;
 import com.safe.campus.about.utils.Md5Utils;
+import com.safe.campus.mapper.SchoolStudentMapper;
+import com.safe.campus.mapper.SchoolTeacherMapper;
+import com.safe.campus.model.domain.SchoolStudent;
+import com.safe.campus.model.domain.SchoolTeacher;
+import com.safe.campus.model.dto.MqSysDto;
+import com.safe.campus.service.MqMessageService;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
+import org.springframework.amqp.core.AmqpTemplate;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.*;
@@ -78,9 +89,35 @@ class SafeCampusApplicationTests {
 
     @Test
     public void test6() {
-        List<String> strings = Arrays.asList("abc", "", "bc", "efg", "abcd","", "jkl");
+        List<String> strings = Arrays.asList("abc", "", "bc", "efg", "abcd", "", "jkl");
         long count = strings.parallelStream().filter(string -> string.isEmpty()).count();
         System.err.println("count = " + count);
-         ForkJoinPool forkJoinPool;
+        ForkJoinPool forkJoinPool;
     }
+
+    @Test
+    public void update() {
+        System.out.println("Md5Utils.md5(\"27399619753664\") = " + Md5Utils.md5Str("27399619753664"));
+        System.out.println("\"9fd692e8c24f45a95fb0b330d8ce2d12\" = " + "9fd692e8c24f45a95fb0b330d8ce2d12");
+    }
+
+//    @Autowired
+//    private SchoolStudentMapper studentMapper;
+//    @Autowired
+//    private SchoolTeacherMapper schoolTeacherMapper;
+//
+//
+//    @Test
+//    void test7() {
+//        List<SchoolTeacher> students =schoolTeacherMapper .selectList(new QueryWrapper<SchoolTeacher>());
+//        students.forEach(teacher -> {
+//            MqSysDto mqSysDto = new MqSysDto();
+//            mqSysDto.setType(1);
+//            mqSysDto.setName(teacher.getTName());
+//            mqSysDto.setIdNumber(teacher.getIdNumber());
+//            mqSysDto.setMasterId(teacher.getMasterId());
+//            mqSysDto.setUserId(teacher.getId());
+//            HttpUtils.DO_POST("http://localhost:8890/sys/ttt", new Gson().toJson(mqSysDto), null, null);
+//        });
+//    }
 }

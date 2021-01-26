@@ -9,14 +9,9 @@ spring:
     allow-bean-definition-overriding: true
   datasource:
     driver-class-name: com.mysql.jdbc.Driver
-    url: jdbc:mysql://172.17.0.1:3306/campus_organization?autoReconnect=true&useUnicode=true&characterEncoding=UTF-8&allowMultiQueries=true&useSSL=false&&serverTimezone=GMT%2B8
-    username: ztgz
-    password: Axkj1Ztgz9Ypt?9FJcampusztgzPublic66
-#  datasource:
-#    driver-class-name: com.mysql.jdbc.Driver
-#    url: jdbc:mysql://172.17.0.2:3306/campus_organization?autoReconnect=true&useUnicode=true&characterEncoding=UTF-8&allowMultiQueries=true&useSSL=false&&serverTimezone=GMT%2B8
-#    username: shzx
-#    password: Axkj1Ztgz9Ypt?9FJcampusztgzPublic66
+    url: jdbc:mysql://183.245.38.243:3306/campus_organization?autoReconnect=true&useUnicode=true&characterEncoding=UTF-8&allowMultiQueries=true&useSSL=false&&serverTimezone=GMT%2B8
+    username: root
+    password: eR7uG5v6XEwjaqwd[]C9
     filters: stat,wall
     druid:
       initial-size: 10
@@ -26,11 +21,28 @@ spring:
       time-between-eviction-runs-millis: 60000
       min-evictable-idle-time-millis: 300000
   redis:
-    database: 1
-    host: 172.17.0.1
-    password: axkj2020Ztgz
-    port: 6379
+    database: 0
+    host: 183.245.38.243
+    port: 56379
+    password: redis@123456
     timeout: 10000
+  rabbitmq:
+    host: 183.245.38.243
+    username: ykwz
+    password: ykwz
+    virtual-host: /ykwz
+    template:
+      retry:
+        enabled: true
+        initial-interval: 10000ms
+        max-interval: 30000ms
+        multiplier: 2
+      publisher-confirms: true
+    listener:
+      simple:
+        acknowledge-mode: auto
+    port: 15672
+
   servlet:
     multipart:
       max-file-size: -1MB
@@ -58,14 +70,9 @@ pagehelper:
 
 upload-file:
   imgPath: /images/admin-organization
-  imgUrl: http://ztgz.amsure.cn:8050/images/admin-organization/
+  imgUrl: http://ykwz.amsure.cn:8050/images/admin-organization/
   imgThumbPath: /images/admin-organization
-  imgThumbUrl: http://ztgz.amsure.cn:8050/images/admin-organization/
-#upload-file:
-#  imgPath: /images/admin-organization
-#  imgUrl: http://ztgz.amsure.cn:8050/images/admin-organization/
-#  imgThumbPath: /images/admin-organization
-#  imgThumbUrl: http://ztgz.amsure.cn:8050/images/admin-organization/
+  imgThumbUrl: http://ykwz.amsure.cn:8050/thumb/
 
 token:
   secretKey: 9ac93552c203dde2a133a0988faa05b9
@@ -80,13 +87,12 @@ url:
     - bycdao-ui
     - swagger-resources
     - /school/master/getIntroduction
-    - /admin/token
-    - /admin/exit
     - /file/img/upload
     - /others/selectStudentList
     - /others/getTeacherRoles
     - /others/getStudentByIdNumber
     - /others/getStudentTeacherByIdNumber
+    - /others/getIdNumberByUserId
     - /others/getFaceImgInfo
     - /others/getTeacherForMiniApp
     - /others/getTeacherByPhone
@@ -102,4 +108,15 @@ url:
     - /others/getAllBuildings
     - /others/getPersonsByType
     - /others/getBuildingNoAndLevels
+    - /others/getStudentTeacherByStudentId
+    - /others/getStudentInfoById
+    - /others/getStudentsByTeacherId
+    - /others/getTotalByGradeId
+    - /others/classes
+    - /others/info
+    - /others/ttt
+    - /others/masters
     - /admin/check
+    - /admin/token
+    - /admin/exit
+

@@ -515,11 +515,11 @@ public class SchoolStudentServiceImpl extends ServiceImpl<SchoolStudentMapper, S
             baseQueryDto) {
         QueryWrapper<SchoolStudent> queryWrapper = new QueryWrapper<>();
         if (1 == type) {
-            queryWrapper.eq("master_id", masterId).orderByDesc("created_time");
+            queryWrapper.eq("master_id", masterId);
         } else if (2 == type) {
-            queryWrapper.eq("master_id", masterId).eq("class_id", id).orderByDesc("created_time");
+            queryWrapper.eq("master_id", masterId).eq("class_id", id);
         } else if (3 == type) {
-            queryWrapper.eq("master_id", masterId).eq("class_info_id", id).orderByDesc("created_time");
+            queryWrapper.eq("master_id", masterId).eq("class_info_id", id);
         }
         Page page = PageHelper.startPage(baseQueryDto.getPage(), baseQueryDto.getPage_size());
         List<SchoolStudent> students = studentMapper.selectList(queryWrapper);
