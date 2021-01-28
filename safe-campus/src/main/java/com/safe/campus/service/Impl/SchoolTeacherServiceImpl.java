@@ -147,8 +147,8 @@ public class SchoolTeacherServiceImpl extends ServiceImpl<SchoolTeacherMapper, S
         mqSysDto.setIdNumber(teacher.getIdNumber());
         mqSysDto.setName(teacher.getTName());
         mqSysDto.setType(1);
-        Object MqMsg = mqMessageService.sendSynchronizeMessages("people.insert",new Gson().toJson(mqSysDto));
-        logger.info("消息队列 T MqMsg {}",MqMsg);
+        Object MqMsg = mqMessageService.sendSynchronizeMessages("people.insert", new Gson().toJson(mqSysDto));
+        logger.info("消息队列 T MqMsg {}", MqMsg);
         return WrapMapper.ok("保存成功");
     }
 
@@ -240,7 +240,7 @@ public class SchoolTeacherServiceImpl extends ServiceImpl<SchoolTeacherMapper, S
         mqSysDto.setName(teacher.getTName());
         mqSysDto.setType(1);
         Object MqMsg = mqMessageService.sendSynchronizeMessages("people.delete", new Gson().toJson(mqSysDto));
-        logger.info("消息队列 T MqMsg {}",MqMsg);
+        logger.info("消息队列 T MqMsg {}", MqMsg);
         teacherMapper.deleteById(id);
         return WrapMapper.ok("删除成功");
     }
@@ -305,8 +305,17 @@ public class SchoolTeacherServiceImpl extends ServiceImpl<SchoolTeacherMapper, S
         if (teacherInfoDto.getImgId() != null) {
             teacher.setImgId(teacherInfoDto.getImgId());
         }
+        if (null != teacherInfoDto.getPhone() && !"".equals(teacherInfoDto.getPhone())) {
+            teacher.setPhone(teacherInfoDto.getPhone());
+            SysAdmin admin = adminUserMapper.selectOne(new QueryWrapper<SysAdmin>().eq("t_id", teacher.getId()));
+            if (PublicUtil.isNotEmpty(admin)) {
+                if (!admin.getUserName().equals(teacher.getPhone().toString())) {
+                    admin.setUserName(teacher.getPhone().toString());
+                    adminUserMapper.updateById(admin);
+                }
+            }
+        }
         teacher.setIdNumber(teacherInfoDto.getIdNumber());
-        teacher.setPhone(teacherInfoDto.getPhone());
         teacher.setJoinTime(teacherInfoDto.getJoinTime());
         teacher.setPosition(teacherInfoDto.getPosition());
         teacher.setSectionId(teacherInfoDto.getSectionId());
@@ -366,6 +375,11 @@ public class SchoolTeacherServiceImpl extends ServiceImpl<SchoolTeacherMapper, S
                 // 此教职工下面关联的账号
                 SysAdmin adminUserByTId = adminUserMapper.getAdminUserByTId(teacher.getId());
                 if (PublicUtil.isNotEmpty(adminUserByTId)) {
+                    if (1 == adminUserByTId.getState()) {
+                        vo.setState(0);
+                    } else if (0 == adminUserByTId.getState()) {
+                        vo.setState(1);
+                    }
                     QueryWrapper<SysUserRole> userRoleQueryWrapper = new QueryWrapper<>();
                     userRoleQueryWrapper.eq("user_id", adminUserByTId.getId());
                     List<SysUserRole> userRoles = userRoleMapper.selectList(userRoleQueryWrapper);
@@ -382,6 +396,8 @@ public class SchoolTeacherServiceImpl extends ServiceImpl<SchoolTeacherMapper, S
                         });
                         vo.setRoleInfos(roleInfos);
                     }
+                } else {
+                    vo.setState(0);
                 }
                 list.add(vo);
             });
@@ -491,7 +507,7 @@ public class SchoolTeacherServiceImpl extends ServiceImpl<SchoolTeacherMapper, S
                     mqSysDto.setName(teacher.getTName());
                     mqSysDto.setType(1);
                     Object MqMsg = mqMessageService.sendSynchronizeMessages("people.insert", new Gson().toJson(mqSysDto));
-                    logger.info("消息队列 T MqMsg {}",MqMsg);
+                    logger.info("消息队列 T MqMsg {}", MqMsg);
                     teacherMapper.insert(teacher);
                 }
             }

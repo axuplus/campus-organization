@@ -36,9 +36,9 @@
 
     <profiles>
         <profile>
-            <id>ztgz</id>
+            <id>ykwz</id>
             <properties>
-                <profileActive>ztgz</profileActive>
+                <profileActive>ykwz</profileActive>
             </properties>
             <activation>
                 <activeByDefault>true</activeByDefault>

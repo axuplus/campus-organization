@@ -12,6 +12,7 @@ import com.safe.campus.model.dto.BuildingStudentDto;
 import com.safe.campus.model.dto.SaveBuildingInfoDto;
 import com.safe.campus.model.vo.*;
 import com.safe.campus.about.utils.wrapper.Wrapper;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Map;
@@ -63,5 +64,7 @@ public interface BuildingService extends IService<BuildingNo> {
     Wrapper deleteBuildingStudent(Long sId);
 
     List<SchoolStudentBuildingVo> getStudentBuildingInfo(Long masterId,Integer type, Long id);
+
+    Wrapper importBuildingInfo(MultipartFile file,LoginAuthDto loginAuthDto);
 
 }

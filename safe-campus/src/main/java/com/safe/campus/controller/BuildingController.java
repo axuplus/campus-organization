@@ -13,10 +13,12 @@ import com.safe.campus.model.vo.*;
 import com.safe.campus.service.BuildingService;
 import com.safe.campus.about.utils.wrapper.Wrapper;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiModelProperty;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.Year;
 import java.util.List;
@@ -163,4 +165,12 @@ public class BuildingController extends BaseController {
     public Wrapper deleteBuildingStudent(@PathVariable("sId") Long sId) {
         return buildingService.deleteBuildingStudent(sId);
     }
+
+    @Permission(url = qxurl, type = PermissionType.ADD)
+    @ApiModelProperty("导入楼幢信息")
+    @PostMapping("/import/buildingInfo")
+    public Wrapper importBuildingInfo(@ApiParam(value = "file", required = true) MultipartFile file) {
+        return buildingService.importBuildingInfo(file,getLoginAuthDto());
+    }
+
 }

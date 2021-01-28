@@ -1,12 +1,16 @@
 package com.safe.campus.service.Impl;
 
+import com.alibaba.excel.support.ExcelTypeEnum;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.safe.campus.about.IdWorker;
 import com.safe.campus.about.dto.LoginAuthDto;
 import com.safe.campus.about.exception.BizException;
+import com.safe.campus.about.utils.EasyExcelUtil;
+import com.safe.campus.about.utils.PathUtils;
 import com.safe.campus.about.utils.wrapper.*;
 import com.safe.campus.enums.ErrorCodeEnum;
 import com.safe.campus.mapper.*;
@@ -20,10 +24,14 @@ import com.safe.campus.service.SchoolTeacherService;
 import com.safe.campus.about.utils.PublicUtil;
 import com.safe.campus.about.utils.service.GobalInterface;
 import org.modelmapper.ModelMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -41,6 +49,8 @@ import java.util.stream.Collectors;
 @Service
 @Transactional(rollbackFor = Exception.class)
 public class BuildingNoServiceImpl extends ServiceImpl<BuildingNoMapper, BuildingNo> implements BuildingService {
+
+    protected final Logger logger = LoggerFactory.getLogger(this.getClass());
 
 
     @Autowired
@@ -72,6 +82,9 @@ public class BuildingNoServiceImpl extends ServiceImpl<BuildingNoMapper, Buildin
 
     @Autowired
     private SchoolSectionMapper sectionMapper;
+
+    @Autowired
+    private SysAdminUserMapper userMapper;
 
 
     @Override
@@ -628,7 +641,6 @@ public class BuildingNoServiceImpl extends ServiceImpl<BuildingNoMapper, Buildin
         return null;
     }
 
-
     @Override
     public Wrapper<List<BuildingTreeVo>> getBuildingTree(Long masterId) {
         List<BuildingTreeVo> list = new ArrayList<>();
@@ -709,4 +721,93 @@ public class BuildingNoServiceImpl extends ServiceImpl<BuildingNoMapper, Buildin
         }
         return null;
     }
+
+
+    @Override
+    public Wrapper importBuildingInfo(MultipartFile file, LoginAuthDto loginAuthDto) {
+        IdWorker idWorker = new IdWorker();
+        SysAdmin sysAdmin = userMapper.selectById(loginAuthDto.getUserId());
+        Long masterId = sysAdmin.getMasterId();
+        logger.info("masterId {}", masterId);
+        if (file.isEmpty()) {
+            logger.info("上传文件为空");
+            throw new BizException(ErrorCodeEnum.PUB10000006);
+        }
+        String fileName = file.getOriginalFilename();
+        if (!".xlsx".equals(PathUtils.getExtension(fileName))) {
+            logger.info("文件名格式不正确,请使用后缀名为.XLSX的文件");
+            throw new BizException(ErrorCodeEnum.PUB10000008);
+        }
+
+        List<BuildingExcelDto> list = null;
+        try {
+            list = EasyExcelUtil.readExcelWithModel(file.getInputStream(), BuildingExcelDto.class, ExcelTypeEnum.XLSX);
+        } catch (IOException e) {
+            logger.info("Excel导入失败", e);
+        }
+        logger.info("Excel {}", list);
+        logger.info("Excel 的大小是 {}", list.size());
+        if (PublicUtil.isNotEmpty(list)) {
+            Map<String, List<BuildingExcelDto>> listByNo = list.parallelStream().collect(Collectors.groupingBy(BuildingExcelDto::getBuildingNo));
+            listByNo.forEach((noKey, noValue) -> {
+                BuildingNo no = noMapper.selectOne(new QueryWrapper<BuildingNo>().eq("master_id", masterId).eq("building_no", noKey));
+                if (PublicUtil.isEmpty(no)) {
+                    BuildingNo buildingNo = new BuildingNo();
+                    buildingNo.setId(gobalInterface.generateId());
+                    buildingNo.setMasterId(masterId);
+                    buildingNo.setBuildingNo(noKey);
+                    buildingNo.setCreateTime(new Date());
+                    buildingNo.setIsDelete(0);
+                    buildingNo.setState(0);
+                    buildingNo.setCreateUser(loginAuthDto.getUserId());
+                    noMapper.insert(buildingNo);
+                    no.setId(buildingNo.getId());
+                }
+                Map<String, List<BuildingExcelDto>> levelList = noValue.parallelStream().collect(Collectors.groupingBy(BuildingExcelDto::getBuildingLevel));
+                levelList.forEach((levelKey, levelValue) -> {
+                    BuildingLevel buildingLevel = levelMapper.selectOne(new QueryWrapper<BuildingLevel>().eq("building_level", levelKey).eq("building_no_id", no.getId()));
+                    if (PublicUtil.isEmpty(buildingLevel)) {
+                        BuildingLevel level = new BuildingLevel();
+                        level.setId(gobalInterface.generateId());
+                        level.setBuildingLevel(levelKey);
+                        level.setBuildingNoId(no.getId());
+                        level.setIsDelete(0);
+                        level.setState(0);
+                        level.setCreateUser(loginAuthDto.getUserId());
+                        level.setCreateTime(new Date());
+                        levelMapper.insert(buildingLevel);
+                        buildingLevel.setId(level.getId());
+                    }
+                    Map<String, List<BuildingExcelDto>> roomList = levelValue.parallelStream().collect(Collectors.groupingBy(BuildingExcelDto::getBuildingRoom));
+                    roomList.forEach((roomKey, roomValue) -> {
+                        BuildingRoom buildingRoom = roomMapper.selectOne(new QueryWrapper<BuildingRoom>().eq("building_room", roomKey).eq("building_level_id", buildingLevel.getId()));
+                        if (PublicUtil.isEmpty(buildingRoom)) {
+                            BuildingRoom room = new BuildingRoom();
+                            room.setId(idWorker.nextId());
+                            room.setBuildingLevelId(buildingLevel.getId());
+                            room.setBuildingRoom(roomKey);
+                            room.setIsDelete(0);
+                            room.setState(0);
+                            room.setCreateUser(loginAuthDto.getUserId());
+                            room.setCreateTime(new Date());
+                            roomMapper.insert(room);
+                            buildingRoom.setId(room.getId());
+                        }
+                        roomValue.forEach(b -> {
+                            BuildingBed buildingBed = bedMapper.selectOne(new QueryWrapper<BuildingBed>().eq("bed_name", b.getBuildingBed()).eq("room_id", buildingRoom.getId()));
+                            if (PublicUtil.isEmpty(buildingBed)) {
+                                BuildingBed bed = new BuildingBed();
+                                bed.setId(idWorker.nextId());
+                                bed.setBedName(b.getBuildingBed());
+                                bed.setRoomId(buildingRoom.getId());
+                                bedMapper.insert(bed);
+                            }
+                        });
+                    });
+                });
+            });
+        }
+        return WrapMapper.ok("导入成功");
+    }
+
 }
